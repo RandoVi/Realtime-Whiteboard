@@ -1,3 +1,8 @@
+import { createUser } from './users/createUsers';
+import { deleteUser } from './users/deleteUser';
+import { findUsers } from './users/findUsers';
+import { updateUser } from './users/updateUser';
+
 const express = require('express');
 
 const app = express();
@@ -14,6 +19,26 @@ if (Number.isNaN(PORT)) {
 // Handling GET / Request
 app.get('/', (_req: import('express').Request, res: import('express').Response) => {
     res.send('Welcome to typescript backend!');
+})
+
+app.get('/create', (_req: import('express').Request, res: import('express').Response) => {
+    res.send('Creating mock user');
+    createUser();
+})
+
+app.get('/update', (_req: import('express').Request, res: import('express').Response) => {
+    res.send('Updating mock user');
+    updateUser();
+})
+
+app.get('/find', (_req: import('express').Request, res: import('express').Response) => {
+    res.send('Returning all users');
+    findUsers();
+})
+
+app.get('/delete', (_req: import('express').Request, res: import('express').Response) => {
+    res.send('Deleting mock user');
+    deleteUser();
 })
 
 // Server setup
