@@ -1,18 +1,20 @@
 import { useEffect, useRef, useState } from 'react'
-import type { Camera, Point } from './Types'
-import { screenToWorld, zoomAtPoint, ZOOM_SENSITIVITY } from './Camera'
-
-type Props = {
-  cameraRef: React.RefObject<Camera>
-  viewportRef: React.RefObject<{ width: number; height: number; dpr: number }>
-  requestRender: () => void
-}
+import type { Camera, Point } from '../Types'
+import { screenToWorld, zoomAtPoint, ZOOM_SENSITIVITY } from '../Camera'
+import type { UseWhiteboardInputProps } from '../Types'
+import type { Shape } from '../shapes/Shape'
+import { normalizeRectangle } from '../shapes/geometry/normalizeRectangle'
+import { hitTestShape } from '../shapes/hitTest'
 
 export function useWhiteboardInput({
   cameraRef,
   viewportRef,
   requestRender,
-}: Props) {
+  shapesRef,
+  tool,
+  selectedShapeId,
+  setSelectedShapeId,
+}: UseWhiteboardInputProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
 
   const [showCoordinates, setShowCoordinates] = useState(false)
@@ -21,6 +23,11 @@ export function useWhiteboardInput({
   const mouseScreenRef = useRef<Point>({ x: 0, y: 0 })
   const draggingRef = useRef(false)
   const lastPointerRef = useRef<Point>({ x: 0, y: 0 })
+
+// drawing state
+  const drawingRef = useRef(false)
+  const startPointRef = useRef<Point | null>(null)
+  const previewShapeRef = useRef<Shape | null>(null)
 
   const bindCanvas = (canvas: HTMLCanvasElement | null) => {
     canvasRef.current = canvas
@@ -61,10 +68,28 @@ export function useWhiteboardInput({
 
     const handleMouseMove = (event: MouseEvent) => {
       const rect = canvas.getBoundingClientRect()
-
+      // Update the mouse position in screen coordinates, aka screen space
       const pointer = {
         x: event.clientX - rect.left,
         y: event.clientY - rect.top,
+      }
+
+      if (
+        tool === 'rectangle' &&
+        drawingRef.current &&
+        startPointRef.current &&
+        previewShapeRef.current
+      ) {
+        const world = screenToWorld(pointer, cameraRef.current)
+
+        previewShapeRef.current = {
+          ...previewShapeRef.current,
+
+          width: world.x - startPointRef.current.x,
+          height: world.y - startPointRef.current.y,
+        }
+
+        requestRender()
       }
 
       mouseScreenRef.current = pointer
@@ -95,17 +120,85 @@ export function useWhiteboardInput({
 
       const rect = canvas.getBoundingClientRect()
 
-      draggingRef.current = true
-      lastPointerRef.current = {
+      const pointer = {
         x: event.clientX - rect.left,
         y: event.clientY - rect.top,
       }
 
-      canvas.style.cursor = 'grabbing'
+      if (tool === "select") {
+
+        const world = screenToWorld(
+          pointer,
+          cameraRef.current
+        )
+
+        const clickedShape = shapesRef.current
+          .slice()
+          .reverse()
+          .find(shape =>
+            hitTestShape(world, shape)
+          )
+
+        if (clickedShape) {
+          setSelectedShapeId(clickedShape.id)
+        } else {
+          setSelectedShapeId(null)
+        }
+
+        requestRender()
+        return
+      }
+      
+
+      if (tool === 'pan') {
+        draggingRef.current = true
+        lastPointerRef.current = pointer
+
+        canvas.style.cursor = 'grabbing'
+        return
+      }
+      
+      if (tool === 'rectangle') {
+        const world = screenToWorld(pointer, cameraRef.current)
+
+        drawingRef.current = true
+        startPointRef.current = world
+
+        previewShapeRef.current = {
+          id: crypto.randomUUID(),
+          type: 'rectangle',
+          x: world.x,
+          y: world.y,
+          width: 0,
+          height: 0,
+          fill: '#90caf9',
+          stroke: '#1565c0',
+        }
+
+        return
+      }
     }
 
     const stopDragging = () => {
+      if (
+        tool === 'rectangle' &&
+        drawingRef.current &&
+        previewShapeRef.current
+      ) {
+        const rectangle = normalizeRectangle(previewShapeRef.current)
+
+        shapesRef.current.push(rectangle)
+
+        previewShapeRef.current = null
+
+        requestRender()
+      }
+
+      drawingRef.current = false
+      startPointRef.current = null
+
       draggingRef.current = false
+
       canvas.style.cursor = 'grab'
     }
 
@@ -136,5 +229,6 @@ export function useWhiteboardInput({
     showCoordinates,
     mouseWorld,
     bindCanvas,
+    previewShapeRef,
   }
 }

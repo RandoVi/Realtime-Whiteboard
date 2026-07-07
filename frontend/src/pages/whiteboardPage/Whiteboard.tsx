@@ -1,9 +1,15 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import type { Camera } from './Types'
-import { renderGrid } from './renderGrid'
-import { renderBackground } from './renderBackground'
-import { useWhiteboardInput } from './useWhiteboardInput'
+import { renderGrid } from './render/renderGrid'
+import { renderBackground } from './render/renderBackground'
+import { useWhiteboardInput } from './hooks/useWhiteboardInput'
+import type { Shape } from './shapes/Shape'
+import { renderShapes } from './render/RenderShapes'
 import './Whiteboard.css'
+
+import { BottomToolbar } from './ui/toolbar/BottomToolbar'
+import { LeftToolbar } from './ui/toolbar/LeftToolbar'
+import type { Tool } from './tools/Tool'
 
 
 function Whiteboard() {
@@ -18,11 +24,28 @@ function Whiteboard() {
   const resizeInitializedRef = useRef(false)
   const renderFrameRef = useRef<number | null>(null)
 
+  const shapesRef = useRef<Shape[]>([
+  {
+    id: crypto.randomUUID(),
+    type: 'rectangle',
 
+    x: -100,
+    y: -75,
 
+    width: 200,
+    height: 150,
+
+    fill: '#90caf9',
+    stroke: '#1565c0',
+  },
+])
+
+const [tool, setTool] = useState<Tool>('pan')
+const [selectedShapeId, setSelectedShapeId] = useState<string | null>(null)
+//--------------------- RENDERER
   const render = () => {
     const canvas = canvasRef.current
-    console.log("render");
+    // console.log("render");
 
     if (!canvas) {
       return
@@ -42,11 +65,19 @@ function Whiteboard() {
     
     renderBackground(context, { width, height })
     renderGrid(context, camera, { width, height })
+    renderShapes(
+      context,
+      shapesRef.current,
+      camera,
+      previewShapeRef.current,
+      selectedShapeId
+
+    )
 
   }
 
   const requestRender = () => {
-    console.log(renderFrameRef.current)
+    // console.log(renderFrameRef.current)
     if (renderFrameRef.current !== null) {
       return
     }
@@ -70,10 +101,15 @@ function Whiteboard() {
     showCoordinates,
     mouseWorld,
     bindCanvas,
+    previewShapeRef,
   } = useWhiteboardInput({
     cameraRef: transformRef,
     viewportRef,
     requestRender,
+    shapesRef,
+    tool,
+    selectedShapeId,
+    setSelectedShapeId,
   })
 
   const resizeCanvas = () => {
@@ -101,14 +137,12 @@ function Whiteboard() {
     requestRender()
   }
 
-
-
-useEffect(() => {
-  resizeCanvas()
-
-  const handleWindowResize = () => {
+  useEffect(() => {
     resizeCanvas()
-  }
+
+    const handleWindowResize = () => {
+      resizeCanvas()
+    }
 
   window.addEventListener('resize', handleWindowResize)
 
@@ -130,6 +164,11 @@ useEffect(() => {
           bindCanvas(canvas)
         }}
         className="whiteboard-canvas"
+      />
+      <LeftToolbar />
+      <BottomToolbar
+        tool={tool}
+        setTool={setTool}
       />
 
       {showCoordinates && mouseWorld && (

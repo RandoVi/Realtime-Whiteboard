@@ -1,5 +1,5 @@
-import { screenToWorld, worldToScreen, } from "./Camera";
-import type { Camera } from "./Types";
+import { screenToWorld, worldToScreen, } from "../Camera";
+import type { Camera } from "../Types";
 type Viewport = {
         width: number
         height: number
