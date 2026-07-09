@@ -10,6 +10,7 @@ import './Whiteboard.css'
 import { BottomToolbar } from './ui/toolbar/BottomToolbar'
 import { LeftToolbar } from './ui/toolbar/LeftToolbar'
 import type { Tool } from './tools/Tool'
+import { renderSelection } from './render/renderSelection'
 
 
 function Whiteboard() {
@@ -25,25 +26,25 @@ function Whiteboard() {
   const renderFrameRef = useRef<number | null>(null)
 
   const shapesRef = useRef<Shape[]>([
-  {
-    id: crypto.randomUUID(),
-    type: 'rectangle',
+    {
+      id: crypto.randomUUID(),
+      type: 'rectangle',
 
-    x: -100,
-    y: -75,
+      x: -100,
+      y: -75,
 
-    width: 200,
-    height: 150,
+      width: 200,
+      height: 150,
 
-    fill: '#90caf9',
-    stroke: '#1565c0',
-  },
-])
+      fill: 'transparent',
+      stroke: '#1565c0',
+    },
+  ])
 
-const [tool, setTool] = useState<Tool>('pan')
-const [selectedShapeId, setSelectedShapeId] = useState<string | null>(null)
-const selectedShapeIdRef = useRef<string | null>(null)
-//--------------------- RENDERER
+  const [tool, setTool] = useState<Tool>('pan')
+  const [selectedShapeId, setSelectedShapeId] = useState<string | null>(null)
+  const selectedShapeIdRef = useRef<string | null>(null)
+  //--------------------- RENDERER
   const render = () => {
     const canvas = canvasRef.current
     // console.log("render");
@@ -63,7 +64,7 @@ const selectedShapeIdRef = useRef<string | null>(null)
 
     context.setTransform(dpr, 0, 0, dpr, 0, 0)
     context.clearRect(0, 0, width, height)
-    
+
     renderBackground(context, { width, height })
     renderGrid(context, camera, { width, height })
     renderShapes(
@@ -71,8 +72,19 @@ const selectedShapeIdRef = useRef<string | null>(null)
       shapesRef.current,
       camera,
       previewShapeRef.current,
-      selectedShapeIdRef.current
     )
+
+    const selectedShape = shapesRef.current.find(
+      shape => shape.id === selectedShapeIdRef.current
+    )
+
+    if (selectedShape) {
+      renderSelection(
+        context,
+        selectedShape,
+        camera,
+      )
+    }
 
   }
 
@@ -145,17 +157,17 @@ const selectedShapeIdRef = useRef<string | null>(null)
       resizeCanvas()
     }
 
-  window.addEventListener('resize', handleWindowResize)
+    window.addEventListener('resize', handleWindowResize)
 
-  return () => {
-    window.removeEventListener('resize', handleWindowResize)
+    return () => {
+      window.removeEventListener('resize', handleWindowResize)
 
-    if (renderFrameRef.current !== null) {
-      cancelAnimationFrame(renderFrameRef.current)
-      renderFrameRef.current = null
+      if (renderFrameRef.current !== null) {
+        cancelAnimationFrame(renderFrameRef.current)
+        renderFrameRef.current = null
+      }
     }
-  }
-}, [])
+  }, [])
 
   return (
     <div className='whiteboard-page'>

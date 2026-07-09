@@ -1,9 +1,9 @@
 import { screenToWorld, worldToScreen, } from "../Camera";
 import type { Camera } from "../Types";
 type Viewport = {
-        width: number
-        height: number
-    }
+  width: number
+  height: number
+}
 
 const GRID_SPACING = 50;
 

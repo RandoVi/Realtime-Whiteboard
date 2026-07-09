@@ -1,4 +1,4 @@
-import type {Camera, Point} from '../Types'
+import type { Camera, Point } from '../Types'
 import type { Rectangle } from '../shapes/Rectangle'
 import { HANDLE_SIZE, type ResizeHandle } from './selection'
 
@@ -9,7 +9,7 @@ export function hitTestHandle(point: Point, rectangle: Rectangle, camera: Camera
 
     const screenWidth = rectangle.width * camera.scale
     const screenHeight = rectangle.height * camera.scale
-    
+
     const handles: { type: ResizeHandle; x: number; y: number }[] = [
         { type: 'nw', x: screenX, y: screenY },
         { type: 'ne', x: screenX + screenWidth, y: screenY },
@@ -18,14 +18,14 @@ export function hitTestHandle(point: Point, rectangle: Rectangle, camera: Camera
     ] as const
 
     for (const handle of handles) {
-    if (
-        point.x >= handle.x - HANDLE_SIZE / 2 &&
-        point.x <= handle.x + HANDLE_SIZE / 2 &&
-        point.y >= handle.y - HANDLE_SIZE / 2 &&
-        point.y <= handle.y + HANDLE_SIZE / 2
-    ) {
-        return console.log(`Hit test for handle ${handle.type} at (${handle.x}, ${handle.y})`), handle.type
-    }
+        if (
+            point.x >= handle.x - HANDLE_SIZE / 2 &&
+            point.x <= handle.x + HANDLE_SIZE / 2 &&
+            point.y >= handle.y - HANDLE_SIZE / 2 &&
+            point.y <= handle.y + HANDLE_SIZE / 2
+        ) {
+            return console.log(`Hit test for handle ${handle.type} at (${handle.x}, ${handle.y})`), handle.type
+        }
     }
 
     return null

@@ -29,7 +29,7 @@ export function useWhiteboardInput({
   const draggingRef = useRef(false)
   const lastPointerRef = useRef<Point>({ x: 0, y: 0 })
 
-// drawing state
+  // drawing state
   const drawingRef = useRef(false)
   const startPointRef = useRef<Point | null>(null)
   const previewShapeRef = useRef<Shape | null>(null)
@@ -43,8 +43,8 @@ export function useWhiteboardInput({
   const originalRectangleRef = useRef<Rectangle | null>(null)
   // hovered handle state
   const hoveredHandleRef =
-  useRef<ResizeHandle | null>(null)
-  
+    useRef<ResizeHandle | null>(null)
+
 
   const bindCanvas = (canvas: HTMLCanvasElement | null) => {
     canvasRef.current = canvas
@@ -113,13 +113,6 @@ export function useWhiteboardInput({
             resizeHandleRef.current,
             world
           )
-
-          const normalized = normalizeRectangle(rectangle)
-
-          rectangle.x = normalized.x
-          rectangle.y = normalized.y
-          rectangle.width = normalized.width
-          rectangle.height = normalized.height
 
           requestRender()
         }
@@ -204,7 +197,7 @@ export function useWhiteboardInput({
           }
         }
       }
-      
+
       // If dragging, update the camera offset based on the mouse movement
       if (draggingRef.current) {
         const dx = pointer.x - lastPointerRef.current.x
@@ -306,8 +299,8 @@ export function useWhiteboardInput({
 
         requestRender()
         return
-}
-      
+      }
+
 
       if (tool === 'pan') {
         draggingRef.current = true
@@ -316,7 +309,7 @@ export function useWhiteboardInput({
         canvas.style.cursor = 'grabbing'
         return
       }
-      
+
       if (tool === 'rectangle') {
         const world = screenToWorld(pointer, cameraRef.current)
 
@@ -351,6 +344,16 @@ export function useWhiteboardInput({
         previewShapeRef.current = null
 
         requestRender()
+      }
+
+      if (resizingRef.current && selectedShapeIdRef.current) {
+        const rect = shapesRef.current.find(
+          s => s.id === selectedShapeIdRef.current
+        )
+
+        if (rect?.type === "rectangle") {
+          Object.assign(rect, normalizeRectangle(rect))
+        }
       }
       // Reset all interaction states
       drawingRef.current = false
