@@ -41,4 +41,5 @@ export type UseWhiteboardInputProps = {
   setSelectedShapeId: React.Dispatch<
     React.SetStateAction<string | null>
   >
+  selectedShapeIdRef: React.RefObject<string | null>
 }

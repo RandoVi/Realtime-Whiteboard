@@ -1,5 +1,6 @@
 import type { Camera } from '../Types'
 import type { Rectangle } from '../shapes/Rectangle'
+import { HANDLE_SIZE } from '../tools/selection'
 
 export function renderRectangle(context: CanvasRenderingContext2D, rectangle: Rectangle, camera: Camera, isSelected: boolean) {
     // Convert world coordinates to screen coordinates
@@ -15,12 +16,15 @@ export function renderRectangle(context: CanvasRenderingContext2D, rectangle: Re
 
     context.beginPath()
     // Draw the rectangle using screen coordinates and scaled dimensions
-    context.rect(screenX, screenY, rectangle.width * camera.scale, rectangle.height * camera.scale)
+    context.rect(screenX, screenY, screenWidth, screenHeight)
     context.fill()
     context.stroke()
 
     if (isSelected) {
         context.save()
+
+        context.strokeStyle = '#3b82f6'
+        context.lineWidth = 2
 
         const padding = 2
 
@@ -32,5 +36,31 @@ export function renderRectangle(context: CanvasRenderingContext2D, rectangle: Re
         )
 
         context.restore()
+
+        context.fillStyle = "white"
+        context.strokeStyle = "#3b82f6"
+        const handles = [
+            { x: screenX, y: screenY },
+            { x: screenX + screenWidth, y: screenY },
+            { x: screenX, y: screenY + screenHeight },
+            { x: screenX + screenWidth, y: screenY + screenHeight },
+        ]
+        for (const handle of handles) {
+        context.beginPath()
+
+        context.rect(
+            handle.x - HANDLE_SIZE / 2,
+            handle.y - HANDLE_SIZE / 2,
+            HANDLE_SIZE,
+            HANDLE_SIZE
+        )
+
+        context.fill()
+        context.stroke()
+        }
     }
+
+
+
+    
 }

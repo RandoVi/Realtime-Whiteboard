@@ -42,6 +42,7 @@ function Whiteboard() {
 
 const [tool, setTool] = useState<Tool>('pan')
 const [selectedShapeId, setSelectedShapeId] = useState<string | null>(null)
+const selectedShapeIdRef = useRef<string | null>(null)
 //--------------------- RENDERER
   const render = () => {
     const canvas = canvasRef.current
@@ -70,8 +71,7 @@ const [selectedShapeId, setSelectedShapeId] = useState<string | null>(null)
       shapesRef.current,
       camera,
       previewShapeRef.current,
-      selectedShapeId
-
+      selectedShapeIdRef.current
     )
 
   }
@@ -110,6 +110,7 @@ const [selectedShapeId, setSelectedShapeId] = useState<string | null>(null)
     tool,
     selectedShapeId,
     setSelectedShapeId,
+    selectedShapeIdRef,
   })
 
   const resizeCanvas = () => {
