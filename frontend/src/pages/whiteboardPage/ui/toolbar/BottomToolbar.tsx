@@ -2,6 +2,9 @@ import { useState } from 'react'
 import type { Tool } from '../../tools/Tool'
 import './Toolbar.css'
 import CursorIcon from './icons/CursorIcon'
+import RectangleIcon from './icons/RectangleIcon'
+import MoveIcon from './icons/MoveIcon'
+import SelectorIcon from './icons/SelectorIcon'
 
   type Props = {
     tool: Tool
@@ -16,17 +19,17 @@ export function BottomToolbar({
   return (
     <div className="bottom-toolbar">
   <button className="tool-button" onClick={() => setTool('rectangle')}>
-    <CursorIcon color={'purple'}/>
+    <RectangleIcon color={'none'}/>
   </button>
 
   <button className="tool-button" onClick={() => setTool('pan')}>
     {/* <Pencil /> */}
-    <CursorIcon color={'purple'}/>
+    <MoveIcon color={'none'}/>
   </button>
 
   <button className="tool-button" onClick={() => setTool('select')}>
     {/* <Rectangle /> */}
-    <CursorIcon color={'purple'}/>
+    <SelectorIcon color={'purple'}/>
   </button>
 
   <button className="tool-button">
