@@ -1,4 +1,5 @@
 import type { Camera } from '../Types'
+import type { Interaction } from '../interaction/Interaction'
 import type { Shape } from '../shapes/Shape'
 import { renderRectangle } from './RenderRectangle'
 
@@ -6,14 +7,18 @@ export function renderShapes(
   context: CanvasRenderingContext2D,
   shapes: Shape[],
   camera: Camera,
-  previewShape?: Shape | null,
+  interaction: Interaction,
 ) {
   for (const shape of shapes) {
     renderShape(context, shape, camera)
   }
 
-  if (previewShape) {
-    renderShape(context, previewShape, camera)
+  if (interaction.type === "drawingShape") {
+    renderShape(
+      context,
+      interaction.preview,
+      camera
+    )
   }
 }
 

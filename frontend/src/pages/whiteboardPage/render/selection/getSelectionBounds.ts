@@ -13,6 +13,7 @@ export type SelectionBounds = {
   center: Point
 }
 
+// Returns the selection bounds for a given shape.
 export function getSelectionBounds(shape: Shape): SelectionBounds {
   switch (shape.type) {
     case 'rectangle': {

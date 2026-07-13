@@ -11,6 +11,7 @@ import { BottomToolbar } from './ui/toolbar/BottomToolbar'
 import { LeftToolbar } from './ui/toolbar/LeftToolbar'
 import type { Tool } from './tools/Tool'
 import { renderSelection } from './render/renderSelection'
+import { getShapeById } from './shapes/getShapeById'
 
 
 function Whiteboard() {
@@ -42,7 +43,7 @@ function Whiteboard() {
   ])
 
   const [tool, setTool] = useState<Tool>('pan')
-  const [selectedShapeId, setSelectedShapeId] = useState<string | null>(null)
+  const [, setSelectedShapeId] = useState<string | null>(null)
   const selectedShapeIdRef = useRef<string | null>(null)
   //--------------------- RENDERER
   const render = () => {
@@ -71,12 +72,15 @@ function Whiteboard() {
       context,
       shapesRef.current,
       camera,
-      previewShapeRef.current,
+      interactionRef.current,
     )
 
-    const selectedShape = shapesRef.current.find(
-      shape => shape.id === selectedShapeIdRef.current
-    )
+    const selectedShape = selectedShapeIdRef.current
+      ? getShapeById(
+        shapesRef.current,
+        selectedShapeIdRef.current
+      )
+      : undefined
 
     if (selectedShape) {
       renderSelection(
@@ -113,14 +117,13 @@ function Whiteboard() {
     showCoordinates,
     mouseWorld,
     bindCanvas,
-    previewShapeRef,
+    interactionRef,
   } = useWhiteboardInput({
     cameraRef: transformRef,
     viewportRef,
     requestRender,
     shapesRef,
     tool,
-    selectedShapeId,
     setSelectedShapeId,
     selectedShapeIdRef,
   })

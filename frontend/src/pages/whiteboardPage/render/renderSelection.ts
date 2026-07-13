@@ -1,7 +1,7 @@
 import type { Camera } from '../Types'
-import type { Rectangle } from '../shapes/Rectangle'
 import type { Shape } from '../shapes/Shape'
 import { HANDLE_SIZE } from '../tools/selection'
+import { getResizeHandles } from './selection/getResizeHandles'
 import { getSelectionBounds} from "./selection/getSelectionBounds"
 import type { SelectionBounds } from './selection/getSelectionBounds'
 
@@ -50,12 +50,7 @@ function renderRectangleSelection(
     context.fillStyle = 'white'
     context.strokeStyle = '#3b82f6'
 
-    const handles = [
-        { x: screenX, y: screenY },
-        { x: screenX + screenWidth, y: screenY },
-        { x: screenX, y: screenY + screenHeight },
-        { x: screenX + screenWidth, y: screenY + screenHeight },
-    ]
+    const handles = getResizeHandles(bounds, camera)
 
     for (const handle of handles) {
         context.beginPath()

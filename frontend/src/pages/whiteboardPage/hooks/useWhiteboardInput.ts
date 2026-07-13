@@ -2,13 +2,16 @@ import { useEffect, useRef, useState } from 'react'
 import type { Camera, Point } from '../Types'
 import { screenToWorld, zoomAtPoint, ZOOM_SENSITIVITY } from '../Camera'
 import type { UseWhiteboardInputProps } from '../Types'
-import type { Shape } from '../shapes/Shape'
-import { normalizeRectangle } from '../shapes/geometry/normalizeRectangle'
 import { hitTestShape } from '../shapes/hitTest'
-import type { ResizeHandle } from '../tools/selection'
-import type { Rectangle } from '../shapes/Rectangle'
-import { hitTestHandle } from '../tools/hitTestHandle'
-import { resizeRectangle } from '../shapes/geometry/resizeRectangle'
+import type { Interaction } from '../interaction/Interaction'
+import { moveShape } from '../shapes/geometry/moveShape'
+import { getShapeById } from '../shapes/getShapeById'
+import { getResizeHandleForShape } from '../render/selection/getResizeHandleForShape'
+import { resizeShape } from '../shapes/geometry/resizeShape'
+import { normalizeShape } from '../shapes/geometry/normalizeShape'
+import { updatePreviewShape } from '../shapes/updatePreviewShape'
+import { createShape } from '../shapes/createShape'
+import { getSelectionCursor } from '../render/selection/getSelectionCursor'
 
 export function useWhiteboardInput({
   cameraRef,
@@ -16,7 +19,7 @@ export function useWhiteboardInput({
   requestRender,
   shapesRef,
   tool,
-  selectedShapeId,
+
   setSelectedShapeId,
   selectedShapeIdRef,
 }: UseWhiteboardInputProps) {
@@ -26,28 +29,28 @@ export function useWhiteboardInput({
   const [mouseWorld, setMouseWorld] = useState<Point | null>(null)
 
   const mouseScreenRef = useRef<Point>({ x: 0, y: 0 })
-  const draggingRef = useRef(false)
-  const lastPointerRef = useRef<Point>({ x: 0, y: 0 })
-
-  // drawing state
-  const drawingRef = useRef(false)
-  const startPointRef = useRef<Point | null>(null)
-  const previewShapeRef = useRef<Shape | null>(null)
-  // moving state
-  const movingShapeRef = useRef(false)
-  const moveStartRef = useRef<Point | null>(null)
-  const originalShapeRef = useRef<Shape | null>(null)
-  // resizing state
-  const resizingRef = useRef(false)
-  const resizeHandleRef = useRef<ResizeHandle | null>(null)
-  const originalRectangleRef = useRef<Rectangle | null>(null)
-  // hovered handle state
-  const hoveredHandleRef =
-    useRef<ResizeHandle | null>(null)
-
+  const interactionRef = useRef<Interaction>({
+    type: "idle",
+  })
 
   const bindCanvas = (canvas: HTMLCanvasElement | null) => {
     canvasRef.current = canvas
+  }
+
+  const selectShape = (id: string | null) => {
+    selectedShapeIdRef.current = id
+    setSelectedShapeId(id)
+  }
+
+  const getSelectedShape = () => {
+    if (!selectedShapeIdRef.current) {
+      return undefined
+    }
+
+    return getShapeById(
+      shapesRef.current,
+      selectedShapeIdRef.current
+    )
   }
 
   // Handle mouse wheel events for zooming
@@ -94,23 +97,17 @@ export function useWhiteboardInput({
       const world = screenToWorld(pointer, cameraRef.current)
 
       if (
-        resizingRef.current &&
-        resizeHandleRef.current &&
-        originalRectangleRef.current &&
-        selectedShapeId
+        interactionRef.current.type === "resizingShape"
       ) {
-        const rectangle = shapesRef.current.find(
-          shape => shape.id === selectedShapeId
-        )
+        const interaction = interactionRef.current
 
-        if (
-          rectangle &&
-          rectangle.type === 'rectangle'
-        ) {
-          resizeRectangle(
-            rectangle,
-            originalRectangleRef.current,
-            resizeHandleRef.current,
+        const shape = getSelectedShape()
+
+        if (shape) {
+          resizeShape(
+            shape,
+            interaction.original,
+            interaction.handle,
             world
           )
 
@@ -121,39 +118,33 @@ export function useWhiteboardInput({
       }
 
       // Update the preview shape if drawing a rectangle
-      if (
-        tool === 'rectangle' &&
-        drawingRef.current &&
-        startPointRef.current &&
-        previewShapeRef.current
-      ) {
-
-        previewShapeRef.current = {
-          ...previewShapeRef.current,
-
-          width: world.x - startPointRef.current.x,
-          height: world.y - startPointRef.current.y,
-        }
-
-        requestRender()
-      }
-      // Update the position of the shape being moved if moving a shape
-      if (
-        movingShapeRef.current &&
-        moveStartRef.current &&
-        originalShapeRef.current &&
-        selectedShapeId
-      ) {
-        const dx = world.x - moveStartRef.current.x
-        const dy = world.y - moveStartRef.current.y
-
-        const shape = shapesRef.current.find(
-          shape => shape.id === selectedShapeId
+      if (interactionRef.current.type === 'drawingShape') {
+        updatePreviewShape(
+          interactionRef.current.preview,
+          interactionRef.current.start,
+          world
         )
 
+        requestRender()
+        return
+      }
+      // Update the position of the shape being moved if moving a shape
+      if (interactionRef.current.type === "movingShape") {
+
+        const interaction = interactionRef.current
+
+        const dx = world.x - interaction.start.x
+        const dy = world.y - interaction.start.y
+
+        const shape = getSelectedShape()
+
         if (shape) {
-          shape.x = originalShapeRef.current.x + dx
-          shape.y = originalShapeRef.current.y + dy
+          moveShape(
+            shape,
+            interaction.original,
+            dx,
+            dy,
+          )
 
           requestRender()
         }
@@ -163,49 +154,34 @@ export function useWhiteboardInput({
 
       mouseScreenRef.current = pointer
 
-      if (
-        tool === 'select' &&
-        !movingShapeRef.current &&
-        selectedShapeIdRef.current
-      ) {
-        const shape = shapesRef.current.find(
-          shape => shape.id === selectedShapeIdRef.current
-        )
+      if (tool === 'select') {
+        const shape = getSelectedShape()
 
-        if (shape && shape.type === 'rectangle') {
-          const handle = hitTestHandle(
-            pointer,
+        if (shape) {
+          const handle = getResizeHandleForShape(
             shape,
+            pointer,
             cameraRef.current
           )
 
-          hoveredHandleRef.current = handle
-
-          switch (handle) {
-            case 'nw':
-            case 'se':
-              canvas.style.cursor = 'nwse-resize'
-              break
-
-            case 'ne':
-            case 'sw':
-              canvas.style.cursor = 'nesw-resize'
-              break
-
-            default:
-              canvas.style.cursor = 'grab'
-          }
+          canvas.style.cursor = getSelectionCursor(handle)
         }
       }
 
-      // If dragging, update the camera offset based on the mouse movement
-      if (draggingRef.current) {
-        const dx = pointer.x - lastPointerRef.current.x
-        const dy = pointer.y - lastPointerRef.current.y
+      // Handle panning if the current interaction is panning
+      if (interactionRef.current.type === "panning") {
+        const interaction = interactionRef.current
 
-        lastPointerRef.current = pointer
+        const dx = pointer.x - interaction.start.x
+        const dy = pointer.y - interaction.start.y
+
+        interactionRef.current = {
+          ...interaction,
+          start: pointer,
+        }
 
         const camera = cameraRef.current
+
         cameraRef.current = {
           ...camera,
           offsetX: camera.offsetX + dx,
@@ -241,32 +217,27 @@ export function useWhiteboardInput({
         // 1. Check selected shape handles first
         if (selectedShapeIdRef.current) {
 
-          const selectedShape = shapesRef.current.find(
-            shape => shape.id === selectedShapeIdRef.current
-          )
+          const selectedShape = getSelectedShape()
 
-          if (
-            selectedShape &&
-            selectedShape.type === 'rectangle'
-          ) {
-            const handle = hitTestHandle(
-              pointer,
+          if (selectedShape) {
+            const handle = getResizeHandleForShape(
               selectedShape,
+              pointer,
               cameraRef.current
             )
 
             if (handle) {
-              resizingRef.current = true
-              resizeHandleRef.current = handle
-              originalRectangleRef.current = {
-                ...selectedShape
+              interactionRef.current = {
+                type: "resizingShape",
+                shapeId: selectedShape.id,
+                original: { ...selectedShape },
+                handle,
               }
 
               return
             }
           }
         }
-
 
         // 2. Otherwise check shape body
         const clickedShape = shapesRef.current
@@ -276,97 +247,95 @@ export function useWhiteboardInput({
             hitTestShape(world, shape)
           )
 
-
         if (clickedShape) {
 
-          selectedShapeIdRef.current = clickedShape.id
-          setSelectedShapeId(clickedShape.id)
+          selectShape(clickedShape.id)
 
-          movingShapeRef.current = true
-          moveStartRef.current = world
-          originalShapeRef.current = {
-            ...clickedShape
+          interactionRef.current = {
+            type: "movingShape",
+            start: world,
+            original: { ...clickedShape },
+            shapeId: clickedShape.id,
           }
 
           requestRender()
           return
         }
 
-
         // 3. Clicked empty space
-        selectedShapeIdRef.current = null
-        setSelectedShapeId(null)
+        selectShape(null)
 
         requestRender()
         return
       }
 
-
       if (tool === 'pan') {
-        draggingRef.current = true
-        lastPointerRef.current = pointer
+        interactionRef.current = {
+          type: "panning",
+          start: pointer,
+        }
 
         canvas.style.cursor = 'grabbing'
         return
       }
 
-      if (tool === 'rectangle') {
-        const world = screenToWorld(pointer, cameraRef.current)
+      const world = screenToWorld(
+        pointer,
+        cameraRef.current
+      )
 
-        drawingRef.current = true
-        startPointRef.current = world
+      const shape = createShape(
+        tool,
+        world
+      )
 
-        previewShapeRef.current = {
-          id: crypto.randomUUID(),
-          type: 'rectangle',
-          x: world.x,
-          y: world.y,
-          width: 0,
-          height: 0,
-          fill: '#90caf9',
-          stroke: '#1565c0',
+      if (shape) {
+        interactionRef.current = {
+          type: "drawingShape",
+          start: world,
+          preview: shape,
         }
 
         return
       }
     }
     // Stop dragging or drawing when the mouse is released
-    const stopDragging = () => {
-      if (
-        tool === 'rectangle' &&
-        drawingRef.current &&
-        previewShapeRef.current
-      ) {
-        const rectangle = normalizeRectangle(previewShapeRef.current)
+    const handleMouseUp = () => {
+      const interaction = interactionRef.current
 
-        shapesRef.current.push(rectangle)
+      switch (interaction.type) {
+        case "drawingShape": {
+          const shape = normalizeShape({
+            ...interaction.preview,
+          })
 
-        previewShapeRef.current = null
+          shapesRef.current.push(shape)
+          requestRender()
 
-        requestRender()
-      }
+          break
+        }
 
-      if (resizingRef.current && selectedShapeIdRef.current) {
-        const rect = shapesRef.current.find(
-          s => s.id === selectedShapeIdRef.current
-        )
+        case "resizingShape": {
+          const shape = getSelectedShape()
 
-        if (rect?.type === "rectangle") {
-          Object.assign(rect, normalizeRectangle(rect))
+          if (shape) {
+            const normalized = normalizeShape(shape)
+
+            Object.assign(
+              shape,
+              normalized
+            )
+
+            requestRender()
+          }
+
+          break
         }
       }
-      // Reset all interaction states
-      drawingRef.current = false
-      startPointRef.current = null
-      draggingRef.current = false
-      // Reset moving state of the shape
-      movingShapeRef.current = false
-      moveStartRef.current = null
-      originalShapeRef.current = null
-      // Reset resizing state of the shape
-      resizingRef.current = false
-      resizeHandleRef.current = null
-      originalRectangleRef.current = null
+
+      interactionRef.current = {
+        type: "idle",
+      }
 
       canvas.style.cursor = 'grab'
     }
@@ -376,11 +345,9 @@ export function useWhiteboardInput({
 
       setShowCoordinates((v) => !v)
     }
-
     // Add event listeners for mouse and keyboard events
-
     window.addEventListener('mousemove', handleMouseMove)
-    window.addEventListener('mouseup', stopDragging)
+    window.addEventListener('mouseup', handleMouseUp)
     window.addEventListener('keydown', handleKeyDown)
 
     canvas.addEventListener('wheel', handleZoom, { passive: false })
@@ -388,7 +355,7 @@ export function useWhiteboardInput({
 
     return () => {
       window.removeEventListener('mousemove', handleMouseMove)
-      window.removeEventListener('mouseup', stopDragging)
+      window.removeEventListener('mouseup', handleMouseUp)
       window.removeEventListener('keydown', handleKeyDown)
 
       canvas.removeEventListener('wheel', handleZoom)
@@ -399,7 +366,6 @@ export function useWhiteboardInput({
     cameraRef,
     requestRender,
     tool,
-    selectedShapeId,
     setSelectedShapeId,
   ])
 
@@ -407,6 +373,6 @@ export function useWhiteboardInput({
     showCoordinates,
     mouseWorld,
     bindCanvas,
-    previewShapeRef,
+    interactionRef,
   }
 }
