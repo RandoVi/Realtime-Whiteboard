@@ -12,6 +12,8 @@ import { normalizeShape } from '../shapes/geometry/normalizeShape'
 import { updatePreviewShape } from '../shapes/updatePreviewShape'
 import { createShape } from '../shapes/createShape'
 import { getSelectionCursor } from '../render/selection/getSelectionCursor'
+import { getSelectionHandle } from '../render/selection/getSelectionHandle'
+import { handleSelectionMoveMouseDown } from '../render/selection/handleSelectionMouseDown'
 
 export function useWhiteboardInput({
   cameraRef,
@@ -155,17 +157,14 @@ export function useWhiteboardInput({
       mouseScreenRef.current = pointer
 
       if (tool === 'select') {
-        const shape = getSelectedShape()
+        const handle = getSelectionHandle(
+          getSelectedShape(),
+          pointer,
+          cameraRef.current,
+        )
 
-        if (shape) {
-          const handle = getResizeHandleForShape(
-            shape,
-            pointer,
-            cameraRef.current
-          )
-
-          canvas.style.cursor = getSelectionCursor(handle)
-        }
+        canvas.style.cursor =
+          getSelectionCursor(handle)
       }
 
       // Handle panning if the current interaction is panning
@@ -219,24 +218,23 @@ export function useWhiteboardInput({
 
           const selectedShape = getSelectedShape()
 
-          if (selectedShape) {
-            const handle = getResizeHandleForShape(
-              selectedShape,
-              pointer,
-              cameraRef.current
-            )
+          const handle = getSelectionHandle(
+            selectedShape,
+            pointer,
+            cameraRef.current,
+          )
 
-            if (handle) {
-              interactionRef.current = {
-                type: "resizingShape",
-                shapeId: selectedShape.id,
-                original: { ...selectedShape },
-                handle,
-              }
-
-              return
+          if (selectedShape && handle) {
+            interactionRef.current = {
+              type: "resizingShape",
+              shapeId: selectedShape.id,
+              original: { ...selectedShape },
+              handle,
             }
+
+            return
           }
+
         }
 
         // 2. Otherwise check shape body
@@ -247,18 +245,15 @@ export function useWhiteboardInput({
             hitTestShape(world, shape)
           )
 
-        if (clickedShape) {
-
-          selectShape(clickedShape.id)
-
-          interactionRef.current = {
-            type: "movingShape",
-            start: world,
-            original: { ...clickedShape },
-            shapeId: clickedShape.id,
-          }
-
-          requestRender()
+        if (
+          handleSelectionMoveMouseDown({
+            clickedShape,
+            world,
+            interactionRef,
+            selectShape,
+            requestRender,
+          })
+        ) {
           return
         }
 
