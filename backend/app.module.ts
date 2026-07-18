@@ -7,7 +7,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 
 @Module({
   imports: [MongooseModule.forRoot(
-      "mongodb://localhost:27017/whiteboard-app"
+      "mongodb://localhost:27017/realtime-whiteboard"
     ),
     UserModule, WhiteboardModule, ChatModule],
   providers: [ChatGateway],
