@@ -1,6 +1,6 @@
 import { IsString, MinLength } from "class-validator";
 
-export class User {
+export class WhiteboardEventSchema {
 
   id!: string;
   

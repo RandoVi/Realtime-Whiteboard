@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { randomUUID } from 'crypto';
-import { User } from '../entity/User';
+import { User } from '../schemas/UserSchema';
 import { UserDTO } from '../dto/UserDTO';
 import { plainToInstance } from "class-transformer";
 import { validate } from "class-validator";
@@ -21,7 +21,7 @@ export class UserService {
 
   create(dto: UserDTO): User {
     if (dto.name !== undefined) {
-      const user: User = { id: randomUUID(), name: dto.name };
+      const user: User = { id: randomUUID(), name: dto.name , email: ""};
     this.users.push(user);
     return user;
     } else {

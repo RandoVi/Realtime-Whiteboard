@@ -13,6 +13,7 @@
   "dependencies": {
     "@nestjs/common": "^11.1.28",
     "@nestjs/core": "^11.1.28",
+    "@nestjs/mongoose": "^11.0.4",
     "@nestjs/platform-socket.io": "^11.1.28",
     "@nestjs/websockets": "^11.1.28",
     "class-transformer": "^0.5.1",
@@ -20,6 +21,7 @@
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
     "mongodb": "^7.4.0",
+    "mongoose": "^9.7.4",
     "socket.io": "^4.8.3",
     "socket.io-client": "^4.8.3"
   },
