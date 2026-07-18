@@ -1,42 +1,73 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { randomUUID } from 'crypto';
-import { User } from '../schemas/UserSchema';
-import { UserDTO } from '../dto/UserDTO';
+import { User, UserDocument } from '../schemas/UserSchema';
+import { CreateUserDTO } from '../dto/CreateUserDTO';
 import { plainToInstance } from "class-transformer";
 import { validate } from "class-validator";
+import { UserRepository } from '../repository/UserRepository';
+import { UpdateUserDto } from '../dto/UpdateUserDTO';
 
 @Injectable()
 export class UserService {
-  private users: User[] = []; // stand-in for a real DB-backed repository
 
-  findAll(): User[] {
-    return this.users;
+  constructor(
+    private readonly userRepository: UserRepository,
+  ) {}
+
+  async create(data: CreateUserDTO): Promise<UserDocument> {
+
+    const existingUser = await this.userRepository.findByEmail(
+      data.email,
+    );
+
+
+  if (existingUser) {
+    throw new Error(
+      "Email already exists",
+    );
   }
 
-  findOne(id: string): User {
-    const user = this.users.find((u) => u.id === id);
-    if (!user) throw new NotFoundException(`User ${id} not found`);
+
+  return this.userRepository.create(data);
+  
+  }
+  async findOneById(id: string): Promise<UserDocument> {
+
+    const user = await this.userRepository.findById(id);
+
+    if (!user) throw new NotFoundException(`User with ${id} not found`);
+
     return user;
   }
 
-  create(dto: UserDTO): User {
-    if (dto.name !== undefined) {
-      const user: User = { id: randomUUID(), name: dto.name , email: ""};
-    this.users.push(user);
-    return user;
-    } else {
-      throw new Error("Error creating User: name is undefined");
-    }
+  async findAll(): Promise<UserDocument[]> {
+    return this.userRepository.findAll();
   }
 
-  async handleRequest(body: unknown) {
-    const dto = plainToInstance(UserDTO, body); // turn raw JSON into a UserDTO instance
-    const errors = await validate(dto); // run all the decorator rules
+  async updateById(id:string, changes:UpdateUserDto):Promise<UserDocument>{
 
-    if (errors.length > 0) {
-      throw new Error(JSON.stringify(errors)); // reject invalid input
+    const user = await this.userRepository.update(id,changes);
+
+    if (!user) {
+      throw new Error(
+        "User not found",
+      );
     }
 
-    // dto is now trusted / validated
+    return user;
+  }
+
+  async deleteById(id: string):Promise<UserDocument | null> {
+    //It fetches the document of the user that was deleted as confirmation
+    const deletedUser = await this.userRepository.delete(id);
+
+    if (!deletedUser) {
+
+      throw new NotFoundException(
+        'User not found',
+      );
+    }
+
+    return deletedUser;
   }
 }

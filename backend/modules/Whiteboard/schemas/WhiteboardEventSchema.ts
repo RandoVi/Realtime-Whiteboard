@@ -1,8 +1,9 @@
 import { IsString, MinLength } from "class-validator";
+import { Types } from "mongoose";
 
 export class WhiteboardEventSchema {
 
-  id!: string;
+  _id!: Types.ObjectId;
   
   @IsString()
   @MinLength(1)
