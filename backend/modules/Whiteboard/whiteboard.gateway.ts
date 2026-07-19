@@ -9,10 +9,10 @@ export class WhiteboardGateway implements OnGatewayConnection, OnGatewayDisconne
   
   // constructor(private readonly WhiteboardService: WhiteboardService) {}
   handleConnection(client: any, ...args: any[]) {
-    throw new Error("Method not implemented.");
+    console.log("Whiteboard connected")
   }
   handleDisconnect(client: any) {
-    throw new Error("Method not implemented.");
+    console.log("Whiteboard disconnected")
   }
 
   // @SubscribeMessage('WhiteboardUpdateEvent')

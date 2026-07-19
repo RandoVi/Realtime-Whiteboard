@@ -4,6 +4,7 @@ import { UserService } from './service/UserService';
 import { UserRepository } from "./repository/UserRepository"
 import { MongooseModule } from '@nestjs/mongoose';
 import { User, UserSchema } from './schemas/UserSchema';
+import { UserGateway } from './user.gateway';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { User, UserSchema } from './schemas/UserSchema';
   providers: [
         UserRepository,
         UserService,
+        UserGateway,
     ],
   exports: [UserService], // in case another module needs it later
 })

@@ -5,6 +5,11 @@ import { renderBackground } from './renderBackground'
 import { useWhiteboardInput } from './useWhiteboardInput'
 import './Whiteboard.css'
 
+import { io } from "socket.io-client";
+
+const socket = io("http://localhost:3000", {
+  transports: ["websocket"],
+});
 
 function Whiteboard() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
@@ -39,7 +44,7 @@ function Whiteboard() {
 
     context.setTransform(dpr, 0, 0, dpr, 0, 0)
     context.clearRect(0, 0, width, height)
-    
+
     renderBackground(context, { width, height })
     renderGrid(context, camera, { width, height })
 
@@ -103,27 +108,36 @@ function Whiteboard() {
 
 
 
-useEffect(() => {
-  resizeCanvas()
-
-  const handleWindowResize = () => {
+  useEffect(() => {
     resizeCanvas()
-  }
 
-  window.addEventListener('resize', handleWindowResize)
-
-  return () => {
-    window.removeEventListener('resize', handleWindowResize)
-
-    if (renderFrameRef.current !== null) {
-      cancelAnimationFrame(renderFrameRef.current)
-      renderFrameRef.current = null
+    const handleWindowResize = () => {
+      resizeCanvas()
     }
-  }
-}, [])
+
+    window.addEventListener('resize', handleWindowResize)
+
+    return () => {
+      window.removeEventListener('resize', handleWindowResize)
+
+      if (renderFrameRef.current !== null) {
+        cancelAnimationFrame(renderFrameRef.current)
+        renderFrameRef.current = null
+      }
+    }
+  }, [])
 
   return (
     <div className='whiteboard-page'>
+      <button style={{ position: "absolute", top: 10, left: 10, backgroundColor: "blue", color: "white", padding: 10, borderRadius: 5, border: "none", cursor: "pointer" }}
+        onClick={() => {
+          socket.emit("ping", {
+            message: "Hello backend",
+          });
+        }}
+      >
+        Send
+      </button>
       <canvas
         ref={(canvas) => {
           canvasRef.current = canvas
@@ -138,6 +152,7 @@ useEffect(() => {
           <div>y: {mouseWorld.y.toFixed(2)}</div>
         </div>
       )}
+
     </div>
   )
 }
