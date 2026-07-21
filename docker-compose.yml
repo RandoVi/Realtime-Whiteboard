@@ -1,0 +1,29 @@
+services:
+  backend:
+    build:
+      context: ./backend
+    environment:
+      MONGO_URI: mongodb://mongo:27017/realtime-whiteboard
+    container_name: whiteboard-api
+
+    ports:
+      - "3000:3000"
+    env_file:
+      - ./backend/.env
+    depends_on:
+      - mongo
+
+    command: node dist/main.js
+
+  mongo:
+    image: mongo:8
+
+    restart: unless-stopped
+
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+
+volumes:
+  mongo-data:
