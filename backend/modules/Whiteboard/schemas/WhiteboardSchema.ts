@@ -14,6 +14,11 @@ export class Whiteboard {
         unique: true,
     })
     email!: string;
+
+    @Prop({
+        required:true
+    })
+    data: Object = [];
 }
 export type WhiteboardDocument = HydratedDocument<Whiteboard>;
 

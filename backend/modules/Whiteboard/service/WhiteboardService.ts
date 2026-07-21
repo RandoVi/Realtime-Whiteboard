@@ -1,42 +1,73 @@
-// import { Injectable, NotFoundException } from '@nestjs/common';
-// import { randomUUID } from 'crypto';
-// import { WhiteboardEventSchema } from '../schemas/WhiteboardEventSchema';
-// import { WhiteboardEventDTO } from '../dto/WhiteboardEventDTO';
-// import { instanceToPlain, plainToInstance } from "class-transformer";
-// import { validate } from "class-validator";
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { randomUUID } from 'crypto';
+import { Whiteboard, WhiteboardDocument } from '../schemas/WhiteboardSchema';
+import { CreateWhiteboardDTO } from '../dto/CreateWhiteboardDTO';
+import { plainToInstance } from "class-transformer";
+import { validate } from "class-validator";
+import { WhiteboardRepository } from '../repository/WhiteboardRepository';
+import { UpdateWhiteboardDTO } from '../dto/UpdateWhiteboardDTO';
 
-// @Injectable()
-// export class WhiteboardService {
-//   private events: WhiteboardEventSchema[] = []; // stand-in for a real DB-backed repository
+@Injectable()
+export class WhiteboardService {
 
-//   async findAll(): Promise<WhiteboardEventSchema[]> {
-//     return this.events;
-//   }
+  constructor(
+    private readonly WhiteboardRepository: WhiteboardRepository,
+  ) {}
 
-//   async findOne(id: string): Promise<WhiteboardEventSchema> {
-//     const event = this.events.find((e) => e.id === id);
-//     if (!event) throw new NotFoundException(`Event ${id} not found`);
-//     return event;
-//   }
+  async create(data: CreateWhiteboardDTO): Promise<WhiteboardDocument> {
 
-//   async create(dto: WhiteboardEventDTO): Promise<WhiteboardEventSchema> {
-//     if (dto.name !== undefined) {
-//       const event: WhiteboardEventSchema = { id: randomUUID(), name: dto.name };
-//     this.events.push(event);
-//     return event;
-//     } else {
-//       throw new Error("Error creating event: name is undefined");
-//     }
-//   }
+    const existingWhiteboard = await this.WhiteboardRepository.findByName(
+      data.name,
+    );
 
-//   async saveEvent(event: WhiteboardEventDTO) {
-//     const dto = plainToInstance(WhiteboardEventDTO, event); // turn raw JSON into a UserDTO instance
-//     const errors = await validate(dto); // run all the decorator rules
 
-//     if (errors.length > 0) {
-//       throw new Error(JSON.stringify(errors)); // reject invalid input
-//     }
+  if (existingWhiteboard) {
+    throw new Error(
+      "Whiteboard with this name already exists",
+    );
+  }
 
-//     // dto is now trusted / validated
-//   }
-// }
+
+  return this.WhiteboardRepository.create(data);
+  
+  }
+  async findOneById(id: string): Promise<WhiteboardDocument> {
+
+    const Whiteboard = await this.WhiteboardRepository.findById(id);
+
+    if (!Whiteboard) throw new NotFoundException(`Whiteboard with ${id} not found`);
+
+    return Whiteboard;
+  }
+
+  async findAll(): Promise<WhiteboardDocument[]> {
+    return this.WhiteboardRepository.findAll();
+  }
+
+  async updateById(id:string, changes:UpdateWhiteboardDTO):Promise<WhiteboardDocument>{
+
+    const Whiteboard = await this.WhiteboardRepository.update(id,changes);
+
+    if (!Whiteboard) {
+      throw new Error(
+        "Whiteboard not found",
+      );
+    }
+
+    return Whiteboard;
+  }
+
+  async deleteById(id: string):Promise<WhiteboardDocument | null> {
+    //It fetches the document of the Whiteboard that was deleted as confirmation
+    const deletedWhiteboard = await this.WhiteboardRepository.delete(id);
+
+    if (!deletedWhiteboard) {
+
+      throw new NotFoundException(
+        'Whiteboard not found',
+      );
+    }
+
+    return deletedWhiteboard;
+  }
+}

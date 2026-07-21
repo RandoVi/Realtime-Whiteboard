@@ -1,28 +1,34 @@
-// import { Controller, Get, Post, Patch, Body, Param } from '@nestjs/common';
-// // import { WhiteboardService } from '../service/WhiteboardService';
-// import { WhiteboardEventDTO } from '../dto/WhiteboardEventDTO';
+import { Controller, Get, Post, Patch, Body, Param, Delete } from '@nestjs/common';
+import { WhiteboardService } from '../service/WhiteboardService';
+import { CreateWhiteboardDTO } from '../dto/CreateWhiteboardDTO';
+import { UpdateWhiteboardDTO } from '../dto/UpdateWhiteboardDTO';
 
-// @Controller('board')
-// export class UserController {
-//   constructor(private readonly whiteboardService: WhiteboardService) {} // DI
+@Controller('Whiteboard')
+export class WhiteboardController {
+  constructor(private readonly WhiteboardService: WhiteboardService) {}
 
-//   // @Get()
-//   // findAll() {
-//   //   return this.whiteboardService.findAll();
-//   // }
+  @Post()
+  create(@Body() data: CreateWhiteboardDTO) {
+    return this.WhiteboardService.create(data);
+  }
 
-//   // @Get(':id')
-//   // findOne(@Param('id') id: string) {
-//   //   return this.whiteboardService.findOne(id);
-//   // }
+    @Get(':id')
+  findOneById(@Param('id') id: string) {
+    return this.WhiteboardService.findOneById(id);
+  }
 
-//   // @Post()
-//   // create(@Body() dto: WhiteboardEventDTO) {
-//   //   return this.whiteboardService.create(dto);
-//   // }
+  @Get()
+  findAll() {
+    return this.WhiteboardService.findAll();
+  }
 
-//   @Patch(':id/done')
-//   patch(@Param('id') id: string) {
+  @Patch(':id')
+  patchById(@Param('id') id: string, @Body() data: UpdateWhiteboardDTO) {
+    return this.WhiteboardService.updateById(id, data);
+  }
 
-//   }
-// }
+  @Delete(':id')
+  deleteById(@Param('id') id: string) {
+    return this.WhiteboardService.deleteById(id);
+  }
+}
