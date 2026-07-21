@@ -1,12 +1,20 @@
-import { IsString, MinLength } from "class-validator";
-import { Types } from "mongoose";
+import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
+import { HydratedDocument, Types } from "mongoose";
 
-export class WhiteboardEventSchema {
+@Schema({
+    timestamps: true,
+})
+export class Whiteboard {
 
-  _id!: Types.ObjectId;
-  
-  @IsString()
-  @MinLength(1)
-  name!: string;
+    @Prop({ required: true })
+    name!: string;
 
+    @Prop({
+        required: true,
+        unique: true,
+    })
+    email!: string;
 }
+export type WhiteboardDocument = HydratedDocument<Whiteboard>;
+
+export const WhiteboardSchema = SchemaFactory.createForClass(Whiteboard);
