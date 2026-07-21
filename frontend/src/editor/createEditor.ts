@@ -5,7 +5,7 @@ import { getShapeById } from "../shapes/getShapeById";
 import type { ChangeEvent } from "react";
 import { updateShape } from "./commands/updateShape";
 import { deleteShape } from "./commands/deleteShape";
-import { duplicateShape } from "./commands/duplicateShape";
+// import { duplicateShape } from "./commands/duplicateShape";
 import type { EditorCommand } from "./EditorCommand";
 import { createShape } from "./commands/createShape";
 import type { Document } from "../document/Document";
@@ -61,18 +61,23 @@ export function createEditor({
 
   function duplicateSelectedShape() {
 
-    const shapeId = selectedShapeIdRef.current
+    const shape = getSelectedShape();
 
-    if (!shapeId) {
-      return
+    if (!shape) {
+      return;
     }
 
+    const duplicated = {
+      ...shape,
+      id: crypto.randomUUID(),
+      x: shape.x + 20,
+      y: shape.y + 20,
+    };
 
     execute({
-      type: "duplicateShape",
-      shapeId,
-    })
-
+      type: "createShape",
+      shape: duplicated,
+    });
   }
 
   function bind<K extends keyof Shape>(
@@ -130,13 +135,6 @@ export function createEditor({
           setSelectedShapeId(null);
         }
 
-        break;
-
-      case "duplicateShape":
-        duplicateShape({
-          shapes: document.shapesRef.current,
-          shapeId: command.shapeId,
-        });
         break;
     }
   }

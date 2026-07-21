@@ -19,13 +19,12 @@ export type DeleteShapeCommand = {
     shapeId: string;
 };
 
-export type DuplicateShapeCommand = {
-    type: "duplicateShape";
-    shapeId: string;
-};
+// export type DuplicateShapeCommand = {
+//     type: "duplicateShape";
+//     shapeId: string;
+// };
 
 export type EditorCommand =
     | CreateShapeCommand
     | UpdateShapeCommand
-    | DeleteShapeCommand
-    | DuplicateShapeCommand;
+    | DeleteShapeCommand;
