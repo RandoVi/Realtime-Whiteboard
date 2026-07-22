@@ -1,42 +1,42 @@
-// import { Injectable, NotFoundException } from '@nestjs/common';
-// import { randomUUID } from 'crypto';
-// import { WhiteboardEventSchema } from '../schemas/WhiteboardEventSchema';
-// import { WhiteboardEventDTO } from '../dto/WhiteboardEventDTO';
-// import { instanceToPlain, plainToInstance } from "class-transformer";
-// import { validate } from "class-validator";
+import { Injectable } from "@nestjs/common";
+import { BoardManager } from "../../../managers/BoardManager";
 
-// @Injectable()
-// export class WhiteboardService {
-//   private events: WhiteboardEventSchema[] = []; // stand-in for a real DB-backed repository
+@Injectable()
+export class WhiteboardService {
 
-//   async findAll(): Promise<WhiteboardEventSchema[]> {
-//     return this.events;
-//   }
+    private readonly boards = new Map<string, BoardManager>();
 
-//   async findOne(id: string): Promise<WhiteboardEventSchema> {
-//     const event = this.events.find((e) => e.id === id);
-//     if (!event) throw new NotFoundException(`Event ${id} not found`);
-//     return event;
-//   }
+    createBoard(id: string, name: string) {
 
-//   async create(dto: WhiteboardEventDTO): Promise<WhiteboardEventSchema> {
-//     if (dto.name !== undefined) {
-//       const event: WhiteboardEventSchema = { id: randomUUID(), name: dto.name };
-//     this.events.push(event);
-//     return event;
-//     } else {
-//       throw new Error("Error creating event: name is undefined");
-//     }
-//   }
+        if (this.boards.has(id)) {
+            throw new Error("Board already exists");
+        }
 
-//   async saveEvent(event: WhiteboardEventDTO) {
-//     const dto = plainToInstance(WhiteboardEventDTO, event); // turn raw JSON into a UserDTO instance
-//     const errors = await validate(dto); // run all the decorator rules
+        const board = new BoardManager(id, name);
 
-//     if (errors.length > 0) {
-//       throw new Error(JSON.stringify(errors)); // reject invalid input
-//     }
+        this.boards.set(id, board);
 
-//     // dto is now trusted / validated
-//   }
-// }
+        return board;
+    }
+
+    getBoard(id: string) {
+
+        return this.boards.get(id);
+    }
+
+    hasBoard(id: string) {
+
+        return this.boards.has(id);
+    }
+
+    deleteBoard(id: string) {
+
+        return this.boards.delete(id);
+    }
+
+    getBoards() {
+
+        return [...this.boards.values()];
+    }
+
+}

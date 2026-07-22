@@ -1,4 +1,4 @@
-export type Shape = {
+interface BoardObject {
     id: string;
 
     creatorId: string;
@@ -16,4 +16,16 @@ export type Shape = {
 
     createdAt: number;
     updatedAt: number;
-};
+}
+
+interface Rectangle extends BoardObject {
+    type: "rectangle";
+    // ...
+}
+
+interface Circle extends BoardObject {
+    type: "circle";
+    // ...
+}
+
+export type Shape = Rectangle | Circle;
