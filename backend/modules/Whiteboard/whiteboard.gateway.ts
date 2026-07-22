@@ -6,7 +6,15 @@ import { BoardUser } from "../../models/user";
 import { Server, Socket } from "socket.io";
 import { Logger } from "@nestjs/common";
 import { ChatGateway } from "../chat/chat.gateway";
-@WebSocketGateway()
+import { EditorCommand } from "../../models/command";
+import { NetworkCommand } from "../../models/networkCommand";
+@WebSocketGateway({
+  transports: ["websocket"],
+  cors: {
+    origin: "http://localhost:5173",
+    credentials: true,
+  },
+})
 export class WhiteboardGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect{
 
   constructor(
@@ -53,21 +61,21 @@ export class WhiteboardGateway implements OnGatewayInit, OnGatewayConnection, On
         socket.join(body.boardId);
     }
 
-    @SubscribeMessage("createShape")
-    createShape(
-        @MessageBody() body: {
-            boardId: string;
-            shape: Shape;
-        },
+    @SubscribeMessage("command")
+    handleCommand(
+        @MessageBody() body: NetworkCommand,
     ) {
 
-        const board = this.boards.getBoard(body.boardId);
+        const board = this.boards.createBoard("1", "test");
+        console.log(body)
 
         if (!board) {
             return;
         }
-
-        board.objects.create(body.shape);
+        if (body.command.type === "createShape") {
+            board.objects.create(body.command.shape);
+        }
+        console.log("All boards: ", board.objects.getAll())
     }
 
 }

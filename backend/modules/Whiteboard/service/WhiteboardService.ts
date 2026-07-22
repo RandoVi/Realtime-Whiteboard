@@ -9,6 +9,7 @@ export class WhiteboardService {
     createBoard(id: string, name: string) {
 
         if (this.boards.has(id)) {
+            return
             throw new Error("Board already exists");
         }
 

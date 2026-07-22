@@ -10,7 +10,13 @@ import {
 
 import { Server } from "socket.io";
 
-@WebSocketGateway()
+@WebSocketGateway({
+  transports: ["websocket"],
+  cors: {
+    origin: "http://localhost:5173",
+    credentials: true,
+  },
+})
 export class ChatGateway
   implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
 {

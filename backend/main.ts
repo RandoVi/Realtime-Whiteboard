@@ -7,7 +7,7 @@ async function bootstrap() {
 
   app.enableCors({
     origin: "http://localhost:5173",
-    credentials: true,
+    credentials:true,
   });
 
   app.useGlobalPipes(new ValidationPipe()); // enforce DTO validation on every route
