@@ -5,7 +5,7 @@ import { CreateUserDTO } from '../dto/CreateUserDTO';
 import { plainToInstance } from "class-transformer";
 import { validate } from "class-validator";
 import { UserRepository } from '../repository/UserRepository';
-import { UpdateUserDto } from '../dto/UpdateUserDTO';
+import { UpdateUserDTO } from '../dto/UpdateUserDTO';
 
 @Injectable()
 export class UserService {
@@ -44,7 +44,7 @@ export class UserService {
     return this.userRepository.findAll();
   }
 
-  async updateById(id:string, changes:UpdateUserDto):Promise<UserDocument>{
+  async updateById(id:string, changes:UpdateUserDTO):Promise<UserDocument>{
 
     const user = await this.userRepository.update(id,changes);
 
