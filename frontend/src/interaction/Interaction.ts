@@ -18,6 +18,7 @@ export type Interaction =
         start: Point
         original: Shape
         shapeId: string
+        moved: boolean
     }
 
     | {

@@ -29,6 +29,7 @@ export function handleSelectionMoveMouseDown({
     start: world,
     original: { ...clickedShape },
     shapeId: clickedShape.id,
+    moved: false,
   }
 
   requestRender()

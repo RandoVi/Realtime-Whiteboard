@@ -1,3 +1,3 @@
 export const SOCKET_EVENTS = {
-    COMMAND: "command",
+    COMMAND: "ping",
 } as const;

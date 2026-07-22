@@ -39,7 +39,10 @@ export function handleMovingShapeMouseMove({
 
   const dy =
     world.y - interaction.start.y
-
+  //just to avoid unnecessary updates when the mouse is moved a little bit(jitter)
+  if (!interaction.moved && (Math.abs(dx) > 2 || Math.abs(dy) > 2)) {
+    interaction.moved = true;
+  }
 
   editor.execute(
     {
@@ -54,7 +57,9 @@ export function handleMovingShapeMouseMove({
     },
     {
       broadcast: false,
+
     }
+
   );
 
 
