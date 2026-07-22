@@ -28,25 +28,9 @@ function Whiteboard() {
   const renderFrameRef = useRef<number | null>(null)
   const document = useMemo(
     () =>
-      createDocument([
-        {
-          id: crypto.randomUUID(),
-          type: "rectangle",
-
-          x: -100,
-          y: -75,
-
-          width: 200,
-          height: 150,
-
-          fill: "transparent",
-          stroke: "#1565c0",
-        },
-      ]),
+      createDocument([]),
     []
   )
-
-
 
   const [tool, setTool] = useState<Tool>('pan')
   const [selectedShapeId, setSelectedShapeId] =
