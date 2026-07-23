@@ -2,8 +2,10 @@ services:
   backend:
     build:
       context: ./backend
+      dockerfile: Dockerfile
     environment:
       MONGO_URI: mongodb://mongo:27017/realtime-whiteboard
+      CHOKIDAR_USEPOLLING: "true"
     container_name: whiteboard-api
 
     ports:
@@ -12,8 +14,11 @@ services:
       - ./backend/.env
     depends_on:
       - mongo
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
 
-    command: node dist/main.js
+    command: npm run start-dev
 
   mongo:
     image: mongo:8

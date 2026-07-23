@@ -1,12 +1,10 @@
 import { WebSocketGateway, OnGatewayConnection, OnGatewayDisconnect, WebSocketServer, SubscribeMessage, MessageBody, ConnectedSocket, OnGatewayInit } from "@nestjs/websockets";
 
 import { WhiteboardService } from "./service/WhiteboardService";
-import { Shape } from "../../models/shape";
 import { BoardUser } from "../../models/user";
 import { Server, Socket } from "socket.io";
 import { Logger } from "@nestjs/common";
 import { ChatGateway } from "../chat/chat.gateway";
-import { EditorCommand } from "../../models/command";
 import { NetworkCommand } from "../../models/networkCommand";
 @WebSocketGateway({
   transports: ["websocket"],
@@ -33,12 +31,12 @@ export class WhiteboardGateway implements OnGatewayInit, OnGatewayConnection, On
   handleConnection(client: any, ...args: any[]) {
     const { sockets } = this.io.sockets;
 
-    this.logger.log(`Client id: ${client.id} connected`);
+    this.logger.log(`CONNECTED - Client id: ${client.id} connected`);
     this.logger.debug(`Number of connected clients: ${sockets.size}`);
   }
 
   handleDisconnect(client: any) {
-    this.logger.log(`Client id:${client.id} disconnected`);
+    this.logger.log(`DISCONNECTED - Client id:${client.id} disconnected`);
   }
 
     @SubscribeMessage("joinBoard")
@@ -65,17 +63,16 @@ export class WhiteboardGateway implements OnGatewayInit, OnGatewayConnection, On
     handleCommand(
         @MessageBody() body: NetworkCommand,
     ) {
-
-        const board = this.boards.createBoard("1", "test");
+        let board = this.boards.getBoard("1");
         console.log(body)
 
         if (!board) {
-            return;
+            board = this.boards.createBoard("1", "test");
         }
         if (body.command.type === "createShape") {
-            board.objects.create(body.command.shape);
+            board!.objects.create(body.command.shape);
         }
-        console.log("All boards: ", board.objects.getAll())
+        console.log("All boards: ", board!.objects.getAll())
     }
 
 }
