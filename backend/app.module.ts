@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { WhiteboardModule } from './modules/whiteboard/whiteboard.module';
+import { BoardModule } from './modules/board/board.module';
 import { ChatModule } from './modules/chat/chat.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import dotenv from 'dotenv';
@@ -32,7 +32,7 @@ dotenv.config();
 //     }
 //   }
     
-    WhiteboardModule, ChatModule, ShapesModule
+    BoardModule, ChatModule, ShapesModule
   ],
 })
 export class AppModule {}

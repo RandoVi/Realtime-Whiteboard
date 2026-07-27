@@ -2,7 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { BoardManager } from "../../../managers/BoardManager";
 
 @Injectable()
-export class WhiteboardService {
+export class BoardService {
 
     private readonly boards = new Map<string, BoardManager>();
 

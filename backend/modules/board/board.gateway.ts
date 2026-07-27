@@ -1,6 +1,6 @@
 import { WebSocketGateway, OnGatewayConnection, OnGatewayDisconnect, WebSocketServer, SubscribeMessage, MessageBody, ConnectedSocket, OnGatewayInit } from "@nestjs/websockets";
 
-import { WhiteboardService } from "./service/WhiteboardService";
+import { BoardService } from "./service/BoardService";
 import { BoardUser } from "../../models/user";
 import { Server, Socket } from "socket.io";
 import { Logger } from "@nestjs/common";
@@ -13,10 +13,10 @@ import { NetworkCommand } from "../../models/networkCommand";
     credentials: true,
   },
 })
-export class WhiteboardGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect{
+export class BoardGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect{
 
   constructor(
-      private readonly boards: WhiteboardService,
+      private readonly boards: BoardService,
   ) {}
 
   private readonly logger = new Logger(ChatGateway.name);
