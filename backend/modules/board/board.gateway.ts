@@ -63,16 +63,17 @@ export class BoardGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
     async handleCommand(
         @MessageBody() body: NetworkCommand,
     ) {
-        let board = this.boards.getBoard("1");
+        let board = this.boards.getBoard(body.clientId);
         console.log(body)
 
         if (!board) {
-            board = await this.boards.createBoardAndPersist("1");
+            board = await this.boards.createBoardAndPersist(body.clientId);
         }
         if (body.command.type === "createShape") {
             board!.objects.create(body.command.shape);
         }
-        console.log("All boards: ", board!.objects.getAll())
+        console.log("All objects in board: ", board!.objects.getAll())
+        console.log("All boards: ", this.boards.getBoards())
     }
 
 }
