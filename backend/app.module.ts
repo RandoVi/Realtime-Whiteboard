@@ -1,15 +1,12 @@
 import { Module } from '@nestjs/common';
-import { WhiteboardModule } from './modules/Whiteboard/whiteboard.module';
-import { ChatGateway } from './modules/chat/chat.gateway';
+import { BoardModule } from './modules/board/board.module';
 import { ChatModule } from './modules/chat/chat.module';
 import { MongooseModule } from '@nestjs/mongoose';
-import { UserModule } from './modules/users/user.module';
 import dotenv from 'dotenv';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ShapesModule } from './modules/shapes/shapes.module';
 
 dotenv.config();
-
-const url = process.env.DATABASE_URL!;
 
 @Module({
   imports: [ 
@@ -35,7 +32,7 @@ const url = process.env.DATABASE_URL!;
 //     }
 //   }
     
-    UserModule, WhiteboardModule, ChatModule,
+    BoardModule, ChatModule, ShapesModule
   ],
 })
 export class AppModule {}

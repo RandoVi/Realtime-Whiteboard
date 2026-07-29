@@ -8,7 +8,7 @@
   "main": "index.js",
   "scripts": {
     "build": "tsc",
-    "start": " nest start",
+    "start": "node dist/main",
     "start-dev": "nest start --watch"
   },
   "dependencies": {
@@ -29,10 +29,13 @@
     "socket.io-client": "^4.8.3"
   },
   "devDependencies": {
+    "@nestjs/cli": "^11.0.0",
     "@types/express": "^5.0.6",
     "@types/node": "^26.1.0",
     "ts-node": "^10.9.2",
-    "typescript": "^6.0.3",
-    "@nestjs/cli": "^11.0.0"
+    "typescript": "^6.0.3"
+  },
+  "overrides": {
+    "brace-expansion": "^5.0.8"
   }
 }

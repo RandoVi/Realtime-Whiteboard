@@ -10,7 +10,13 @@ import {
 
 import { Server } from "socket.io";
 
-@WebSocketGateway()
+@WebSocketGateway({
+  transports: ["websocket"],
+  cors: {
+    origin: "http://localhost:5173",
+    credentials: true,
+  },
+})
 export class ChatGateway
   implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
 {
@@ -31,7 +37,7 @@ export class ChatGateway
   }
 
   handleDisconnect(client: any) {
-    this.logger.log(`Cliend id:${client.id} disconnected`);
+    this.logger.log(`Client id:${client.id} disconnected`);
   }
 
   @SubscribeMessage("ping")

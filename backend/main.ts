@@ -4,14 +4,15 @@ import { AppModule } from './app.module';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-
+  //HTTP Setup
   app.enableCors({
     origin: "http://localhost:5173",
-    credentials: true,
+    credentials:true,
   });
 
   app.useGlobalPipes(new ValidationPipe()); // enforce DTO validation on every route
-  
+  //For database persistence on shutdown
+  app.enableShutdownHooks();
   await app.listen(3000);
 }
 bootstrap();
