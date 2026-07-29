@@ -55,7 +55,7 @@ export class BoardGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
                 const board = await this.boards.createBoardAndPersist(boardId, hostId);
                 
                 if (!board) {
-                    return;
+                    break;
                 }
 
                 const hostUser = new BoardUser();
@@ -69,18 +69,18 @@ export class BoardGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
                     hostId: board.ownerId,
                     boardId: board.id,
                 });
-                break
+                break;
             case BoardCommand.JOIN:
                 if (!data.id) {
                     console.log("No id in socket under JOIN command")
-                    return
+                    break
                 }
 
                 if (this.boards.hasBoard(data.id)) {
                     const board = this.boards.getBoard(data.id);
 
-                    if (!board) return
-                    if (!data.user) return
+                    if (!board) break
+                    if (!data.user) break
 
                     board.users.add(data.user);
                     socket.join(board.id);
@@ -89,13 +89,13 @@ export class BoardGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
                         username: data.user.username
                     })
                 }
-                break
+                break;
             case BoardCommand.LEAVE:
-                break
+                break;
             case BoardCommand.GET:
-                break
+                break;
             case BoardCommand.DELETE:
-                break
+                break;
             default:
                 console.log("BOARD: default, no commands")
                 break;
