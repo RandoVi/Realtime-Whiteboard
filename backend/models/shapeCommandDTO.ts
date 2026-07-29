@@ -1,6 +1,6 @@
-import { EditorCommand } from "./command";
+import { EditorCommand } from "./shapeCommands";
 
-export type NetworkCommand = {
+export type ShapeCommandDTO = {
   id: string;
   clientId: string;
   boardId: string;

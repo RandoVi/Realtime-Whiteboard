@@ -1,19 +1,12 @@
 import { WebSocketGateway, OnGatewayConnection, OnGatewayDisconnect, WebSocketServer, SubscribeMessage, MessageBody, ConnectedSocket, OnGatewayInit } from "@nestjs/websockets";
 
 import { BoardService } from "./service/BoardService";
-import { BoardUser } from "../../models/user";
 import { Server, Socket } from "socket.io";
 import { Logger } from "@nestjs/common";
-import { NetworkCommand } from "../../models/networkCommand";
 import { randomUUID } from "crypto";
-
-  enum BoardCommand {
-    Create = "CREATE",
-    Join = "JOIN",
-    Leave = "LEAVE",
-    Get = "GET",
-    Delete = "DELETE"
-  }
+import { BoardCommandDTO } from "./dto/BoardCommandDTO";
+import { BoardCommand } from "../../common/enum/BoardCommand";
+import { ShapeCommandDTO } from "../../models/shapeCommandDTO";
 
 @WebSocketGateway({
   transports: ["websocket"],
@@ -51,46 +44,45 @@ export class BoardGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
     @SubscribeMessage("boardCommand")
     async handleBoard(
         @ConnectedSocket() socket: Socket,
-        @MessageBody() body: {
-            id: string,
-            user: BoardUser,
-            type: BoardCommand
-        }
+        @MessageBody() data: BoardCommandDTO
     ) {
-        switch (body.type) {
-            case "CREATE":
+        switch (data.type) {
+            case BoardCommand.CREATE:
+
+                if (!data.user) return
                 const boardId = randomUUID();
-                const board = await this.boards.createBoardAndPersist(boardId, body.user.id);
+                const board = await this.boards.createBoardAndPersist(boardId, data.user.id);
 
                 if (!board) {
                     return;
                 }
 
-                board.users.add(body.user);
+                board.users.add(data.user);
 
                 socket.join(board.id);
-            case "JOIN":
-                if (this.boards.hasBoard(body.id)) {
-                    const board = this.boards.getBoard(body.id);
+            case BoardCommand.JOIN:
+                if (this.boards.hasBoard(data.id)) {
+                    const board = this.boards.getBoard(data.id);
 
                     if (!board) return
+                    if (!data.user) return
 
-                    board?.users.add(body.user);
-                    socket.join(board!.id);
-                    this.io.to(board!.id).emit("user-joined-board", {
-                        userId: body.user.id,
-                        username: body.user.username
+                    board.users.add(data.user);
+                    socket.join(board.id);
+                    this.io.to(board.id).emit("user-joined-board", {
+                        userId: data.user.id,
+                        username: data.user.username
                     })
                 }
-            case "LEAVE":
-            case "GET":
-            case "DELETE":
+            case BoardCommand.LEAVE:
+            case BoardCommand.GET:
+            case BoardCommand.DELETE:
         }
     }
 
     @SubscribeMessage("command")
     async handleCommand(
-        @MessageBody() body: NetworkCommand,
+        @MessageBody() body: ShapeCommandDTO,
     ) {
         let board = this.boards.getBoard(body.clientId);
         console.log(body)
