@@ -14,5 +14,5 @@ export class BoardCommandDTO {
 
   @IsOptional()
   @IsEnum(BoardCommand)
-  type!: BoardCommand;
+  type?: BoardCommand;
 }
