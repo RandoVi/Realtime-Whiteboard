@@ -27,6 +27,27 @@ export class SocketCollaboration implements Collaboration {
         );
     }
 
+    createBoard(
+        callback: (boardId: string) => void
+    ): void {
+
+        this.socket.emit(
+            SOCKET_EVENTS.BOARD_COMMAND,
+            {
+                type: "CREATE"
+            }
+        );
+
+        this.socket.once(
+            SOCKET_EVENTS.BOARD_COMMAND,
+            (message) => {
+
+                callback(message.id);
+
+            }
+        );
+    }
+
     send(command: EditorCommand): void {
         const message: NetworkCommand = {
             id: crypto.randomUUID(),

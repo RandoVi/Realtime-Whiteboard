@@ -14,6 +14,7 @@ import { ObjectInspector } from '../ui/objectPanel/ObjectInspector'
 import { createDocument } from '../document/createDocument'
 
 import { SocketCollaboration } from "../socket/collaboration/SocketCollaboration";
+import { BoardLobbyModal, type LobbyState } from '../lobby/BoardLobbyModal'
 
 function Whiteboard() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
@@ -31,6 +32,10 @@ function Whiteboard() {
       createDocument([]),
     []
   )
+  //lobby state and id
+  const [lobbyState, setLobbyState] = useState<LobbyState>("lobby");
+  const [boardId, setBoardId] = useState("");
+
 
   const [tool, setTool] = useState<Tool>('pan')
   const [selectedShapeId, setSelectedShapeId] =
@@ -84,6 +89,14 @@ function Whiteboard() {
     }
 
   }
+
+  const handleCreateBoard = () => {
+    console.log("Create board");
+  };
+
+  const handleJoinBoard = () => {
+    console.log("Join board:", boardId);
+  };
 
   const requestRender = () => {
     // console.log(renderFrameRef.current)
@@ -206,6 +219,28 @@ function Whiteboard() {
     ? getShapeById(document.shapesRef.current, selectedShapeId)
     : undefined
 
+  const handleCreate = () => {
+    setLobbyState("creating");
+
+    collaboration.createBoard(
+      (id) => {
+        setBoardId(id);
+        setLobbyState("created");
+      }
+    );
+  };
+
+  const handleJoin = () => {
+    setLobbyState("joining");
+
+    // collaboration.joinBoard(boardId);
+  };
+
+  const handleStart = () => {
+    setLobbyState("connected");
+
+    // collaboration.startBoard(boardId);
+  };
   return (
     <div className='whiteboard-page'>
       <canvas
@@ -214,6 +249,14 @@ function Whiteboard() {
           bindCanvas(canvas)
         }}
         className="whiteboard-canvas"
+      />
+      <BoardLobbyModal
+        state={lobbyState}
+        boardId={boardId}
+        onBoardIdChange={setBoardId}
+        onCreate={handleCreate}
+        onJoin={handleJoin}
+        onStart={handleStart}
       />
       {/* <ObjectPanel /> */}
       <BottomToolbar
