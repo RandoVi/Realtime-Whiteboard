@@ -8,6 +8,9 @@ export type BoardDocument = HydratedDocument<Board>;
 @Schema({ timestamps: true })
 export class Board {
 
+  @Prop({ required: true })
+  _id!: string;
+
   @Prop({ required: true, index: true })
   ownerId!: string;
 

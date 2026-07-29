@@ -11,8 +11,9 @@ export class BoardRepository {
     @InjectModel(Board.name) private readonly boardModel: Model<BoardDocument>,
   ) {}
 
-  async create(ownerId: string): Promise<BoardDocument> {
+  async create(id: string, ownerId: string): Promise<BoardDocument> {
     const board = new this.boardModel({
+      _id: id, // Custom id instead of default
       ownerId,
     });
     return board.save();

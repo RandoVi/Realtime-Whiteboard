@@ -17,7 +17,7 @@ export class BoardService implements OnApplicationShutdown {
 
     private dirtyQueue: Set<string> = new Set();
 
-    async createBoardAndPersist(ownerId: string): Promise<BoardManager> {
+    async createBoardAndPersist(id: string, ownerId: string): Promise<BoardManager> {
 
         if (this.boards.has(ownerId)) {
             throw new ConflictException('User with id: ' + ownerId +' has already created a board')
@@ -29,7 +29,7 @@ export class BoardService implements OnApplicationShutdown {
         this.creationLocks.add(ownerId);
 
         try {
-            const savedBoard = await this.boardRepository.create(ownerId);
+            const savedBoard = await this.boardRepository.create(id, ownerId);
             const newBoard = new BoardManager(savedBoard.id, savedBoard.ownerId);
             this.boards.set(newBoard.id, newBoard);
             return newBoard;
