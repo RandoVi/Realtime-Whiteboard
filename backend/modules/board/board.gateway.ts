@@ -72,7 +72,7 @@ export class BoardGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
 
             case BoardCommand.JOIN:
                 if (!data.id) {
-                    console.log("No id in socket")
+                    console.log("No id in socket under JOIN command")
                     return
                 }
 
@@ -95,7 +95,9 @@ export class BoardGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
             case BoardCommand.GET:
 
             case BoardCommand.DELETE:
-
+            
+            default:
+                console.log("BOARD: default, no commands")
         }
     }
 
