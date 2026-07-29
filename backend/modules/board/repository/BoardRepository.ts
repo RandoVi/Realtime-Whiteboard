@@ -1,23 +1,53 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { AnyBulkWriteOperation, Model } from 'mongoose';
 import { Board, BoardDocument } from '../schemas/BoardSchema';
 import { BoardObject } from '../../shapes/schemas/ShapeSchema';
+import { BoardManager } from '../../../managers/BoardManager';
 
 @Injectable()
-export class BoardsRepository {
+export class BoardRepository {
   constructor(
     @InjectModel(Board.name) private readonly boardModel: Model<BoardDocument>,
   ) {}
 
-  async create(ownerId: string, title: string): Promise<BoardDocument> {
+  async create(ownerId: string): Promise<BoardDocument> {
     const board = new this.boardModel({
       ownerId,
-      title,
-      shapes: [],
-      version: 0,
     });
     return board.save();
+  }
+
+  async saveManyBoardUpdates(boards: BoardManager[]): Promise<void> {
+    // Guard against empty calls to avoid sending unnecessary commands to MongoDB
+    if (!boards || boards.length === 0) {
+      return;
+    }
+
+    // Map each BoardManager instance into a Mongoose bulkWrite operation
+    const bulkOps: AnyBulkWriteOperation<BoardDocument>[] = boards.map((board) => {
+      // Extract pure data from the in-memory board manager instance
+      const data = board.toPersistence(); 
+
+      return {
+        updateOne: {
+          filter: { _id: data._id },
+          
+          update: { 
+            $set: {
+              ownerId: data.ownerId,
+              objects: data.objects,
+            } 
+          },
+          
+          // Upsert option: if the document doesn't exist yet in DB, create it!
+          upsert: true,
+        },
+      };
+    });
+
+    // Execute all update operations atomically in a SINGLE network round-trip
+    await this.boardModel.bulkWrite(bulkOps);
   }
 
   async findById(boardId: string): Promise<BoardDocument | null> {

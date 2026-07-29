@@ -7,6 +7,7 @@ interface BoardObject {
 
     x: number;
     y: number;
+    radius: number;
 
     width: number;
     height: number;

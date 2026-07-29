@@ -60,14 +60,14 @@ export class BoardGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
     }
 
     @SubscribeMessage("command")
-    handleCommand(
+    async handleCommand(
         @MessageBody() body: NetworkCommand,
     ) {
         let board = this.boards.getBoard("1");
         console.log(body)
 
         if (!board) {
-            board = this.boards.createBoard("1", "test");
+            board = await this.boards.createBoardAndPersist("1");
         }
         if (body.command.type === "createShape") {
             board!.objects.create(body.command.shape);

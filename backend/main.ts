@@ -11,7 +11,8 @@ async function bootstrap() {
   });
 
   app.useGlobalPipes(new ValidationPipe()); // enforce DTO validation on every route
-  
+  //For database persistence on shutdown
+  app.enableShutdownHooks();
   await app.listen(3000);
 }
 bootstrap();

@@ -7,8 +7,6 @@ export type BoardDocument = HydratedDocument<Board>;
 
 @Schema({ timestamps: true })
 export class Board {
-  @Prop({ required: true })
-  title!: string;
 
   @Prop({ required: true, index: true })
   ownerId!: string;
@@ -26,6 +24,12 @@ export class Board {
 
   @Prop({ default: 0 })
   version!: number;
+
+  applyUpdate(changes: Partial<BoardDocument>): void {
+    if (changes.shapes) {
+      this.shapes = changes.shapes;
+    }
+  }
 }
 
 export const BoardSchema = SchemaFactory.createForClass(Board);

@@ -1,9 +1,10 @@
 import { IsString, MinLength } from "class-validator";
+import { Shape } from "../../../models/shape";
 
-export class WhiteboardEventDTO {
+export class BoardUpdateDTO {
   @IsString()
   @MinLength(1)
   boardId!: string;
   
-  event!:Object;
+  shapes!:Shape[];
 }

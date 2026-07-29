@@ -45,4 +45,7 @@ export class ObjectManager {
     clear(): void {
         this.objects.clear();
     }
+    toJSON(): Shape[] {
+        return Array.from(this.objects.values());
+    }
 }
