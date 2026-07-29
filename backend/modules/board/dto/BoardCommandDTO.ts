@@ -5,7 +5,7 @@ import { BoardCommand } from '../../../common/enum/BoardCommand';
 
 export class BoardCommandDTO {
   @IsString()
-  id!: string;
+  id?: string;
 
   @IsOptional()
   @ValidateNested()

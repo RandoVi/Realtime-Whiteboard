@@ -7,6 +7,7 @@ import { randomUUID } from "crypto";
 import { BoardCommandDTO } from "./dto/BoardCommandDTO";
 import { BoardCommand } from "../../common/enum/BoardCommand";
 import { ShapeCommandDTO } from "../../models/shapeCommandDTO";
+import { BoardUser } from "../../models/user";
 
 @WebSocketGateway({
   transports: ["websocket"],
@@ -49,18 +50,32 @@ export class BoardGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
         switch (data.type) {
             case BoardCommand.CREATE:
 
-                if (!data.user) return
                 const boardId = randomUUID();
-                const board = await this.boards.createBoardAndPersist(boardId, data.user.id);
-
+                const hostId = randomUUID();
+                const board = await this.boards.createBoardAndPersist(boardId, hostId);
+                
                 if (!board) {
                     return;
                 }
 
-                board.users.add(data.user);
+                const hostUser = new BoardUser();
+                hostUser.id = hostId;
+                hostUser.username = "HOST";
+
+                board.users.add(hostUser);
 
                 socket.join(board.id);
+                socket.emit("created", {
+                    hostId: board.ownerId,
+                    boardId: board.id,
+                });
+
             case BoardCommand.JOIN:
+                if (!data.id) {
+                    console.log("No id in socket")
+                    return
+                }
+
                 if (this.boards.hasBoard(data.id)) {
                     const board = this.boards.getBoard(data.id);
 
@@ -74,9 +89,13 @@ export class BoardGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
                         username: data.user.username
                     })
                 }
+
             case BoardCommand.LEAVE:
+
             case BoardCommand.GET:
+
             case BoardCommand.DELETE:
+
         }
     }
 
