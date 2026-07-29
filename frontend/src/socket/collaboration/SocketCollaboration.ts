@@ -15,7 +15,10 @@ export class SocketCollaboration implements Collaboration {
         (command: EditorCommand) => void;
 
     constructor() {
-        this.socket = io("http://localhost:3000");
+           this.socket = io("http://localhost:3000", {
+            withCredentials:true,
+            transports: ["websocket"],
+        });
 
         this.socket.on(
             SOCKET_EVENTS.COMMAND,
