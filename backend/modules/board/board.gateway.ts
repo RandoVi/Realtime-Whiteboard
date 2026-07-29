@@ -69,7 +69,7 @@ export class BoardGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
                     hostId: board.ownerId,
                     boardId: board.id,
                 });
-
+                break
             case BoardCommand.JOIN:
                 if (!data.id) {
                     console.log("No id in socket under JOIN command")
@@ -89,15 +89,16 @@ export class BoardGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
                         username: data.user.username
                     })
                 }
-
+                break
             case BoardCommand.LEAVE:
-
+                break
             case BoardCommand.GET:
-
+                break
             case BoardCommand.DELETE:
-            
+                break
             default:
                 console.log("BOARD: default, no commands")
+                break;
         }
     }
 
