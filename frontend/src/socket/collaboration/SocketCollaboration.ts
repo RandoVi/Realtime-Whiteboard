@@ -35,12 +35,12 @@ export class SocketCollaboration implements Collaboration {
             command,
         };
 
-        console.log(message);
-
         this.socket.emit(
             SOCKET_EVENTS.COMMAND,
             message
         );
+        console.log(SOCKET_EVENTS.COMMAND);
+        console.log(message);
     }
 
     onCommand(
