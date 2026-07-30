@@ -101,7 +101,7 @@ export class BoardGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
                     const dto = new BoardStateDTO(board.id, board.ownerId, board.objects.getAll(), board.users.getAll());
 
                     socket.emit("board-state", dto);
-                    this.io.to(board.id).emit("user-joined-board", {
+                    socket.broadcast.to(board.id).emit("user-joined-board", {
                         userId: data.user.id,
                         username: data.user.username
                     })
@@ -128,7 +128,7 @@ export class BoardGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
                     }
                     board.users.remove(data.user.id);
                     socket.leave(board.id);
-                    this.io.to(board.id).emit("user-left-board", {
+                    socket.broadcast.to(board.id).emit("user-left-board", {
                         userId: data.user.id,
                         username: data.user.username
                     })
@@ -188,9 +188,9 @@ export class BoardGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
 
     @SubscribeMessage("boardObjectCommand")
     async handleCommand(
+        @ConnectedSocket() socket: Socket,
         @MessageBody() data: BoardObjectCommandDTO,
-    ) { 
-        console.log("Received boardObjectCommand: " + JSON.stringify(data))
+    ) {
         switch (data.command.type){
             case "createBoardObject": {
                 if(!this.boards.hasBoard(data.boardId)) {
@@ -203,7 +203,7 @@ export class BoardGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
                 }
                 const board = this.boards.getBoard(data.boardId);
                 board!.objects.create(data.command.boardObject);
-                this.io.to(board!.id).emit("boardObjectCommand", data);
+                socket.broadcast.to(board!.id).emit("boardObjectCommand", data);
                 console.log("Object created successfully")
                 break
             }
@@ -216,7 +216,7 @@ export class BoardGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
                 }
                 const board = this.boards.getBoard(data.boardId);
                 board!.objects.update(data.command.boardObjectId, data.command.updates);
-                this.io.to(board!.id).emit("boardObjectCommand", data);
+                socket.broadcast.to(board!.id).emit("boardObjectCommand", data);
                 console.log("Object updated successfully")
                 break
             }
@@ -229,7 +229,7 @@ export class BoardGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
                 }
                 const board = this.boards.getBoard(data.boardId);
                 board!.objects.delete(data.command.boardObjectId);
-                this.io.to(board!.id).emit("boardObjectCommand", data);
+                socket.broadcast.to(board!.id).emit("boardObjectCommand", data);
                 console.log("Object deleted")
                 break
             }
