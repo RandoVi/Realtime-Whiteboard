@@ -8,7 +8,7 @@ export type BoardObjectDocument = HydratedDocument<BoardObject>;
 export class BoardObject {
 
   @Prop({ required: true })
-  _id!: string;
+  id!: string;
 
   @Prop({ required: false, type: String })
   color?: string;
