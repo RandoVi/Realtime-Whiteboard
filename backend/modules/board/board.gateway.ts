@@ -197,6 +197,7 @@ export class BoardGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
                 }
                 const board = this.boards.getBoard(data.boardId);
                 board!.objects.create(data.command.boardObject);
+                this.io.to(board!.id).emit("object-created", board?.objects.get(data.command.boardObject.id));
                 console.log("Object created successfully")
                 break
             }
