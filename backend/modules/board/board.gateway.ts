@@ -191,13 +191,15 @@ export class BoardGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
             case "createBoardObject": {
                 if(!this.boards.hasBoard(data.boardId)) {
                     console.log('No "board" in socket(CREATE - OBJECT)')
+                    break
                 }
                 if(!data.command.boardObject) {
                     console.log('No "boardObject" in socket(CREATE - OBJECT)')
+                    break
                 }
                 const board = this.boards.getBoard(data.boardId);
                 board!.objects.create(data.command.boardObject);
-                this.io.to(board!.id).emit("object-created", board?.objects.get(data.command.boardObject.id));
+                this.io.to(board!.id).emit(data.command.type, data);
                 console.log("Object created successfully")
                 break
             }
