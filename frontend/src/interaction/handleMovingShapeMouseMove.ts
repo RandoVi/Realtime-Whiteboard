@@ -6,12 +6,14 @@ import type { Interaction } from "./Interaction"
 
 import type { Shape } from "../types/Shape"
 import type { Editor } from "../editor/Editor"
+import type { Presence } from "../socket/preview/Presence"
 
 type Args = {
   world: Point
   interactionRef: MutableRefObject<Interaction>
   getSelectedShape: () => Shape | undefined
   editor: Editor
+  presence: Presence
 }
 
 export function handleMovingShapeMouseMove({
@@ -19,6 +21,7 @@ export function handleMovingShapeMouseMove({
   interactionRef,
   getSelectedShape,
   editor,
+  presence,
 }: Args) {
 
   const interaction = interactionRef.current
@@ -61,6 +64,13 @@ export function handleMovingShapeMouseMove({
     }
 
   );
+
+  presence.send({
+    type: "moveObjectPreview",
+    boardObjectId: boardObject.id,
+    x: interaction.original.x + dx,
+    y: interaction.original.y + dy,
+  });
 
 
   return true

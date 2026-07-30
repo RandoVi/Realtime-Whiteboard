@@ -23,6 +23,7 @@ export function useWhiteboardInput({
   document,
   tool,
   editor,
+  presence,
 
   setSelectedShapeId,
   selectedShapeIdRef,
@@ -83,7 +84,7 @@ export function useWhiteboardInput({
 
     const endInteraction = () => {
 
-      console.log("Ending interaction");
+      console.log("Ending interaction");useWhiteboardInput
       interactionRef.current = {
         type: "idle",
       }
@@ -125,6 +126,7 @@ export function useWhiteboardInput({
         interactionRef,
         getSelectedShape,
         editor,
+        presence,
       })
       ) {
         return
@@ -236,6 +238,7 @@ export function useWhiteboardInput({
     tool,
     setSelectedShapeId,
     editor,
+    presence,
     document,
   ])
 

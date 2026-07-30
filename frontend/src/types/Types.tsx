@@ -34,6 +34,7 @@ export type UseWhiteboardInputProps = {
   document: Document
   tool: Tool
   editor: Editor
+  presence: any
   setSelectedShapeId: React.Dispatch<
     React.SetStateAction<string | null>
   >

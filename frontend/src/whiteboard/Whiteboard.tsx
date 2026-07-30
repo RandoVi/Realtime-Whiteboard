@@ -15,6 +15,8 @@ import { createDocument } from '../document/createDocument'
 import { setBoardId as setNetworkBoardId } from "../network/board";
 import { SocketCollaboration } from "../socket/collaboration/SocketCollaboration";
 import { BoardLobbyModal, type LobbyState } from '../lobby/BoardLobbyModal'
+import { SocketPresence } from '../socket/preview/SocketPresence'
+import type {PreviewPosition} from "../render/RenderShapes";
 
 function Whiteboard() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
@@ -23,6 +25,10 @@ function Whiteboard() {
     offsetX: 0,
     offsetY: 0,
   })
+
+  const remotePreviews = useRef(
+    new Map<string, PreviewPosition>()
+);
 
   const viewportRef = useRef({ width: 0, height: 0, dpr: 1 }) // dpr = device pixel ratio
   const resizeInitializedRef = useRef(false)
@@ -71,6 +77,7 @@ function Whiteboard() {
       document.shapesRef.current,
       camera,
       interactionRef.current,
+      remotePreviews.current
     )
 
     const selectedShape = selectedShapeIdRef.current
@@ -116,6 +123,11 @@ function Whiteboard() {
     []
   );
 
+  const presence = useMemo(
+    () => new SocketPresence(),
+    []
+  );
+
   const editor = useMemo(
     () =>
       createEditor({
@@ -156,6 +168,7 @@ function Whiteboard() {
     requestRender,
     document,
     tool,
+    presence,
     editor,
     setSelectedShapeId,
     selectedShapeIdRef,
@@ -222,6 +235,31 @@ function Whiteboard() {
       }
     );
   };
+
+  useEffect(() => {
+    presence.onCommand(
+    command => {
+
+        switch(command.type){
+
+            case "moveObjectPreview":
+
+                remotePreviews.current.set(
+                    command.boardObjectId,
+                    {
+                        x: command.x,
+                        y: command.y,
+                    }
+                );
+
+                requestRender();
+
+                break;
+        }
+
+    }
+);
+  }, [presence]);
 
   const handleJoin = () => {
 
