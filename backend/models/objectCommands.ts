@@ -27,6 +27,16 @@ export type DeleteBoardObjectCommand = {
     boardObjectId: string;
 };
 
+export type MovePreviewCommand = {
+    type: "moveObjectPreview";
+    boardObjectId: string;
+}
+
+export  type CursorMovement = {
+    type: "cursorMovement";
+    //TODO customization
+}
+
 // export type DuplicateBoardObjectCommand = {
 //     type: "duplicateBoardObject";
 //     BoardObjectId: string;
@@ -35,4 +45,6 @@ export type DeleteBoardObjectCommand = {
 export type EditorCommand =
     | CreateBoardObjectCommand
     | UpdateBoardObjectCommand
-    | DeleteBoardObjectCommand;
+    | DeleteBoardObjectCommand
+    | MovePreviewCommand
+    | CursorMovement;
