@@ -9,6 +9,7 @@ import { BoardCommand } from "../../common/enum/BoardCommand";
 import { BoardObjectCommandDTO } from "../../models/boardObjectCommandDTO";
 import { BoardUser } from "../../models/user";
 import { io } from "socket.io-client";
+import { BoardStateDTO } from "./dto/BoardStateDTO";
 
 @WebSocketGateway({
   transports: ["websocket"],
@@ -93,7 +94,10 @@ export class BoardGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
                     }
                     board.users.add(data.user);
                     socket.join(board.id);
-                    socket.emit("board-state", board);
+
+                    const dto = new BoardStateDTO(board.id, board.ownerId, board.objects.getAll(), board.users.getAll());
+
+                    socket.emit("board-state", dto);
                     this.io.to(board.id).emit("user-joined-board", {
                         userId: data.user.id,
                         username: data.user.username
