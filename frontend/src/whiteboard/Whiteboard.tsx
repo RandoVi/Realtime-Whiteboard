@@ -225,7 +225,14 @@ function Whiteboard() {
   const handleJoin = () => {
     setLobbyState("joining");
 
-    // collaboration.joinBoard(boardId);
+    collaboration.joinBoard(
+      boardId,
+      () => {
+
+        setLobbyState("connected");
+
+      }
+    );
   };
 
   const handleStart = () => {
