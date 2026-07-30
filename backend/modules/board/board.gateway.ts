@@ -187,7 +187,7 @@ export class BoardGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
     }
 
     @SubscribeMessage("boardObjectCommand")
-    async handleCommand(
+    async handleObjectCommand(
         @ConnectedSocket() socket: Socket,
         @MessageBody() data: BoardObjectCommandDTO,
     ) {
@@ -238,5 +238,24 @@ export class BoardGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
         }
     }
 
+    @SubscribeMessage("boardPresenceCommand")
+    async handleSocketCommand(
+        @ConnectedSocket() socket: Socket,
+        @MessageBody() data: BoardObjectCommandDTO,
+    ) {
+        switch (data.command.type){
+            case ("moveObjectPreview"): {
+                socket.broadcast.to(data.boardId).emit("boardPresenceCommand", data);
+            }
+            case ("cursorMovement"): {
+                //TODO socket.broadcast.to(data.boardId).emit("boardPresenceCommand", data);
+            }
+            default: {
+                console.log("Default response - cursor move")
+            }
+        }
+    }
+
+    
 }
 
