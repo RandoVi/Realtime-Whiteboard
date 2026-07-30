@@ -82,6 +82,8 @@ export function useWhiteboardInput({
     }
 
     const endInteraction = () => {
+
+      console.log("Ending interaction");
       interactionRef.current = {
         type: "idle",
       }

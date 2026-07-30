@@ -1,28 +1,20 @@
 import type { Shape } from "../types/Shape";
 
 export type CreateShapeCommand = {
-    type: "createShape"
-
-    shape: Shape
-}
+    type: "createBoardObject";
+    boardObject: Shape;
+};
 
 export type UpdateShapeCommand = {
-    type: "updateShape";
-
-    shapeId: string;
-
+    type: "updateBoardObject";
+    boardObjectId: string;
     updates: Partial<Shape>;
 };
 
 export type DeleteShapeCommand = {
-    type: "deleteShape";
-    shapeId: string;
+    type: "deleteBoardObject";
+    boardObjectId: string;
 };
-
-// export type DuplicateShapeCommand = {
-//     type: "duplicateShape";
-//     shapeId: string;
-// };
 
 export type EditorCommand =
     | CreateShapeCommand

@@ -13,4 +13,12 @@ export interface Collaboration {
         ) => void
     ): void;
 
+    createBoard(
+        callback: (boardId: string) => void
+    ): void;
+
+    joinBoard(
+        boardId: string,
+        callback: () => void
+    ): void;
 }

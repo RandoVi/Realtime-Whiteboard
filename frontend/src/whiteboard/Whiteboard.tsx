@@ -12,8 +12,9 @@ import { getShapeById } from '../shapes/getShapeById'
 import { createEditor } from '../editor/createEditor'
 import { ObjectInspector } from '../ui/objectPanel/ObjectInspector'
 import { createDocument } from '../document/createDocument'
-
+import { setBoardId as setNetworkBoardId } from "../network/board";
 import { SocketCollaboration } from "../socket/collaboration/SocketCollaboration";
+import { BoardLobbyModal, type LobbyState } from '../lobby/BoardLobbyModal'
 
 function Whiteboard() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
@@ -31,6 +32,10 @@ function Whiteboard() {
       createDocument([]),
     []
   )
+  //lobby state and id
+  const [lobbyState, setLobbyState] = useState<LobbyState>("lobby");
+  const [boardId, setBoardId] = useState("");
+
 
   const [tool, setTool] = useState<Tool>('pan')
   const [selectedShapeId, setSelectedShapeId] =
@@ -206,6 +211,42 @@ function Whiteboard() {
     ? getShapeById(document.shapesRef.current, selectedShapeId)
     : undefined
 
+  const handleCreate = () => {
+    setLobbyState("creating");
+
+    collaboration.createBoard(
+      (id) => {
+        setBoardId(id);
+        setNetworkBoardId(id);
+        setLobbyState("created");
+      }
+    );
+  };
+
+  const handleJoin = () => {
+
+    setLobbyState("joining");
+
+    collaboration.joinBoard(
+      boardId,
+      (boardState) => {
+        console.log("Joined board with id: " + boardState.boardId);
+        setBoardId(boardState.boardId);
+        setNetworkBoardId(boardState.boardId);
+        document.load(boardState.objects);
+
+        requestRender();
+
+        setLobbyState("connected");
+      }
+    );
+  };
+
+  const handleStart = () => {
+    setLobbyState("connected");
+
+    // collaboration.startBoard(boardId);
+  };
   return (
     <div className='whiteboard-page'>
       <canvas
@@ -214,6 +255,14 @@ function Whiteboard() {
           bindCanvas(canvas)
         }}
         className="whiteboard-canvas"
+      />
+      <BoardLobbyModal
+        state={lobbyState}
+        boardId={boardId}
+        onBoardIdChange={setBoardId}
+        onCreate={handleCreate}
+        onJoin={handleJoin}
+        onStart={handleStart}
       />
       {/* <ObjectPanel /> */}
       <BottomToolbar
@@ -230,8 +279,11 @@ function Whiteboard() {
         <div className="coordinates-overlay">
           <div>x: {mouseWorld.x.toFixed(2)}</div>
           <div>y: {mouseWorld.y.toFixed(2)}</div>
+          <div>Board ID: {boardId || "none"}</div>
         </div>
+
       )}
+
     </div>
   )
 }

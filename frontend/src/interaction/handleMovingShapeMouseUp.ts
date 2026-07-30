@@ -31,18 +31,18 @@ export function handleMovingShapeMouseUp({
         return true;
     }
 
-    const shape = getSelectedShape();
+    const boardObject = getSelectedShape();
 
-    if (!shape) {
+    if (!boardObject) {
         return false;
     }
-    // Update the shape's position in the editor
+    // Update the board object's position in the editor
     editor.execute({
-        type: "updateShape",
-        shapeId: shape.id,
+        type: "updateBoardObject",
+        boardObjectId: boardObject.id,
         updates: {
-            x: shape.x,
-            y: shape.y,
+            x: boardObject.x,
+            y: boardObject.y,
         },
     });
 

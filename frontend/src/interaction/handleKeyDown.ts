@@ -24,16 +24,16 @@ export function handleKeyDown({
       event.key === "Backspace"
     ) {
 
-      const shapeId = getSelectedShapeId()
+      const boardObjectId = getSelectedShapeId()
 
-      if (!shapeId) {
+      if (!boardObjectId) {
         return
       }
 
 
       editor.execute({
-        type: "deleteShape",
-        shapeId,
+        type: "deleteBoardObject",
+        boardObjectId,
       })
 
     }

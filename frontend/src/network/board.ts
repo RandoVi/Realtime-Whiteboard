@@ -1,2 +1,11 @@
-export const boardId = "default";
-//default will be changed later when dealing with multiple boards.
+let boardId = "";
+
+export function setBoardId(id: string) {
+    boardId = id;
+}
+
+export function getBoardId() {
+    return boardId;
+}
+
+export { boardId };
