@@ -246,12 +246,15 @@ export class BoardGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
         switch (data.command.type){
             case ("moveObjectPreview"): {
                 socket.broadcast.to(data.boardId).emit("boardPresenceCommand", data);
+                break;
             }
             case ("cursorMovement"): {
                 //TODO socket.broadcast.to(data.boardId).emit("boardPresenceCommand", data);
+                break;
             }
             default: {
                 console.log("Default response - cursor move")
+                break;
             }
         }
     }
