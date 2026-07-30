@@ -26,6 +26,7 @@ export function BoardLobbyModal({
     onBoardIdChange,
     onCreate,
     onJoin,
+    onStart
 }: Props) {
     if (!open) {
         return null;
@@ -95,7 +96,7 @@ export function BoardLobbyModal({
                         Copy ID
                     </button>
 
-                    <button>
+                    <button onClick={onStart}>
                         Start Whiteboard
                     </button>
                 </div>

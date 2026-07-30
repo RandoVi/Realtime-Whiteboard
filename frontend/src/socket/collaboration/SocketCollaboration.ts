@@ -15,8 +15,8 @@ export class SocketCollaboration implements Collaboration {
         (command: EditorCommand) => void;
 
     constructor() {
-           this.socket = io("http://localhost:3000", {
-            withCredentials:true,
+        this.socket = io("http://localhost:3000", {
+            withCredentials: true,
             transports: ["websocket"],
         });
 
@@ -29,7 +29,7 @@ export class SocketCollaboration implements Collaboration {
             }
         );
     }
-
+    //Board General Commands
     createBoard(
         callback: (boardId: string) => void
     ): void {
@@ -42,15 +42,44 @@ export class SocketCollaboration implements Collaboration {
         );
 
         this.socket.once(
-            SOCKET_EVENTS.BOARD_COMMAND,
-            (message) => {
+            "created",
+            (data: {
+                boardId: string
+                hostId: string
+            }) => {
+                callback(data.boardId);
+            }
+        );
+    }
 
-                callback(message.id);
+    joinBoard(
+        boardId: string,
+        callback: () => void
+    ): void {
+
+        this.socket.emit(
+            "boardCommand",
+            {
+                type: "JOIN",
+                id: boardId,
+                user: {
+                    id: clientId,
+                    username: "..."
+                }
+            }
+        );
+
+        this.socket.once(
+            "board-state",
+            (boardState) => {
+
+                callback();
 
             }
         );
     }
 
+    //Board Specific Commands
     send(command: EditorCommand): void {
         const message: NetworkCommand = {
             id: crypto.randomUUID(),

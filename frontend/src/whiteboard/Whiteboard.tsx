@@ -90,14 +90,6 @@ function Whiteboard() {
 
   }
 
-  const handleCreateBoard = () => {
-    console.log("Create board");
-  };
-
-  const handleJoinBoard = () => {
-    console.log("Join board:", boardId);
-  };
-
   const requestRender = () => {
     // console.log(renderFrameRef.current)
     if (renderFrameRef.current !== null) {
@@ -273,8 +265,11 @@ function Whiteboard() {
         <div className="coordinates-overlay">
           <div>x: {mouseWorld.x.toFixed(2)}</div>
           <div>y: {mouseWorld.y.toFixed(2)}</div>
+          <div>Board ID: {boardId || "none"}</div>
         </div>
+
       )}
+
     </div>
   )
 }
