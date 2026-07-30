@@ -6,7 +6,9 @@ export class ObjectManager {
     private readonly objects = new Map<string, BoardObject>();
 
     create(boardObject: BoardObject): BoardObject {
-
+        if (!boardObject._id) {
+            throw new Error("BoardObject id is missing")
+        }
         if (this.objects.has(boardObject._id)) {
             throw new Error("BoardObject already exists");
         }
