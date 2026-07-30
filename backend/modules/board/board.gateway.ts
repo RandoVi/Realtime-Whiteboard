@@ -77,6 +77,7 @@ export class BoardGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
             case BoardCommand.JOIN:
                 if (!data.id) {
                     console.log('No "id" in socket(JOIN - BOARD)')
+                    socket.emit("join-board-response", "No boardId sent with socket(missing)")
                     break
                 }
 
@@ -85,11 +86,13 @@ export class BoardGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
 
                     if (!board) {
                         console.log('No "board" in socket(JOIN - BOARD)')
+                        socket.emit("join-board-response", "No board with id: " + data.id + " exists.")
                         break
                     }
                         
                     if (!data.user) {
                         console.log('No "user" in socket(JOIN - BOARD)')
+                        socket.emit("join-board-response", "No user data available (missing)")
                         break
                     }
                     board.users.add(data.user);
@@ -199,7 +202,7 @@ export class BoardGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
                 }
                 const board = this.boards.getBoard(data.boardId);
                 board!.objects.create(data.command.boardObject);
-                this.io.to(board!.id).emit(data.command.type, data);
+                this.io.to(board!.id).emit("boardObjectCommand", data);
                 console.log("Object created successfully")
                 break
             }
@@ -212,6 +215,7 @@ export class BoardGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
                 }
                 const board = this.boards.getBoard(data.boardId);
                 board!.objects.update(data.command.boardObjectId, data.command.updates);
+                this.io.to(board!.id).emit("boardObjectCommand", data);
                 console.log("Object updated successfully")
                 break
             }
@@ -224,6 +228,7 @@ export class BoardGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
                 }
                 const board = this.boards.getBoard(data.boardId);
                 board!.objects.delete(data.command.boardObjectId);
+                this.io.to(board!.id).emit("boardObjectCommand", data);
                 console.log("Object deleted")
                 break
             }
