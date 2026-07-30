@@ -8,6 +8,7 @@ import { BoardCommandDTO } from "./dto/BoardCommandDTO";
 import { BoardCommand } from "../../common/enum/BoardCommand";
 import { BoardObjectCommandDTO } from "../../models/boardObjectCommandDTO";
 import { BoardUser } from "../../models/user";
+import { io } from "socket.io-client";
 
 @WebSocketGateway({
   transports: ["websocket"],
@@ -70,6 +71,7 @@ export class BoardGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
                     hostId: board.ownerId,
                     boardId: board.id,
                 });
+                console.log("Board created with id: " + board.id)
                 break;
             case BoardCommand.JOIN:
                 if (!data.id) {
@@ -95,6 +97,7 @@ export class BoardGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
                         userId: data.user.id,
                         username: data.user.username
                     })
+                    console.log("User joined " + data.user.username + " the board: " + data.id)
                 }
                 break;
             case BoardCommand.LEAVE:
@@ -115,17 +118,59 @@ export class BoardGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
                         console.log('No "user" in socket(JOIN)')
                         break
                     }
-                    board.users.add(data.user);
+                    board.users.remove(data.user.id);
                     socket.leave(board.id);
                     this.io.to(board.id).emit("user-left-board", {
                         userId: data.user.id,
                         username: data.user.username
                     })
+                    console.log("User left " + data.user.username + " the board: " + data.id)
                 }
                 break;
-            case BoardCommand.GET:
+            case BoardCommand.GET: {
+                if (!data.id) {
+                    console.log('No "id" in socket(GET - BOARD)')
+                    break
+                }
+
+                if (this.boards.hasBoard(data.id)) {
+                    const board = this.boards.getBoard(data.id);
+
+                    if (!board) {
+                        console.log('No "board" in socket(GET - BOARD)')
+                        break
+                    }
+                    socket.emit("get-board-response", {
+                        boardId: board.id,
+                        hostId: board.ownerId,
+                    })
+                    console.log("Emitted 'get-board-response' with board data")
+                    }
                 break;
+                }
             case BoardCommand.DELETE:
+                if (!data.id) {
+                    console.log('No "id" in socket(DELETE - BOARD)')
+                    break
+                }
+
+                if (this.boards.hasBoard(data.id)) {
+                    const board = this.boards.getBoard(data.id);
+
+                    if (!board) {
+                        console.log('No "board" in socket(DELETE - BOARD)')
+                        break
+                    }
+                        
+                    if (!data.user) {
+                        console.log('No "user" in socket(DELETE - BOARD)')
+                        break
+                    }
+                    this.boards.deleteBoard(data.id)
+
+                    this.io.in(board.id).socketsLeave(board.id);
+                    console.log("Board deleted, user sockets removed")
+                }
                 break;
             default:
                 console.log("BOARD: default response, no commands")
@@ -147,6 +192,7 @@ export class BoardGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
                 }
                 const board = this.boards.getBoard(data.boardId);
                 board!.objects.create(data.command.boardObject);
+                console.log("Object created successfully")
                 break
             }
             case "updateBoardObject": {
@@ -158,6 +204,7 @@ export class BoardGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
                 }
                 const board = this.boards.getBoard(data.boardId);
                 board!.objects.update(data.command.boardObjectId, data.command.updates);
+                console.log("Object updated successfully")
                 break
             }
             case "deleteBoardObject": {
@@ -169,6 +216,7 @@ export class BoardGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
                 }
                 const board = this.boards.getBoard(data.boardId);
                 board!.objects.delete(data.command.boardObjectId);
+                console.log("Object deleted")
                 break
             }
             default:
