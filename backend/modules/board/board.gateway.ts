@@ -6,7 +6,7 @@ import { Logger } from "@nestjs/common";
 import { randomUUID } from "crypto";
 import { BoardCommandDTO } from "./dto/BoardCommandDTO";
 import { BoardCommand } from "../../common/enum/BoardCommand";
-import { ShapeCommandDTO } from "../../models/shapeCommandDTO";
+import { BoardObjectCommandDTO } from "../../models/boardObjectCommandDTO";
 import { BoardUser } from "../../models/user";
 
 @WebSocketGateway({
@@ -55,6 +55,7 @@ export class BoardGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
                 const board = await this.boards.createBoardAndPersist(boardId, hostId);
                 
                 if (!board) {
+                    console.log('No "board" in socket(CREATE - BOARD)')
                     break;
                 }
 
@@ -72,16 +73,22 @@ export class BoardGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
                 break;
             case BoardCommand.JOIN:
                 if (!data.id) {
-                    console.log("No id in socket under JOIN command")
+                    console.log('No "id" in socket(JOIN - BOARD)')
                     break
                 }
 
                 if (this.boards.hasBoard(data.id)) {
                     const board = this.boards.getBoard(data.id);
 
-                    if (!board) break
-                    if (!data.user) break
-
+                    if (!board) {
+                        console.log('No "board" in socket(JOIN - BOARD)')
+                        break
+                    }
+                        
+                    if (!data.user) {
+                        console.log('No "user" in socket(JOIN - BOARD)')
+                        break
+                    }
                     board.users.add(data.user);
                     socket.join(board.id);
                     this.io.to(board.id).emit("user-joined-board", {
@@ -91,33 +98,82 @@ export class BoardGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
                 }
                 break;
             case BoardCommand.LEAVE:
+                if (!data.id) {
+                    console.log('No "id" in socket(LEAVE - BOARD)')
+                    break
+                }
+
+                if (this.boards.hasBoard(data.id)) {
+                    const board = this.boards.getBoard(data.id);
+
+                    if (!board) {
+                        console.log('No "board" in socket(JOIN)')
+                        break
+                    }
+                        
+                    if (!data.user) {
+                        console.log('No "user" in socket(JOIN)')
+                        break
+                    }
+                    board.users.add(data.user);
+                    socket.leave(board.id);
+                    this.io.to(board.id).emit("user-left-board", {
+                        userId: data.user.id,
+                        username: data.user.username
+                    })
+                }
                 break;
             case BoardCommand.GET:
                 break;
             case BoardCommand.DELETE:
                 break;
             default:
-                console.log("BOARD: default, no commands")
+                console.log("BOARD: default response, no commands")
                 break;
         }
     }
 
-    @SubscribeMessage("command")
+    @SubscribeMessage("boardObjectCommand")
     async handleCommand(
-        @MessageBody() body: ShapeCommandDTO,
+        @MessageBody() data: BoardObjectCommandDTO,
     ) {
-        let board = this.boards.getBoard(body.clientId);
-        console.log(body)
-
-        if (!board) {
-            const id = randomUUID();
-            board = await this.boards.createBoardAndPersist(id, body.clientId);
+        switch (data.command.type){
+            case "createBoardObject": {
+                if(!this.boards.hasBoard(data.boardId)) {
+                    console.log('No "board" in socket(CREATE - OBJECT)')
+                }
+                if(!data.command.boardObject) {
+                    console.log('No "boardObject" in socket(CREATE - OBJECT)')
+                }
+                const board = this.boards.getBoard(data.boardId);
+                board!.objects.create(data.command.boardObject);
+                break
+            }
+            case "updateBoardObject": {
+                if(!this.boards.hasBoard(data.boardId)) {
+                    console.log('No "board" in socket(UPDATE - OBJECT)')
+                }
+                if(!data.command.updates) {
+                    console.log('No "updates" in socket(UPDATE - OBJECT)')
+                }
+                const board = this.boards.getBoard(data.boardId);
+                board!.objects.update(data.command.boardObjectId, data.command.updates);
+                break
+            }
+            case "deleteBoardObject": {
+                if(!this.boards.hasBoard(data.boardId)) {
+                    console.log('No "board" in socket(DELETE - OBJECT)')
+                }
+                if(!data.command.boardObjectId) {
+                    console.log('No "boardObjectId" in socket(DELETE - OBJECT)')
+                }
+                const board = this.boards.getBoard(data.boardId);
+                board!.objects.delete(data.command.boardObjectId);
+                break
+            }
+            default:
+                console.log("Default case for boardObjectCommand")
         }
-        if (body.command.type === "createShape") {
-            board!.objects.create(body.command.shape);
-        }
-        console.log("All objects in board: ", board!.objects.getAll())
-        console.log("All boards: ", this.boards.getBoards())
     }
 
 }

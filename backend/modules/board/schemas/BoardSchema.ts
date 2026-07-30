@@ -1,7 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Schema as MongooseSchema } from 'mongoose';
 import { HydratedDocument } from 'mongoose';
-import { Shape } from '../../shapes/schemas/ShapeSchema';
+import { BoardObject } from '../../boardObjects/schemas/BoardObjectSchema';
 
 export type BoardDocument = HydratedDocument<Board>;
 
@@ -23,14 +23,14 @@ export class Board {
   status!: string;
   // To retain all the subproperties
   @Prop({ type: [MongooseSchema.Types.Mixed], default: [] })
-  shapes!: Shape[];
+  boardObjects!: BoardObject[];
 
   @Prop({ default: 0 })
   version!: number;
 
   applyUpdate(changes: Partial<BoardDocument>): void {
-    if (changes.shapes) {
-      this.shapes = changes.shapes;
+    if (changes.boardObjects) {
+      this.boardObjects = changes.boardObjects;
     }
   }
 }

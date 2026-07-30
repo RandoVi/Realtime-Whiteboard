@@ -2,7 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { AnyBulkWriteOperation, Model } from 'mongoose';
 import { Board, BoardDocument } from '../schemas/BoardSchema';
-import { BoardObject } from '../../shapes/schemas/ShapeSchema';
+import { BoardObject } from '../../boardObjects/schemas/BoardObjectSchema';
 import { BoardManager } from '../../../managers/BoardManager';
 
 @Injectable()

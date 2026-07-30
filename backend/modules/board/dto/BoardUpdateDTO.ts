@@ -1,10 +1,10 @@
 import { IsString, MinLength } from "class-validator";
-import { Shape } from "../../../models/shape";
+import { BoardObject } from "../../boardObjects/schemas/BoardObjectSchema";
 
 export class BoardUpdateDTO {
   @IsString()
   @MinLength(1)
   boardId!: string;
   
-  shapes!:Shape[];
+  boardObjects!:BoardObject[];
 }
