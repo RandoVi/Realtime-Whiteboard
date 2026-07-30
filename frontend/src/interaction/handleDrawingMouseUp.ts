@@ -16,13 +16,13 @@ export function handleDrawingMouseUp({
     return false
   }
 
-  const shape = normalizeShape({
+  const boardObject = normalizeShape({
     ...interactionRef.current.preview,
   })
 
   editor.execute({
-    type: "createShape",
-    shape,
+    type: "createBoardObject",
+    boardObject,
   })
 
   return true

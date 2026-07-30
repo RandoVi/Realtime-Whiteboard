@@ -53,8 +53,8 @@ export function createEditor({
 
 
     execute({
-      type: "deleteShape",
-      shapeId,
+      type: "deleteBoardObject",
+      boardObjectId: shapeId,
     })
 
   }
@@ -75,8 +75,8 @@ export function createEditor({
     };
 
     execute({
-      type: "createShape",
-      shape: duplicated,
+      type: "createBoardObject",
+      boardObject: duplicated,
     });
   }
 
@@ -98,8 +98,8 @@ export function createEditor({
       }
 
       execute({
-        type: "updateShape",
-        shapeId: shape.id,
+        type: "updateBoardObject",
+        boardObjectId: shape.id,
         updates: {
           [property]: value,
         },
@@ -109,28 +109,28 @@ export function createEditor({
 
   function apply(command: EditorCommand) {
     switch (command.type) {
-      case "createShape":
+      case "createBoardObject":
         createShape({
           shapes: document.shapesRef.current,
-          shape: command.shape,
+          shape: command.boardObject,
         });
         break;
 
-      case "updateShape":
+      case "updateBoardObject":
         updateShape({
           shapes: document.shapesRef.current,
-          shapeId: command.shapeId,
+          shapeId: command.boardObjectId,
           updates: command.updates,
         });
         break;
 
-      case "deleteShape":
+      case "deleteBoardObject":
         deleteShape({
           shapes: document.shapesRef.current,
-          shapeId: command.shapeId,
+          shapeId: command.boardObjectId,
         });
 
-        if (selectedShapeIdRef.current === command.shapeId) {
+        if (selectedShapeIdRef.current === command.boardObjectId) {
           selectedShapeIdRef.current = null;
           setSelectedShapeId(null);
         }

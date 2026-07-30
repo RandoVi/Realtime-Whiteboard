@@ -3,13 +3,18 @@ import type { Document } from "./Document";
 
 
 export function createDocument(
-  shapes: Shape[]
+    shapes: Shape[]
 ): Document {
 
-  return {
-    shapesRef: {
-      current: shapes,
-    },
-  };
+    const shapesRef = {
+        current: shapes,
+    };
 
+    return {
+        shapesRef,
+
+        load(shapes: Shape[]) {
+            shapesRef.current = shapes;
+        },
+    };
 }

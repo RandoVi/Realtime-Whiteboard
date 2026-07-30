@@ -4,7 +4,8 @@ import { io, Socket } from "socket.io-client";
 import { clientId } from "../../network/client";
 import { SOCKET_EVENTS } from "../../network/events";
 import type { NetworkCommand } from "../../network/NetworkCommand";
-import { boardId } from "../../network/board";
+import { getBoardId } from "../../network/board";
+import type { BoardStateDTO } from "./BoardStateDTO";
 
 
 
@@ -54,7 +55,7 @@ export class SocketCollaboration implements Collaboration {
 
     joinBoard(
         boardId: string,
-        callback: () => void
+        callback: (boardState: BoardStateDTO) => void
     ): void {
 
         this.socket.emit(
@@ -64,17 +65,15 @@ export class SocketCollaboration implements Collaboration {
                 id: boardId,
                 user: {
                     id: clientId,
-                    username: "..."
+                    username: "HOST" // or whatever you'll use later
                 }
             }
         );
 
         this.socket.once(
             "board-state",
-            (boardState) => {
-
-                callback();
-
+            (boardState: BoardStateDTO) => {
+                callback(boardState);
             }
         );
     }
@@ -84,7 +83,7 @@ export class SocketCollaboration implements Collaboration {
         const message: NetworkCommand = {
             id: crypto.randomUUID(),
             clientId,
-            boardId,
+            boardId: getBoardId(),
             command,
         };
 

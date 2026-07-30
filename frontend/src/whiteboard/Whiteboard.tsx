@@ -12,7 +12,7 @@ import { getShapeById } from '../shapes/getShapeById'
 import { createEditor } from '../editor/createEditor'
 import { ObjectInspector } from '../ui/objectPanel/ObjectInspector'
 import { createDocument } from '../document/createDocument'
-
+import { setBoardId as setNetworkBoardId } from "../network/board";
 import { SocketCollaboration } from "../socket/collaboration/SocketCollaboration";
 import { BoardLobbyModal, type LobbyState } from '../lobby/BoardLobbyModal'
 
@@ -217,20 +217,27 @@ function Whiteboard() {
     collaboration.createBoard(
       (id) => {
         setBoardId(id);
+        setNetworkBoardId(id);
         setLobbyState("created");
       }
     );
   };
 
   const handleJoin = () => {
+
     setLobbyState("joining");
 
     collaboration.joinBoard(
       boardId,
-      () => {
+      (boardState) => {
+        console.log("Joined board with id: " + boardState.boardId);
+        setBoardId(boardState.boardId);
+        setNetworkBoardId(boardState.boardId);
+        document.load(boardState.objects);
+
+        requestRender();
 
         setLobbyState("connected");
-
       }
     );
   };
