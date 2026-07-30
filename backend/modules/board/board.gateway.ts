@@ -93,6 +93,7 @@ export class BoardGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
                     }
                     board.users.add(data.user);
                     socket.join(board.id);
+                    socket.emit("board-state", board);
                     this.io.to(board.id).emit("user-joined-board", {
                         userId: data.user.id,
                         username: data.user.username
