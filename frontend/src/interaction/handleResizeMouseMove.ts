@@ -27,9 +27,9 @@ export function handleResizeMouseMove({
 
     const interaction = interactionRef.current
 
-    const shape = getSelectedShape()
+    const boardObject = getSelectedShape()
 
-    if (shape) {
+    if (boardObject) {
 
         const resizedShape = {
             ...interaction.original,
@@ -46,8 +46,8 @@ export function handleResizeMouseMove({
 
         editor.execute(
             {
-                type: "updateShape",
-                shapeId: shape.id,
+                type: "updateBoardObject",
+                boardObjectId: boardObject.id,
                 updates: {
                     x: resizedShape.x,
                     y: resizedShape.y,

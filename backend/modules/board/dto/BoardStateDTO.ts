@@ -1,4 +1,3 @@
-import { IsString, MinLength } from "class-validator";
 import { BoardObject } from "../../boardObjects/schemas/BoardObjectSchema";
 import { BoardUser } from "../../../models/user";
 

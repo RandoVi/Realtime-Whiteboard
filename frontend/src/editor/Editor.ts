@@ -11,6 +11,7 @@ export interface Editor {
     command: EditorCommand,
     options?: ExecuteOptions
   ): void;
+  
 
   bind<K extends keyof Shape>(
     property: K,

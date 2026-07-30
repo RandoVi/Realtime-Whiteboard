@@ -27,9 +27,9 @@ export function handleMovingShapeMouseMove({
     return false
   }
 
-  const shape = getSelectedShape()
+  const boardObject = getSelectedShape()
 
-  if (!shape) {
+  if (!boardObject) {
     return false
   }
 
@@ -46,9 +46,9 @@ export function handleMovingShapeMouseMove({
 
   editor.execute(
     {
-      type: "updateShape",
+      type: "updateBoardObject",
 
-      shapeId: shape.id,
+      boardObjectId: boardObject.id,
 
       updates: {
         x: interaction.original.x + dx,

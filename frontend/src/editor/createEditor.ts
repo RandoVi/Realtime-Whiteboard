@@ -122,6 +122,15 @@ export function createEditor({
           shapeId: command.boardObjectId,
           updates: command.updates,
         });
+        console.table(
+          document.shapesRef.current.map(shape => ({
+            id: shape.id,
+            x: shape.x,
+            y: shape.y,
+            width: shape.width,
+            height: shape.height,
+          }))
+        );
         break;
 
       case "deleteBoardObject":
@@ -143,6 +152,7 @@ export function createEditor({
     command: EditorCommand,
     options?: ExecuteOptions
   ) {
+    console.log(command.type);
     apply(command);
 
     if (options?.broadcast !== false) {

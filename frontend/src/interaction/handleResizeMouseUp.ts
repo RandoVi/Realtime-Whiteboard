@@ -27,8 +27,8 @@ export function handleResizeMouseUp({
   }
 
   editor.execute({
-    type: "updateShape",
-    shapeId: shape.id,
+    type: "updateBoardObject",
+    boardObjectId: shape.id,
     updates: {
       x: shape.x,
       y: shape.y,

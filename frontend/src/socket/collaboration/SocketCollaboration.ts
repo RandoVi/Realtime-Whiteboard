@@ -24,6 +24,9 @@ export class SocketCollaboration implements Collaboration {
         this.socket.on(
             SOCKET_EVENTS.COMMAND,
             (message: NetworkCommand) => {
+                if (message.clientId === clientId) {
+                    return;
+                }
                 this.commandHandler?.(
                     message.command
                 );
