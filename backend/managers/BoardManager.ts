@@ -16,17 +16,17 @@ export class BoardManager {
         if (Array.isArray(changes.boardObjects)) {
         for (const boardObjectUpdate of changes.boardObjects) {
             // Skip invalid updates that lack an ID
-            if (!boardObjectUpdate._id) continue;
+            if (!boardObjectUpdate.id) continue;
 
             // Apply each shape update to the ObjectManager individually
-            this.objects.update(boardObjectUpdate._id, boardObjectUpdate);
+            this.objects.update(boardObjectUpdate.id, boardObjectUpdate);
         }
         }
     }
 
     toPersistence() {
         return {
-        _id: this.id,
+        id: this.id,
         ownerId: this.ownerId,
         objects: this.objects.toJSON(),
         };

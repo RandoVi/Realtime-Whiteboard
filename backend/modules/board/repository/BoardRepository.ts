@@ -13,7 +13,7 @@ export class BoardRepository {
 
   async create(id: string, ownerId: string): Promise<BoardDocument> {
     const board = new this.boardModel({
-      _id: id, // Custom id instead of default
+      id: id, // double id for simplicity for now
       ownerId,
     });
     return board.save();
@@ -32,7 +32,7 @@ export class BoardRepository {
 
       return {
         updateOne: {
-          filter: { _id: data._id },
+          filter: { id: data.id },
           
           update: { 
             $set: {
@@ -85,7 +85,7 @@ export class BoardRepository {
     // Try updating shape in-place first matching array element by id
     const updatedBoard = await this.boardModel
       .findOneAndUpdate(
-        { _id: boardId, 'shapes.id': shape.id },
+        { id: boardId, 'shapes.id': shape.id },
         {
           $set: { 'shapes.$': shape },
           $inc: { version: 1 },

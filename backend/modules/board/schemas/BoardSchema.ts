@@ -9,7 +9,7 @@ export type BoardDocument = HydratedDocument<Board>;
 export class Board {
 
   @Prop({ required: true })
-  _id!: string;
+  id!: string;
 
   @Prop({ required: true, index: true })
   ownerId!: string;
