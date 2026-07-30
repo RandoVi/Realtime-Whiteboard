@@ -1,26 +1,27 @@
-import { Shape } from "../models/shape";
+import { BoardObject } from "../modules/boardObjects/schemas/BoardObjectSchema";
+
 
 export class ObjectManager {
 
-    private readonly objects = new Map<string, Shape>();
+    private readonly objects = new Map<string, BoardObject>();
 
-    create(shape: Shape): Shape {
+    create(boardObject: BoardObject): BoardObject {
 
-        if (this.objects.has(shape.id)) {
-            throw new Error("Shape already exists");
+        if (this.objects.has(boardObject._id)) {
+            throw new Error("BoardObject already exists");
         }
 
-        this.objects.set(shape.id, shape);
+        this.objects.set(boardObject._id, boardObject);
 
-        return shape;
+        return boardObject;
     }
 
-    update(id: string, update: Partial<Shape>): Shape {
+    update(id: string, update: Partial<BoardObject>): BoardObject {
 
         const object = this.objects.get(id);
 
         if (!object) {
-            throw new Error("Shape not found");
+            throw new Error("BoardObject not found");
         }
 
         Object.assign(object, update);
@@ -34,18 +35,18 @@ export class ObjectManager {
         return this.objects.delete(id);
     }
 
-    get(id: string): Shape | undefined {
+    get(id: string): BoardObject | undefined {
         return this.objects.get(id);
     }
 
-    getAll(): Shape[] {
+    getAll(): BoardObject[] {
         return [...this.objects.values()];
     }
 
     clear(): void {
         this.objects.clear();
     }
-    toJSON(): Shape[] {
+    toJSON(): BoardObject[] {
         return Array.from(this.objects.values());
     }
 }

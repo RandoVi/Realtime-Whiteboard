@@ -13,13 +13,13 @@ export class BoardManager {
     ) {}
 
     applyUpdate(changes: BoardUpdateDTO): void {
-        if (Array.isArray(changes.shapes)) {
-        for (const shapeUpdate of changes.shapes) {
+        if (Array.isArray(changes.boardObjects)) {
+        for (const boardObjectUpdate of changes.boardObjects) {
             // Skip invalid updates that lack an ID
-            if (!shapeUpdate.id) continue;
+            if (!boardObjectUpdate._id) continue;
 
             // Apply each shape update to the ObjectManager individually
-            this.objects.update(shapeUpdate.id, shapeUpdate);
+            this.objects.update(boardObjectUpdate._id, boardObjectUpdate);
         }
         }
     }
