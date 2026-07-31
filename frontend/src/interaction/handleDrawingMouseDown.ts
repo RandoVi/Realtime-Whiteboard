@@ -10,7 +10,7 @@ type Args = {
   world: Point
   interactionRef: MutableRefObject<Interaction>
 }
-
+// Handles the mouse down event when starting to draw a shape
 export function handleDrawingMouseDown({
   tool,
   world,

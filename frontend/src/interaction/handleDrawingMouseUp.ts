@@ -7,7 +7,7 @@ type Args = {
   interactionRef: MutableRefObject<Interaction>
   editor: Editor
 }
-
+// Handles the mouse up event when drawing a shape
 export function handleDrawingMouseUp({
   interactionRef,
   editor

@@ -10,7 +10,7 @@ type Args = {
   camera: Camera
   interactionRef: MutableRefObject<Interaction>
 }
-
+// Handles the mouse down event for resizing a selected shape
 export function handleSelectionResizeMouseDown({
   selectedShape,
   pointer,

@@ -12,7 +12,7 @@ type Args = {
   getSelectedShape: () => Shape | undefined
 
 }
-
+// Handles the mouse up event for various interactions like drawing, moving, and resizing shapes
 export function handleMouseUp({
   interactionRef,
   getSelectedShape,

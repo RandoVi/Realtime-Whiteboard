@@ -1,6 +1,6 @@
 import type { Editor } from "../editor/Editor"
 import type { Interaction } from "../interaction/Interaction"
-import type { Shape } from "./Shape"
+
 import type { Tool } from "./Tool"
 import type { RefObject } from "react"
 import type { Document } from "../document/Document"
@@ -34,6 +34,7 @@ export type UseWhiteboardInputProps = {
   document: Document
   tool: Tool
   editor: Editor
+  presence: any
   setSelectedShapeId: React.Dispatch<
     React.SetStateAction<string | null>
   >

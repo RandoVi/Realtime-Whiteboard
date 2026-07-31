@@ -2,13 +2,13 @@ import type { Shape } from "../types/Shape";
 
 export type CreateShapeCommand = {
     type: "createBoardObject";
-    boardObject: Shape;
+    boardObject: Shape; //bcs object doesn't exist yet, we send the whole object
 };
 
 export type UpdateShapeCommand = {
     type: "updateBoardObject";
     boardObjectId: string;
-    updates: Partial<Shape>;
+    updates: Partial<Shape>; //Partial object.
 };
 
 export type DeleteShapeCommand = {

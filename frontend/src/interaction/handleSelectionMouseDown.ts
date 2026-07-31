@@ -21,7 +21,7 @@ type Args = {
   interactionRef: MutableRefObject<Interaction>
   requestRender: () => void
 }
-
+// Handles the mouse down event for selecting, moving, or resizing shapes on the whiteboard
 export function handleSelectionMouseDown({
   pointer,
   world,
@@ -32,7 +32,7 @@ export function handleSelectionMouseDown({
   interactionRef,
   requestRender,
 }: Args): boolean {
-
+  // Check if the user is trying to resize the selected shape
   if (
     handleSelectionResizeMouseDown({
       selectedShape: getSelectedShape(),
@@ -48,7 +48,7 @@ export function handleSelectionMouseDown({
     .slice()
     .reverse()
     .find(shape => hitTestShape(world, shape))
-
+  // If the user clicked on a shape, select it and start moving it
   if (
     handleSelectionMoveMouseDown({
       clickedShape,
@@ -60,7 +60,7 @@ export function handleSelectionMouseDown({
   ) {
     return true
   }
-
+  // If the user clicked on an empty area, clear the selection
   handleSelectionClearMouseDown({
     selectShape,
     requestRender,

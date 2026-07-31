@@ -6,19 +6,22 @@ import type { Interaction } from "./Interaction"
 
 import type { Shape } from "../types/Shape"
 import type { Editor } from "../editor/Editor"
+import type { Presence } from "../socket/preview/Presence"
 
 type Args = {
   world: Point
   interactionRef: MutableRefObject<Interaction>
   getSelectedShape: () => Shape | undefined
   editor: Editor
+  presence: Presence
 }
-
+// Handles the mouse move event for a shape that is being moved
 export function handleMovingShapeMouseMove({
   world,
   interactionRef,
   getSelectedShape,
   editor,
+  presence,
 }: Args) {
 
   const interaction = interactionRef.current
@@ -44,6 +47,7 @@ export function handleMovingShapeMouseMove({
     interaction.moved = true;
   }
 
+  // Update the position of the shape based on the mouse movement
   editor.execute(
     {
       type: "updateBoardObject",
@@ -61,6 +65,16 @@ export function handleMovingShapeMouseMove({
     }
 
   );
+  // Send the updated position to other clients for preview
+  presence.send({
+    type: "objectPreview",
+    previewType: "update",
+    boardObjectId: boardObject.id,
+    updates: {
+      x: interaction.original.x + dx,
+      y: interaction.original.y + dy,
+    }
+  });
 
 
   return true

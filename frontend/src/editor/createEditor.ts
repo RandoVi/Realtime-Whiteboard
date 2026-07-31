@@ -80,6 +80,7 @@ export function createEditor({
     });
   }
 
+  // Bind a property of the selected shape to an input field
   function bind<K extends keyof Shape>(
     property: K,
     transform?: (value: string) => Shape[K]

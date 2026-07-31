@@ -5,7 +5,7 @@ type Args = {
   getSelectedShapeId: () => string | null
   editor: Editor
 }
-
+// Handles key down events for the whiteboard application, including toggling coordinate display and deleting selected shapes
 export function handleKeyDown({
   setShowCoordinates,
   getSelectedShapeId,

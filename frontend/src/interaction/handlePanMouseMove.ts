@@ -8,7 +8,7 @@ type Args = {
   interactionRef: MutableRefObject<Interaction>
   requestRender: () => void
 }
-
+// Handle the mouse move event when panning the canvas
 export function handlePanMouseMove({
   pointer,
   cameraRef,

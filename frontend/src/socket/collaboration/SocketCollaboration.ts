@@ -1,32 +1,27 @@
 import type { Collaboration } from "./Collaboration";
 import type { EditorCommand } from "../../editor/EditorCommand";
-import { io, Socket } from "socket.io-client";
 import { clientId } from "../../network/client";
 import { SOCKET_EVENTS } from "../../network/events";
 import type { NetworkCommand } from "../../network/NetworkCommand";
 import { getBoardId } from "../../network/board";
 import type { BoardStateDTO } from "./BoardStateDTO";
+import { socket } from "../SocketClient";
 
 
-
+// Implements the Collaboration interface using WebSocket for real-time collaboration
+// when creating and joining boards, as well as sending and receiving editor commands.
+// This excludes preview functionality, which is handled separately in the SocketPresence class.
 export class SocketCollaboration implements Collaboration {
-    private socket: Socket;
 
     private commandHandler?:
         (command: EditorCommand) => void;
 
     constructor() {
-        this.socket = io("http://localhost:3000", {
-            withCredentials: true,
-            transports: ["websocket"],
-        });
 
-        this.socket.on(
+
+     socket.on(
             SOCKET_EVENTS.COMMAND,
             (message: NetworkCommand) => {
-                if (message.clientId === clientId) {
-                    return;
-                }
                 this.commandHandler?.(
                     message.command
                 );
@@ -38,14 +33,14 @@ export class SocketCollaboration implements Collaboration {
         callback: (boardId: string) => void
     ): void {
 
-        this.socket.emit(
+       socket.emit(
             SOCKET_EVENTS.BOARD_COMMAND,
             {
                 type: "CREATE"
             }
         );
 
-        this.socket.once(
+        socket.once(
             "created",
             (data: {
                 boardId: string
@@ -61,7 +56,7 @@ export class SocketCollaboration implements Collaboration {
         callback: (boardState: BoardStateDTO) => void
     ): void {
 
-        this.socket.emit(
+        socket.emit(
             "boardCommand",
             {
                 type: "JOIN",
@@ -73,7 +68,7 @@ export class SocketCollaboration implements Collaboration {
             }
         );
 
-        this.socket.once(
+        socket.once(
             "board-state",
             (boardState: BoardStateDTO) => {
                 callback(boardState);
@@ -90,7 +85,7 @@ export class SocketCollaboration implements Collaboration {
             command,
         };
 
-        this.socket.emit(
+        socket.emit(
             SOCKET_EVENTS.COMMAND,
             message
         );
