@@ -3,21 +3,27 @@ import type { Interaction } from '../interaction/Interaction'
 import type { Shape } from '../types/Shape'
 import { renderRectangle } from './RenderRectangle'
 
-export type PreviewPosition = {
-  x: number;
-  y: number;
-};
+export type PreviewData =
+  | {
+    type: "update";
+    shapeId: string;
+    updates: Partial<Shape>;
+  }
+  | {
+    type: "create";
+    shape: Shape;
+  };
 
 export function renderShapes(
   context: CanvasRenderingContext2D,
   shapes: Shape[],
   camera: Camera,
   interaction: Interaction,
-  remotePreviews: Map<string, PreviewPosition>
+  remotePreviews: Map<string, PreviewData>
 ) {
   for (const shape of shapes) {
     if (remotePreviews.has(shape.id)) {
-        continue;
+      continue;
     }
 
     renderShape(context, shape, camera)
@@ -31,24 +37,38 @@ export function renderShapes(
     )
   }
 
-  for (const [id, position] of remotePreviews) {
+  for (const preview of remotePreviews.values()) {
 
-    const shape = shapes.find(
-      shape => shape.id === id
-    );
+    if (preview.type === "create") {
 
-    if (!shape) continue;
+      renderShape(
+        context,
+        preview.shape,
+        camera
+      );
+
+      continue;
+    }
 
 
-    renderShape(
-      context,
-      {
-        ...shape,
-        x: position.x,
-        y: position.y,
-      },
-      camera
-    );
+    if (preview.type === "update") {
+
+      const shape = shapes.find(
+        shape => shape.id === preview.shapeId
+      );
+
+      if (!shape) continue;
+
+
+      renderShape(
+        context,
+        {
+          ...shape,
+          ...preview.updates,
+        },
+        camera
+      );
+    }
   }
 }
 

@@ -9,7 +9,7 @@ type Args = {
   camera: Camera
   canvas: HTMLCanvasElement
 }
-
+// Handles the mouse move event when a shape is selected, updating the cursor based on the selection handle
 export function handleSelectionMouseMove({
   shape,
   pointer,

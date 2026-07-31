@@ -1,6 +1,6 @@
 import type { MutableRefObject } from "react"
 import type { Shape } from "../types/Shape"
-import type { Camera, Point } from "../types/Types"
+import type { Point } from "../types/Types"
 import type { Interaction } from "./Interaction"
 
 type Args = {
@@ -10,7 +10,7 @@ type Args = {
   selectShape: (id: string | null) => void
   requestRender: () => void
 }
-
+// Handles the mouse down event when moving a selected shape
 export function handleSelectionMoveMouseDown({
   clickedShape,
   world,

@@ -8,7 +8,7 @@ type Args = {
   getSelectedShape: () => Shape | undefined
   editor: Editor;
 }
-
+// Handles the mouse up event for resizing a shape
 export function handleResizeMouseUp({
   interactionRef,
   getSelectedShape,
@@ -25,7 +25,7 @@ export function handleResizeMouseUp({
   if (!shape) {
     return false;
   }
-
+  // Finalize the resize operation and update the shape's size and position in the editor
   editor.execute({
     type: "updateBoardObject",
     boardObjectId: shape.id,
@@ -36,7 +36,7 @@ export function handleResizeMouseUp({
       height: shape.height,
     },
   });
-
+  // Reset the interaction state to idle after resizing is complete
   interactionRef.current = {
     type: "idle",
   };

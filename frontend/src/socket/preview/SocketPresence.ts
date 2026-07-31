@@ -1,4 +1,3 @@
-import { io, Socket } from "socket.io-client";
 import { clientId } from "../../network/client";
 import { boardId } from "../../network/board";
 import type { Presence } from "./Presence";

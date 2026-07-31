@@ -16,7 +16,7 @@ import { setBoardId as setNetworkBoardId } from "../network/board";
 import { SocketCollaboration } from "../socket/collaboration/SocketCollaboration";
 import { BoardLobbyModal, type LobbyState } from '../lobby/BoardLobbyModal'
 import { SocketPresence } from '../socket/preview/SocketPresence'
-import type {PreviewPosition} from "../render/RenderShapes";
+import type { PreviewData } from "../render/RenderShapes";
 
 function Whiteboard() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
@@ -27,8 +27,8 @@ function Whiteboard() {
   })
 
   const remotePreviews = useRef(
-    new Map<string, PreviewPosition>()
-);
+    new Map<string, PreviewData>()
+  );
 
   const viewportRef = useRef({ width: 0, height: 0, dpr: 1 }) // dpr = device pixel ratio
   const resizeInitializedRef = useRef(false)
@@ -238,27 +238,47 @@ function Whiteboard() {
 
   useEffect(() => {
     presence.onCommand(
-    command => {
+      command => {
 
-        switch(command.type){
+        switch (command.type) {
 
-            case "moveObjectPreview":
+          case "objectPreview":
 
-                remotePreviews.current.set(
-                    command.boardObjectId,
-                    {
-                        x: command.x,
-                        y: command.y,
-                    }
-                );
+            if (
+              command.previewType === "create" &&
+              command.boardObject
+            ) {
 
-                requestRender();
+              remotePreviews.current.set(
+                command.boardObject.id,
+                {
+                  type: "create",
+                  shape: command.boardObject,
+                }
+              );
 
-                break;
+            }
+
+            if (command.previewType === "update") {
+
+              remotePreviews.current.set(
+                command.boardObjectId,
+                {
+                  type: "update",
+                  shapeId: command.boardObjectId,
+                  updates: command.updates,
+                }
+              );
+
+            }
+
+            requestRender();
+
+            break;
         }
 
-    }
-);
+      }
+    );
   }, [presence]);
 
   const handleJoin = () => {

@@ -15,7 +15,7 @@ type Args = {
   editor: Editor
   presence: Presence
 }
-
+// Handles the mouse move event for a shape that is being moved
 export function handleMovingShapeMouseMove({
   world,
   interactionRef,
@@ -47,6 +47,7 @@ export function handleMovingShapeMouseMove({
     interaction.moved = true;
   }
 
+  // Update the position of the shape based on the mouse movement
   editor.execute(
     {
       type: "updateBoardObject",
@@ -64,12 +65,15 @@ export function handleMovingShapeMouseMove({
     }
 
   );
-
+  // Send the updated position to other clients for preview
   presence.send({
-    type: "moveObjectPreview",
+    type: "objectPreview",
+    previewType: "update",
     boardObjectId: boardObject.id,
-    x: interaction.original.x + dx,
-    y: interaction.original.y + dy,
+    updates: {
+      x: interaction.original.x + dx,
+      y: interaction.original.y + dy,
+    }
   });
 
 

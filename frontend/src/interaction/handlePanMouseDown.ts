@@ -7,7 +7,7 @@ type Args = {
   interactionRef: MutableRefObject<Interaction>
   canvas: HTMLCanvasElement
 }
-
+// Handle the mouse down event when starting to pan the canvas
 export function handlePanMouseDown({
   pointer,
   interactionRef,

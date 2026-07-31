@@ -18,7 +18,6 @@ import { screenToWorld } from '../camera/Camera'
 
 export function useWhiteboardInput({
   cameraRef,
-  viewportRef,
   requestRender,
   document,
   tool,
@@ -106,6 +105,7 @@ export function useWhiteboardInput({
         interactionRef,
         getSelectedShape,
         editor,
+        presence,
       })
       ) {
         return
@@ -116,6 +116,7 @@ export function useWhiteboardInput({
         world,
         interactionRef,
         requestRender,
+        presence,
       })
       ) {
         return
