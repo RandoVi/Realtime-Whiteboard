@@ -105,7 +105,7 @@ export class BoardGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
                         userId: data.user.id,
                         username: data.user.username
                     })
-                    console.log("User joined " + data.user.username + " the board: " + data.id)
+                    console.log("User " + data.user.username + " joined  the board: " + data.id)
                 }
                 break;
             case BoardCommand.LEAVE:
@@ -132,7 +132,7 @@ export class BoardGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
                         userId: data.user.id,
                         username: data.user.username
                     })
-                    console.log("User left " + data.user.username + " the board: " + data.id)
+                    console.log("User " + data.user.username + " left  the board: " + data.id)
                 }
                 break;
             case BoardCommand.GET: {
@@ -204,7 +204,7 @@ export class BoardGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
                 const board = this.boards.getBoard(data.boardId);
                 board!.objects.create(data.command.boardObject);
                 socket.broadcast.to(board!.id).emit("boardObjectCommand", data);
-                console.log("Object created successfully")
+                console.log("Object created successfully - " + data.command.boardObject.id);
                 break
             }
             case "updateBoardObject": {
@@ -217,7 +217,7 @@ export class BoardGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
                 const board = this.boards.getBoard(data.boardId);
                 board!.objects.update(data.command.boardObjectId, data.command.updates);
                 socket.broadcast.to(board!.id).emit("boardObjectCommand", data);
-                console.log("Object updated successfully")
+                console.log("Object updated successfully - " + data.command.boardObjectId)
                 break
             }
             case "deleteBoardObject": {
@@ -230,7 +230,7 @@ export class BoardGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
                 const board = this.boards.getBoard(data.boardId);
                 board!.objects.delete(data.command.boardObjectId);
                 socket.broadcast.to(board!.id).emit("boardObjectCommand", data);
-                console.log("Object deleted")
+                console.log("Object deleted - " + data.command.boardObjectId)
                 break
             }
             default:
