@@ -2,13 +2,14 @@ import type { Editor } from "../editor/Editor"
 
 type Args = {
   setShowCoordinates: React.Dispatch<React.SetStateAction<boolean>>
-  getSelectedShapeId: () => string | null
+  getSelectedObjectId: () => string | null
   editor: Editor
 }
-// Handles key down events for the whiteboard application, including toggling coordinate display and deleting selected shapes
+// Handles key down events for the whiteboard application, including toggling 
+// coordinate display and deleting selected objects
 export function handleKeyDown({
   setShowCoordinates,
-  getSelectedShapeId,
+  getSelectedObjectId,
   editor,
 }: Args) {
   return (event: KeyboardEvent) => {
@@ -24,7 +25,7 @@ export function handleKeyDown({
       event.key === "Backspace"
     ) {
 
-      const boardObjectId = getSelectedShapeId()
+      const boardObjectId = getSelectedObjectId()
 
       if (!boardObjectId) {
         return

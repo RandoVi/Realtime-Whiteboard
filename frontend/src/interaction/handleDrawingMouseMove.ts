@@ -2,7 +2,7 @@ import type { MutableRefObject } from "react"
 import type { Point } from "../types/Types"
 import type { Interaction } from "./Interaction"
 
-import { updatePreviewShape } from "../shapes/updatePreviewShape"
+import { updatePreviewObject } from "../objects/updatePreviewObject"
 import type { Presence } from "../socket/preview/Presence"
 
 type Args = {
@@ -11,25 +11,25 @@ type Args = {
   requestRender: () => void
   presence: Presence
 }
-// Handles the mouse move event when drawing a shape
+// Handles the mouse move event when drawing a object
 export function handleDrawingMouseMove({
   world,
   interactionRef,
   requestRender,
   presence,
 }: Args): boolean {
-  if (interactionRef.current.type !== "drawingShape") {
+  if (interactionRef.current.type !== "drawingObject") {
     return false
   }
 
   const interaction = interactionRef.current
-  // Update the preview shape based on the current mouse position
-  updatePreviewShape(
+  // Update the preview object based on the current mouse position
+  updatePreviewObject(
     interaction.preview,
     interaction.start,
     world,
   )
-  // Send the updated preview shape to other clients
+  // Send the updated preview object to other clients
   presence.send({
     type: "objectPreview",
     previewType: "create",

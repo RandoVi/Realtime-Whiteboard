@@ -1,22 +1,22 @@
-import type { Shape } from "../types/Shape";
+import type { Object } from "../types/Object";
 
-export type CreateShapeCommand = {
+export type CreateObjectCommand = {
     type: "createBoardObject";
-    boardObject: Shape; //bcs object doesn't exist yet, we send the whole object
+    boardObject: Object; //bcs object doesn't exist yet, we send the whole object
 };
 
-export type UpdateShapeCommand = {
+export type UpdateObjectCommand = {
     type: "updateBoardObject";
     boardObjectId: string;
-    updates: Partial<Shape>; //Partial object.
+    updates: Partial<Object>; //Partial object.
 };
 
-export type DeleteShapeCommand = {
+export type DeleteObjectCommand = {
     type: "deleteBoardObject";
     boardObjectId: string;
 };
 
 export type EditorCommand =
-    | CreateShapeCommand
-    | UpdateShapeCommand
-    | DeleteShapeCommand;
+    | CreateObjectCommand
+    | UpdateObjectCommand
+    | DeleteObjectCommand;

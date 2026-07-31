@@ -1,7 +1,6 @@
-import type { Camera, Point } from '../types/Types'
-import { getResizeHandles, type ResizeHandlePosition } from '../selection/getResizeHandles'
-import { getSelectionBounds } from '../selection/getSelectionBounds'
-import type { Rectangle } from './Rectangle'
+import type { Point } from '../types/Types'
+import type { ResizeHandlePosition } from '../selection/getResizeHandles'
+
 import { HANDLE_SIZE, type ResizeHandle } from '../types/selection'
 
 export function hitTestHandle(

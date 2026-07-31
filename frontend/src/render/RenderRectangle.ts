@@ -1,5 +1,5 @@
 import type { Camera } from '../types/Types'
-import type { Rectangle } from '../shapes/Rectangle'
+import type { Rectangle } from '../objects/Rectangle'
 
 export function renderRectangle(
   context: CanvasRenderingContext2D,

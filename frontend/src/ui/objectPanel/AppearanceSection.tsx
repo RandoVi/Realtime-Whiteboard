@@ -1,14 +1,14 @@
-import type { Shape } from "../../types/Shape";
+import type { Object } from "../../types/Object";
 import type { Editor } from "../../editor/Editor";
 import { PropertyRow } from "./PropertyRow";
 
 type Props = {
-  shape: Shape;
+  object: Object;
   editor: Editor;
 };
 
 export function AppearanceSection({
-  shape,
+  object,
   editor,
 }: Props) {
   return (
@@ -19,7 +19,7 @@ export function AppearanceSection({
       <PropertyRow label="Fill">
         <input
           type="color"
-          value={shape.fill}
+          value={object.fill}
           onChange={editor.bind("fill")}
         />
       </PropertyRow>
@@ -27,7 +27,7 @@ export function AppearanceSection({
       <PropertyRow label="Stroke">
         <input
           type="color"
-          value={shape.stroke}
+          value={object.stroke}
           onChange={editor.bind("stroke")}
         />
       </PropertyRow>

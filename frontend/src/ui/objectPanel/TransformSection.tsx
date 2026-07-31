@@ -1,14 +1,14 @@
-import type { Shape } from "../../types/Shape";
+import type { Object } from "../../types/Object";
 import type { Editor } from "../../editor/Editor";
 import { PropertyRow } from "./PropertyRow";
 
 type Props = {
-    shape: Shape;
+    object: Object;
     editor: Editor;
 };
 
 export function TransformSection({
-    shape,
+    object,
     editor,
 }: Props) {
     return (
@@ -18,7 +18,7 @@ export function TransformSection({
             <PropertyRow label="X">
                 <input
                     type="number"
-                    value={shape.x}
+                    value={object.x}
                     onChange={editor.bind(
                         "x",
                         Number
@@ -29,7 +29,7 @@ export function TransformSection({
             <PropertyRow label="Y">
                 <input
                     type="number"
-                    value={shape.y}
+                    value={object.y}
                     onChange={editor.bind(
                         "y",
                         Number
@@ -40,7 +40,7 @@ export function TransformSection({
             <PropertyRow label="Width">
                 <input
                     type="number"
-                    value={shape.width}
+                    value={object.width}
                     onChange={editor.bind(
                         "width",
                         Number
@@ -51,7 +51,7 @@ export function TransformSection({
             <PropertyRow label="Height">
                 <input
                     type="number"
-                    value={shape.height}
+                    value={object.height}
                     onChange={editor.bind(
                         "height",
                         Number

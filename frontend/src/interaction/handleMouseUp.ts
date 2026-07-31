@@ -1,21 +1,21 @@
 import type { MutableRefObject } from "react"
 import type { Interaction } from "./Interaction"
-import type { Shape } from "../types/Shape"
+import type { Object } from "../types/Object"
 import { handleDrawingMouseUp } from "./handleDrawingMouseUp"
 import { handleResizeMouseUp } from "./handleResizeMouseUp"
 import type { Editor } from "../editor/Editor"
-import { handleMovingShapeMouseUp } from "./handleMovingShapeMouseUp"
+import { handleMovingObjectMouseUp } from "./handleMovingObjectMouseUp"
 
 type Args = {
   interactionRef: MutableRefObject<Interaction>
   editor: Editor
-  getSelectedShape: () => Shape | undefined
+  getSelectedObject: () => Object | undefined
 
 }
-// Handles the mouse up event for various interactions like drawing, moving, and resizing shapes
+// Handles the mouse up event for various interactions like drawing, moving, and resizing objects
 export function handleMouseUp({
   interactionRef,
-  getSelectedShape,
+  getSelectedObject,
   editor,
 
 }: Args) {
@@ -30,9 +30,9 @@ export function handleMouseUp({
   }
 
   if (
-    handleMovingShapeMouseUp({
+    handleMovingObjectMouseUp({
       interactionRef,
-      getSelectedShape,
+      getSelectedObject,
       editor,
     })
   ) {
@@ -42,7 +42,7 @@ export function handleMouseUp({
   if (
     handleResizeMouseUp({
       interactionRef,
-      getSelectedShape,
+      getSelectedObject,
       editor,
     })
   ) {

@@ -1,15 +1,15 @@
 import type { MutableRefObject } from "react"
 import type { Interaction } from "./Interaction"
-import { resizeShape } from "../shapes/resizeShape"
+import { resizeObject } from "../objects/resizeObject"
 import type { Point } from "../types/Types"
-import type { Shape } from "../types/Shape"
+import type { Object } from "../types/Object"
 import type { Editor } from "../editor/Editor"
 import type { Presence } from "../socket/preview/Presence"
 
 type Args = {
     world: Point
     interactionRef: MutableRefObject<Interaction>
-    getSelectedShape: () => Shape | undefined
+    getSelectedObject: () => Object | undefined
     editor: Editor
     presence: Presence
 }
@@ -17,45 +17,45 @@ type Args = {
 export function handleResizeMouseMove({
     world,
     interactionRef,
-    getSelectedShape,
+    getSelectedObject,
     editor,
     presence,
 }: Args): boolean {
 
     if (
-        interactionRef.current.type !== "resizingShape"
+        interactionRef.current.type !== "resizingObject"
     ) {
         return false
     }
 
     const interaction = interactionRef.current
 
-    const boardObject = getSelectedShape()
-    // If there is a selected shape, resize it based on the mouse movement
+    const boardObject = getSelectedObject()
+    // If there is a selected object, resize it based on the mouse movement
     if (boardObject) {
 
-        const resizedShape = {
+        const resizedObject = {
             ...interaction.original,
         }
 
 
-        resizeShape(
-            resizedShape,
+        resizeObject(
+            resizedObject,
             interaction.original,
             interaction.handle,
             world
         )
 
-        // Update the shape's size and position in the editor
+        // Update the object's size and position in the editor
         editor.execute(
             {
                 type: "updateBoardObject",
                 boardObjectId: boardObject.id,
                 updates: {
-                    x: resizedShape.x,
-                    y: resizedShape.y,
-                    width: resizedShape.width,
-                    height: resizedShape.height,
+                    x: resizedObject.x,
+                    y: resizedObject.y,
+                    width: resizedObject.width,
+                    height: resizedObject.height,
                 },
             },
             {
@@ -68,10 +68,10 @@ export function handleResizeMouseMove({
             previewType: "update",
             boardObjectId: boardObject.id,
             updates: {
-                x: resizedShape.x,
-                y: resizedShape.y,
-                width: resizedShape.width,
-                height: resizedShape.height,
+                x: resizedObject.x,
+                y: resizedObject.y,
+                width: resizedObject.width,
+                height: resizedObject.height,
             },
         });
     }

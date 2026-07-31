@@ -1,22 +1,22 @@
 import type { MutableRefObject } from "react"
 import type { Interaction } from "./Interaction"
-import { normalizeShape } from "../shapes/normalizeShape"
+import { normalizeObject } from "../objects/normalizeObject"
 import type { Editor } from "../editor/Editor"
 
 type Args = {
   interactionRef: MutableRefObject<Interaction>
   editor: Editor
 }
-// Handles the mouse up event when drawing a shape
+// Handles the mouse up event when drawing a object
 export function handleDrawingMouseUp({
   interactionRef,
   editor
 }: Args): boolean {
-  if (interactionRef.current.type !== "drawingShape") {
+  if (interactionRef.current.type !== "drawingObject") {
     return false
   }
 
-  const boardObject = normalizeShape({
+  const boardObject = normalizeObject({
     ...interactionRef.current.preview,
   })
 

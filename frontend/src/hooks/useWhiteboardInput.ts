@@ -5,14 +5,14 @@ import { handleDrawingMouseDown } from '../interaction/handleDrawingMouseDown'
 import { handleDrawingMouseMove } from '../interaction/handleDrawingMouseMove'
 import { handleKeyDown } from '../interaction/handleKeyDown'
 import { handleMouseUp } from '../interaction/handleMouseUp'
-import { handleMovingShapeMouseMove } from '../interaction/handleMovingShapeMouseMove'
+import { handleMovingObjectMouseMove } from '../interaction/handleMovingObjectMouseMove'
 import { handlePanMouseDown } from '../interaction/handlePanMouseDown'
 import { handlePanMouseMove } from '../interaction/handlePanMouseMove'
 import { handleResizeMouseMove } from '../interaction/handleResizeMouseMove'
 import { handleSelectionMouseDown } from '../interaction/handleSelectionMouseDown'
 import { handleSelectionMouseMove } from '../interaction/handleSelectionMouseMove'
 import { handleZoom } from '../interaction/handleZoom'
-import { getShapeById } from '../shapes/getShapeById'
+import { getObjectById } from '../objects/getObjectById'
 import type { Point } from '../types/Types'
 import { screenToWorld } from '../camera/Camera'
 
@@ -24,8 +24,8 @@ export function useWhiteboardInput({
   editor,
   presence,
 
-  setSelectedShapeId,
-  selectedShapeIdRef,
+  setSelectedObjectId,
+  selectedObjectIdRef,
 }: UseWhiteboardInputProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
 
@@ -41,19 +41,19 @@ export function useWhiteboardInput({
     canvasRef.current = canvas
   }
 
-  const selectShape = (id: string | null) => {
-    selectedShapeIdRef.current = id
-    setSelectedShapeId(id)
+  const selectObject = (id: string | null) => {
+    selectedObjectIdRef.current = id
+    setSelectedObjectId(id)
   }
 
-  const getSelectedShape = () => {
-    if (!selectedShapeIdRef.current) {
+  const getSelectedObject = () => {
+    if (!selectedObjectIdRef.current) {
       return undefined
     }
 
-    return getShapeById(
-      document.shapesRef.current,
-      selectedShapeIdRef.current
+    return getObjectById(
+      document.objectsRef.current,
+      selectedObjectIdRef.current
     )
   }
 
@@ -65,7 +65,7 @@ export function useWhiteboardInput({
 
     const keyDownHandler = handleKeyDown({
       setShowCoordinates,
-      getSelectedShapeId: () => selectedShapeIdRef.current,
+      getSelectedObjectId: () => selectedObjectIdRef.current,
       editor,
     })
 
@@ -90,7 +90,7 @@ export function useWhiteboardInput({
 
       canvas.style.cursor = "grab"
     }
-    // Handle mouse move events for dragging, drawing, and moving shapes
+    // Handle mouse move events for dragging, drawing, and moving objects
     const handleMouseMove = (event: MouseEvent) => {
       const rect = canvas.getBoundingClientRect()
       // Update the mouse position in screen coordinates, aka screen space
@@ -103,7 +103,7 @@ export function useWhiteboardInput({
       if (handleResizeMouseMove({
         world,
         interactionRef,
-        getSelectedShape,
+        getSelectedObject,
         editor,
         presence,
       })
@@ -111,7 +111,7 @@ export function useWhiteboardInput({
         return
       }
 
-      // Update the preview shape if drawing a rectangle
+      // Update the preview object if drawing a rectangle
       if (handleDrawingMouseMove({
         world,
         interactionRef,
@@ -121,11 +121,11 @@ export function useWhiteboardInput({
       ) {
         return
       }
-      // Update the position of the shape being moved if moving a shape
-      if (handleMovingShapeMouseMove({
+      // Update the position of the object being moved if moving an object
+      if (handleMovingObjectMouseMove({
         world,
         interactionRef,
-        getSelectedShape,
+        getSelectedObject,
         editor,
         presence,
       })
@@ -137,7 +137,7 @@ export function useWhiteboardInput({
 
       if (tool === 'select') {
         handleSelectionMouseMove({
-          shape: getSelectedShape(),
+          object: getSelectedObject(),
           pointer,
           camera: cameraRef.current,
           canvas,
@@ -156,7 +156,7 @@ export function useWhiteboardInput({
         setMouseWorld(screenToWorld(pointer, cameraRef.current))
       }
     }
-    // Handle mouse down events for drawing, moving, and selecting shapes
+    // Handle mouse down events for drawing, moving, and selecting objects
     const handleMouseDown = (event: MouseEvent) => {
       if (event.button !== 0) return
 
@@ -175,10 +175,10 @@ export function useWhiteboardInput({
         handleSelectionMouseDown({
           pointer,
           world,
-          shapes: document.shapesRef.current,
+          objects: document.objectsRef.current,
           camera: cameraRef.current,
-          getSelectedShape,
-          selectShape,
+          getSelectedObject,
+          selectObject,
           interactionRef,
           requestRender,
         })
@@ -211,7 +211,7 @@ export function useWhiteboardInput({
       handleMouseUp({
         interactionRef,
         editor,
-        getSelectedShape,
+        getSelectedObject,
       })
       endInteraction()
     }
@@ -237,7 +237,7 @@ export function useWhiteboardInput({
     cameraRef,
     requestRender,
     tool,
-    setSelectedShapeId,
+    setSelectedObjectId,
     editor,
     presence,
     document,

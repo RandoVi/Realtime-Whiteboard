@@ -1,12 +1,12 @@
 type Args = {
-  selectShape: (id: string | null) => void
+  selectObject: (id: string | null) => void
   requestRender: () => void
 }
-// Handles the mouse down event for clearing the selection of shapes on the whiteboard
+// Handles the mouse down event for clearing the selection of objects on the whiteboard
 export function handleSelectionClearMouseDown({
-  selectShape,
+  selectObject,
   requestRender,
 }: Args) {
-  selectShape(null)
+  selectObject(null)
   requestRender()
 }

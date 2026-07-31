@@ -1,39 +1,39 @@
 import type { MutableRefObject } from "react"
 import type { Interaction } from "./Interaction"
-import type { Shape } from "../types/Shape"
+import type { Object } from "../types/Object"
 import type { Editor } from "../editor/Editor"
 
 type Args = {
   interactionRef: MutableRefObject<Interaction>
-  getSelectedShape: () => Shape | undefined
+  getSelectedObject: () => Object | undefined
   editor: Editor;
 }
-// Handles the mouse up event for resizing a shape
+// Handles the mouse up event for resizing a object
 export function handleResizeMouseUp({
   interactionRef,
-  getSelectedShape,
+  getSelectedObject,
   editor,
 }: Args) {
 
   if (
-    interactionRef.current.type !== "resizingShape"
+    interactionRef.current.type !== "resizingObject"
   ) {
     return false
   }
-  const shape = getSelectedShape();
+  const object = getSelectedObject();
 
-  if (!shape) {
+  if (!object) {
     return false;
   }
-  // Finalize the resize operation and update the shape's size and position in the editor
+  // Finalize the resize operation and update the object's size and position in the editor
   editor.execute({
     type: "updateBoardObject",
-    boardObjectId: shape.id,
+    boardObjectId: object.id,
     updates: {
-      x: shape.x,
-      y: shape.y,
-      width: shape.width,
-      height: shape.height,
+      x: object.x,
+      y: object.y,
+      width: object.width,
+      height: object.height,
     },
   });
   // Reset the interaction state to idle after resizing is complete

@@ -1,5 +1,5 @@
 import type { Camera } from '../types/Types'
-import type { Shape } from '../types/Shape'
+import type { Object } from '../types/Object'
 import { HANDLE_SIZE } from '../types/selection'
 import { getResizeHandles } from '../selection/getResizeHandles'
 import { getSelectionBounds} from "../selection/getSelectionBounds"
@@ -7,13 +7,13 @@ import type { SelectionBounds } from '../selection/getSelectionBounds'
 
 export function renderSelection(
     context: CanvasRenderingContext2D,
-    shape: Shape,
+    object: Object,
     camera: Camera,
 ) {
 
-    const bounds = getSelectionBounds(shape)
+    const bounds = getSelectionBounds(object)
 
-    switch (shape.type) {
+    switch (object.type) {
         case 'rectangle':
             renderRectangleSelection(context, bounds, camera)
             break

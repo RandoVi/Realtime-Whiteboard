@@ -1,4 +1,4 @@
-import type { Rectangle } from "../shapes/Rectangle"
+import type { Rectangle } from "./Rectangle"
 
 export function normalizeRectangle(rect: Rectangle): Rectangle {
     let { x, y, width, height } = rect

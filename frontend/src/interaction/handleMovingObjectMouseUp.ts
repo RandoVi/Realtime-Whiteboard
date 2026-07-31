@@ -1,23 +1,23 @@
 import type { MutableRefObject } from "react";
 import type { Interaction } from "./Interaction";
-import type { Shape } from "../types/Shape";
+import type { Object } from "../types/Object";
 import type { Editor } from "../editor/Editor";
 
 type Args = {
     interactionRef: MutableRefObject<Interaction>;
-    getSelectedShape: () => Shape | undefined;
+    getSelectedObject: () => Object | undefined;
     editor: Editor;
 };
-// Handles the mouse up event for a shape that is being moved
-export function handleMovingShapeMouseUp({
+// Handles the mouse up event for an object that is being moved
+export function handleMovingObjectMouseUp({
     interactionRef,
-    getSelectedShape,
+    getSelectedObject,
     editor,
 }: Args): boolean {
 
 
 
-    if (interactionRef.current.type !== "movingShape") {
+    if (interactionRef.current.type !== "movingObject") {
         return false;
     }
 
@@ -31,7 +31,7 @@ export function handleMovingShapeMouseUp({
         return true;
     }
 
-    const boardObject = getSelectedShape();
+    const boardObject = getSelectedObject();
 
     if (!boardObject) {
         return false;

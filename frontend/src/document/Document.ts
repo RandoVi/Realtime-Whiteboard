@@ -1,11 +1,11 @@
 import type { MutableRefObject } from "react";
-import type { Shape } from "../types/Shape";
+import type { Object } from "../types/Object";
 
 
 export type Document = {
-    shapesRef: {
-        current: Shape[];
+    objectsRef: {
+        current: Object[];
     };
 
-    load(shapes: Shape[]): void;
+    load(objects: Object[]): void;
 };

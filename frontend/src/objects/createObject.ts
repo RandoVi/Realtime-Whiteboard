@@ -1,11 +1,11 @@
 import type { Point } from '../types/Types'
 import type { Tool } from '../types/Tool'
-import type { Shape } from '../types/Shape'
+import type { Object } from '../types/Object'
 
-export function createShape(
+export function createObject(
   tool: Tool,
   point: Point
-): Shape | null {
+): Object | null {
 
   switch (tool) {
     case "rectangle":

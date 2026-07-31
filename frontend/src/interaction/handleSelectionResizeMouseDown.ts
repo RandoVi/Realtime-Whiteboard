@@ -1,28 +1,28 @@
 import type { MutableRefObject } from "react"
-import type { Shape } from "../types/Shape"
+import type { Object } from "../types/Object"
 import type { Camera, Point } from "../types/Types"
 import { getSelectionHandle } from "../selection/getSelectionHandle"
 import type { Interaction } from "./Interaction"
 
 type Args = {
-  selectedShape: Shape | undefined
+  selectedObject: Object | undefined
   pointer: Point
   camera: Camera
   interactionRef: MutableRefObject<Interaction>
 }
-// Handles the mouse down event for resizing a selected shape
+// Handles the mouse down event for resizing a selected object
 export function handleSelectionResizeMouseDown({
-  selectedShape,
+  selectedObject,
   pointer,
   camera,
   interactionRef,
 }: Args): boolean {
-  if (!selectedShape) {
+  if (!selectedObject) {
     return false
   }
 
   const handle = getSelectionHandle(
-    selectedShape,
+    selectedObject,
     pointer,
     camera,
   )
@@ -32,9 +32,9 @@ export function handleSelectionResizeMouseDown({
   }
 
   interactionRef.current = {
-    type: "resizingShape",
-    shapeId: selectedShape.id,
-    original: { ...selectedShape },
+    type: "resizingObject",
+    objectId: selectedObject.id,
+    original: { ...selectedObject },
     handle,
   }
 

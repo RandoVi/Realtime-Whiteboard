@@ -1,18 +1,18 @@
-import type { Shape } from "../types/Shape"
+import type { Object } from "../types/Object"
 import type { ResizeHandle } from "../types/selection"
 import { resizeRectangle } from "./resizeRectangle"
 
-export function resizeShape(
-  shape: Shape,
-  original: Shape,
+export function resizeObject(
+  object: Object,
+  original: Object,
   handle: ResizeHandle,
   point: { x: number; y: number }
 ) {
-  switch (shape.type) {
+  switch (object.type) {
     case "rectangle":
       if (original.type === "rectangle") {
         resizeRectangle(
-          shape,
+          object,
           original,
           handle,
           point
@@ -22,7 +22,7 @@ export function resizeShape(
 
     default:
       console.warn(
-        `Resize not implemented for shape type: ${shape.type}`
+        `Resize not implemented for object type: ${object.type}`
       )
   }
 }

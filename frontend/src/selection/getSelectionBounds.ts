@@ -1,4 +1,4 @@
-import type { Shape } from "../types/Shape"
+import type { Object } from "../types/Object"
 import type { Point } from "../types/Types"
 
 export type SelectionBounds = {
@@ -13,27 +13,27 @@ export type SelectionBounds = {
   center: Point
 }
 
-// Returns the selection bounds for a given shape.
-export function getSelectionBounds(shape: Shape): SelectionBounds {
-  switch (shape.type) {
+// Returns the selection bounds for a given object.
+export function getSelectionBounds(object: Object): SelectionBounds {
+  switch (object.type) {
     case 'rectangle': {
       return {
-        left: shape.x,
-        top: shape.y,
-        right: shape.x + shape.width,
-        bottom: shape.y + shape.height,
+        left: object.x,
+        top: object.y,
+        right: object.x + object.width,
+        bottom: object.y + object.height,
 
-        width: shape.width,
-        height: shape.height,
+        width: object.width,
+        height: object.height,
 
         center: {
-          x: shape.x + shape.width / 2,
-          y: shape.y + shape.height / 2,
+          x: object.x + object.width / 2,
+          y: object.y + object.height / 2,
         },
       }
     }
 
     default:
-      throw new Error(`Unsupported shape type: ${shape.type}`)
+      throw new Error(`Unsupported object type: ${object.type}`)
   }
 }

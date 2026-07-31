@@ -1,36 +1,36 @@
 import type { Camera } from '../types/Types'
 import type { Interaction } from '../interaction/Interaction'
-import type { Shape } from '../types/Shape'
+import type { Object } from '../types/Object'
 import { renderRectangle } from './RenderRectangle'
 
 export type PreviewData =
   | {
     type: "update";
-    shapeId: string;
-    updates: Partial<Shape>;
+    objectId: string;
+    updates: Partial<Object>;
   }
   | {
     type: "create";
-    shape: Shape;
+    object: Object;
   };
 
-export function renderShapes(
+export function renderObjects(
   context: CanvasRenderingContext2D,
-  shapes: Shape[],
+  objects: Object[],
   camera: Camera,
   interaction: Interaction,
   remotePreviews: Map<string, PreviewData>
 ) {
-  for (const shape of shapes) {
-    if (remotePreviews.has(shape.id)) {
+  for (const object of objects) {
+    if (remotePreviews.has(object.id)) {
       continue;
     }
 
-    renderShape(context, shape, camera)
+    renderObject(context, object, camera)
   }
 
-  if (interaction.type === "drawingShape") {
-    renderShape(
+  if (interaction.type === "drawingObject") {
+    renderObject(
       context,
       interaction.preview,
       camera
@@ -41,9 +41,9 @@ export function renderShapes(
 
     if (preview.type === "create") {
 
-      renderShape(
+      renderObject(
         context,
-        preview.shape,
+        preview.object,
         camera
       );
 
@@ -53,17 +53,17 @@ export function renderShapes(
 
     if (preview.type === "update") {
 
-      const shape = shapes.find(
-        shape => shape.id === preview.shapeId
+      const object = objects.find(
+        object => object.id === preview.objectId
       );
 
-      if (!shape) continue;
+      if (!object) continue;
 
 
-      renderShape(
+      renderObject(
         context,
         {
-          ...shape,
+          ...object,
           ...preview.updates,
         },
         camera
@@ -72,17 +72,17 @@ export function renderShapes(
   }
 }
 
-function renderShape(
+function renderObject(
   context: CanvasRenderingContext2D,
-  shape: Shape,
+  object: Object,
   camera: Camera,
 ) {
-  switch (shape.type) {
+  switch (object.type) {
     case 'rectangle':
-      renderRectangle(context, shape, camera)
+      renderRectangle(context, object, camera)
       break
 
     default:
-      console.warn(`Unknown shape type: ${shape.type}`)
+      console.warn(`Unknown object type: ${object.type}`)
   }
 }

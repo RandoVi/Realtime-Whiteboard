@@ -1,20 +1,20 @@
-import type { Shape } from "../types/Shape"
+import type { Object } from "../types/Object"
 import type { Camera } from "../types/Types"
 import type { ResizeHandle } from "../types/selection"
 import { getResizeHandleAtPoint } from "./getResizeHandleAtPoint"
 
-export function getResizeHandleForShape(
-  shape: Shape,
+export function getResizeHandleForObject(
+  object: Object,
   point: {x:number, y:number},
   camera: Camera
 ): ResizeHandle | null {
 
-  if (shape.type !== "rectangle") {
+  if (object.type !== "rectangle") {
     return null
   }
 
   return getResizeHandleAtPoint(
-    shape,
+    object,
     point,
     camera
   )

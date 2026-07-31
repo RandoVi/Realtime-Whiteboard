@@ -4,33 +4,33 @@ import type { Point } from "../types/Types"
 import type { Interaction } from "./Interaction"
 
 
-import type { Shape } from "../types/Shape"
+import type { Object } from "../types/Object"
 import type { Editor } from "../editor/Editor"
 import type { Presence } from "../socket/preview/Presence"
 
 type Args = {
   world: Point
   interactionRef: MutableRefObject<Interaction>
-  getSelectedShape: () => Shape | undefined
+  getSelectedObject: () => Object | undefined
   editor: Editor
   presence: Presence
 }
-// Handles the mouse move event for a shape that is being moved
-export function handleMovingShapeMouseMove({
+// Handles the mouse move event for an object that is being moved
+export function handleMovingObjectMouseMove({
   world,
   interactionRef,
-  getSelectedShape,
+  getSelectedObject,
   editor,
   presence,
 }: Args) {
 
   const interaction = interactionRef.current
 
-  if (interaction.type !== "movingShape") {
+  if (interaction.type !== "movingObject") {
     return false
   }
 
-  const boardObject = getSelectedShape()
+  const boardObject = getSelectedObject()
 
   if (!boardObject) {
     return false

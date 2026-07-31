@@ -1,9 +1,9 @@
-import type {Shape} from '../types/Shape'
+import type {Object} from '../types/Object'
 import type {Point} from '../types/Types'
 
 
 //function to check if this world point is inside a shape
-export function hitTestShape(point: Point, shape: Shape): boolean {
+export function hitTestObject(point: Point, shape: Object): boolean {
     switch (shape.type) {
         case 'rectangle':
             return (

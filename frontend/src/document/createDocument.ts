@@ -1,20 +1,20 @@
-import type { Shape } from "../types/Shape";
+import type { Object } from "../types/Object";
 import type { Document } from "./Document";
 
 
 export function createDocument(
-    shapes: Shape[]
+    objects: Object[]
 ): Document {
 
-    const shapesRef = {
-        current: shapes,
+    const objectsRef = {
+        current: objects,
     };
 
     return {
-        shapesRef,
+        objectsRef,
 
-        load(shapes: Shape[]) {
-            shapesRef.current = shapes;
+        load(objects: Object[]) {
+            objectsRef.current = objects;
         },
     };
 }

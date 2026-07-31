@@ -1,41 +1,41 @@
 import type { MutableRefObject } from "react"
 import type { Camera, Point } from "../types/Types"
-import type { Shape } from "../types/Shape"
+import type { Object } from "../types/Object"
 import type { Interaction } from "./Interaction"
 
-import { hitTestShape } from "../shapes/hitTest"
+import { hitTestObject } from "../objects/hitTest"
 import { handleSelectionResizeMouseDown } from "./handleSelectionResizeMouseDown"
-import { handleSelectionMoveMouseDown } from "./handleSelectionMoveMouseDown"
+import { handleSelectionMoveMouseDown } from "../../../../handleSelectionMoveMouseDown"
 import { handleSelectionClearMouseDown } from "./handleSelectionClearMouseDown"
 
 type Args = {
   pointer: Point
   world: Point
 
-  shapes: Shape[]
+  objects: Object[]
   camera: Camera
 
-  getSelectedShape: () => Shape | undefined
-  selectShape: (id: string | null) => void
+  getSelectedObject: () => Object | undefined
+  selectObject: (id: string | null) => void
 
   interactionRef: MutableRefObject<Interaction>
   requestRender: () => void
 }
-// Handles the mouse down event for selecting, moving, or resizing shapes on the whiteboard
+// Handles the mouse down event for selecting, moving, or resizing objects on the whiteboard
 export function handleSelectionMouseDown({
   pointer,
   world,
-  shapes,
+  objects,
   camera,
-  getSelectedShape,
-  selectShape,
+  getSelectedObject,
+  selectObject,
   interactionRef,
   requestRender,
 }: Args): boolean {
-  // Check if the user is trying to resize the selected shape
+  // Check if the user is trying to resize the selected object
   if (
     handleSelectionResizeMouseDown({
-      selectedShape: getSelectedShape(),
+      selectedObject: getSelectedObject(),
       pointer,
       camera,
       interactionRef,
@@ -44,17 +44,17 @@ export function handleSelectionMouseDown({
     return true
   }
 
-  const clickedShape = shapes
+  const clickedObject = objects
     .slice()
     .reverse()
-    .find(shape => hitTestShape(world, shape))
-  // If the user clicked on a shape, select it and start moving it
+    .find(object => hitTestObject(world, object))
+  // If the user clicked on a object, select it and start moving it
   if (
     handleSelectionMoveMouseDown({
-      clickedShape,
+      clickedObject,
       world,
       interactionRef,
-      selectShape,
+      selectObject,
       requestRender,
     })
   ) {
@@ -62,7 +62,7 @@ export function handleSelectionMouseDown({
   }
   // If the user clicked on an empty area, clear the selection
   handleSelectionClearMouseDown({
-    selectShape,
+    selectObject,
     requestRender,
   })
 

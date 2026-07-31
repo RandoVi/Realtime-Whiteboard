@@ -1,6 +1,6 @@
-import type { Shape } from "../types/Shape"
+import type { Object } from "../types/Object"
 
-export function getSelectableShape(shape: Shape | undefined) {
+export function getSelectableShape(shape: Object | undefined) {
   if (!shape) return undefined
 
   switch (shape.type) {

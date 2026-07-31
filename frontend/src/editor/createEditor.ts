@@ -1,22 +1,21 @@
 import type { MutableRefObject } from "react";
-import type { Shape } from "../types/Shape";
+import type { Object } from "../types/Object";
 import type { Editor } from "./Editor";
-import { getShapeById } from "../shapes/getShapeById";
+import { getObjectById } from "../objects/getObjectById";
 import type { ChangeEvent } from "react";
-import { updateShape } from "./commands/updateShape";
-import { deleteShape } from "./commands/deleteShape";
-// import { duplicateShape } from "./commands/duplicateShape";
+import { updateObject } from "./commands/updateObject";
+import { deleteObject } from "./commands/deleteObject";
 import type { EditorCommand } from "./EditorCommand";
-import { createShape } from "./commands/createShape";
+import { createObject } from "./commands/createObject";
 import type { Document } from "../document/Document";
 import type { Collaboration } from "../socket/collaboration/Collaboration";
 import type { ExecuteOptions } from "./Editor";
 
 type Args = {
   document: Document;
-  selectedShapeIdRef: MutableRefObject<string | null>;
+  selectedObjectIdRef: MutableRefObject<string | null>;
 
-  setSelectedShapeId: (id: string | null) => void;
+  setSelectedObjectId: (id: string | null) => void;
 
   requestRender: () => void;
 
@@ -27,51 +26,51 @@ type Args = {
 
 export function createEditor({
   document,
-  selectedShapeIdRef,
-  setSelectedShapeId,
+  selectedObjectIdRef,
+  setSelectedObjectId,
   requestRender,
   collaboration,
 }: Args): Editor {
-  function getSelectedShape() {
-    if (!selectedShapeIdRef.current) {
+  function getSelectedObject() {
+    if (!selectedObjectIdRef.current) {
       return undefined;
     }
 
-    return getShapeById(
-      document.shapesRef.current,
-      selectedShapeIdRef.current
+    return getObjectById(
+      document.objectsRef.current,
+      selectedObjectIdRef.current
     );
   }
 
-  function deleteSelectedShape() {
+  function deleteSelectedObject() {
 
-    const shapeId = selectedShapeIdRef.current
+    const objectId = selectedObjectIdRef.current
 
-    if (!shapeId) {
+    if (!objectId) {
       return
     }
 
 
     execute({
       type: "deleteBoardObject",
-      boardObjectId: shapeId,
+      boardObjectId: objectId,
     })
 
   }
 
-  function duplicateSelectedShape() {
+  function duplicateSelectedObject() {
 
-    const shape = getSelectedShape();
+    const object = getSelectedObject();
 
-    if (!shape) {
+    if (!object) {
       return;
     }
 
     const duplicated = {
-      ...shape,
+      ...object,
       id: crypto.randomUUID(),
-      x: shape.x + 20,
-      y: shape.y + 20,
+      x: object.x + 20,
+      y: object.y + 20,
     };
 
     execute({
@@ -80,27 +79,27 @@ export function createEditor({
     });
   }
 
-  // Bind a property of the selected shape to an input field
-  function bind<K extends keyof Shape>(
+  // Bind a property of the selected object to an input field
+  function bind<K extends keyof Object>(
     property: K,
-    transform?: (value: string) => Shape[K]
+    transform?: (value: string) => Object[K]
   ) {
     return (event: ChangeEvent<HTMLInputElement>) => {
       const raw = event.target.value;
 
       const value = transform
         ? transform(raw)
-        : (raw as Shape[K]);
+        : (raw as Object[K]);
 
-      const shape = getSelectedShape();
+      const object = getSelectedObject();
 
-      if (!shape) {
+      if (!object) {
         return;
       }
 
       execute({
         type: "updateBoardObject",
-        boardObjectId: shape.id,
+        boardObjectId: object.id,
         updates: {
           [property]: value,
         },
@@ -111,38 +110,38 @@ export function createEditor({
   function apply(command: EditorCommand) {
     switch (command.type) {
       case "createBoardObject":
-        createShape({
-          shapes: document.shapesRef.current,
-          shape: command.boardObject,
+        createObject({
+          objects: document.objectsRef.current,
+          object: command.boardObject,
         });
         break;
 
       case "updateBoardObject":
-        updateShape({
-          shapes: document.shapesRef.current,
-          shapeId: command.boardObjectId,
+        updateObject({
+          objects: document.objectsRef.current,
+          objectId: command.boardObjectId,
           updates: command.updates,
         });
         console.table(
-          document.shapesRef.current.map(shape => ({
-            id: shape.id,
-            x: shape.x,
-            y: shape.y,
-            width: shape.width,
-            height: shape.height,
+          document.objectsRef.current.map(object => ({
+            id: object.id,
+            x: object.x,
+            y: object.y,
+            width: object.width,
+            height: object.height,
           }))
         );
         break;
 
       case "deleteBoardObject":
-        deleteShape({
-          shapes: document.shapesRef.current,
-          shapeId: command.boardObjectId,
+        deleteObject({
+          objects: document.objectsRef.current,
+          objectId: command.boardObjectId,
         });
 
-        if (selectedShapeIdRef.current === command.boardObjectId) {
-          selectedShapeIdRef.current = null;
-          setSelectedShapeId(null);
+        if (selectedObjectIdRef.current === command.boardObjectId) {
+          selectedObjectIdRef.current = null;
+          setSelectedObjectId(null);
         }
 
         break;
@@ -166,7 +165,7 @@ export function createEditor({
   return {
     bind,
     execute,
-    deleteSelectedShape,
-    duplicateSelectedShape,
+    deleteSelectedObject,
+    duplicateSelectedObject,
   };
 }
