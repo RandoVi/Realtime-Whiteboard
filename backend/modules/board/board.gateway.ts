@@ -244,7 +244,7 @@ export class BoardGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
         @MessageBody() data: BoardObjectCommandDTO,
     ) {
         switch (data.command.type){
-            case ("moveObjectPreview"): {
+            case ("objectPreview"): {
                 socket.broadcast.to(data.boardId).emit("boardPresenceCommand", data);
                 break;
             }
