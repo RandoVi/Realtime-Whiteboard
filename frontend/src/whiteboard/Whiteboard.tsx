@@ -72,6 +72,7 @@ function Whiteboard() {
 
     renderBackground(context, { width, height })
     renderGrid(context, camera, { width, height })
+    console.log(remotePreviews.current);
     renderShapes(
       context,
       document.shapesRef.current,

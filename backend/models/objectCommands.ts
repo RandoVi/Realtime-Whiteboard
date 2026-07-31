@@ -27,12 +27,23 @@ export type DeleteBoardObjectCommand = {
     boardObjectId: string;
 };
 
-export type MovePreviewCommand = {
-    type: "moveObjectPreview";
-    boardObjectId: string;
-}
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-export  type CursorMovement = {
+export type ObjectPreviewCommand =
+  | {
+      type: "objectPreview";
+      previewType: "create";
+      boardObject: BoardObject;
+    }
+  | {
+      type: "objectPreview";
+      previewType: "update";
+      boardObjectId: string;
+      updates: Partial<BoardObject>;
+    };
+
+export  type CursorMovementCommand = {
     type: "cursorMovement";
     //TODO customization
 }
@@ -46,5 +57,5 @@ export type EditorCommand =
     | CreateBoardObjectCommand
     | UpdateBoardObjectCommand
     | DeleteBoardObjectCommand
-    | MovePreviewCommand
-    | CursorMovement;
+    | ObjectPreviewCommand
+    | CursorMovementCommand;
