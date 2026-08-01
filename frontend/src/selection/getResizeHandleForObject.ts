@@ -5,11 +5,14 @@ import { getResizeHandleAtPoint } from "./getResizeHandleAtPoint"
 
 export function getResizeHandleForObject(
   object: Object,
-  point: {x:number, y:number},
+  point: { x: number, y: number },
   camera: Camera
 ): ResizeHandle | null {
 
-  if (object.type !== "rectangle") {
+  if (
+    object.type !== "rectangle" &&
+    object.type !== "circle"
+  ) {
     return null
   }
 

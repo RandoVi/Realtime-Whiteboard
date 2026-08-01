@@ -1,5 +1,6 @@
 import type { Object } from "../types/Object"
 import type { ResizeHandle } from "../types/selection"
+import { resizeCircle } from "./resizeCircle";
 import { resizeRectangle } from "./resizeRectangle"
 
 export function resizeObject(
@@ -12,6 +13,17 @@ export function resizeObject(
     case "rectangle":
       if (original.type === "rectangle") {
         resizeRectangle(
+          object,
+          original,
+          handle,
+          point
+        )
+      }
+      break
+
+    case "circle":
+      if (original.type === "circle") {
+        resizeCircle(
           object,
           original,
           handle,

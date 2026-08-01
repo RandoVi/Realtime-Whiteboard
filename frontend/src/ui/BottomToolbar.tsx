@@ -31,7 +31,7 @@ export function BottomToolbar({
         <SelectorIcon color={'purple'} />
       </button>
 
-      <button className="tool-button">
+      <button className="tool-button" onClick={() => setTool('stroke')}>
         {/* <Circle /> */}
         <PencilIcon color={'purple'} />
       </button>

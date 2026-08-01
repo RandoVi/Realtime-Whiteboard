@@ -2,6 +2,7 @@ import type { MutableRefObject } from "react";
 import type { Interaction } from "./Interaction";
 import type { Object } from "../types/Object";
 import type { Editor } from "../editor/Editor";
+import { getObjectMoveUpdates } from "./helpers/getObjectMoveUpdates";
 
 type Args = {
     interactionRef: MutableRefObject<Interaction>;
@@ -40,10 +41,7 @@ export function handleMovingObjectMouseUp({
     editor.execute({
         type: "updateBoardObject",
         boardObjectId: boardObject.id,
-        updates: {
-            x: boardObject.x,
-            y: boardObject.y,
-        },
+        updates: getObjectMoveUpdates(boardObject),
     });
 
     interactionRef.current = {

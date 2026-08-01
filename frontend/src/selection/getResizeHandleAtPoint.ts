@@ -11,7 +11,11 @@ export function getResizeHandleAtPoint(
   pointer: Point,
   camera: Camera,
 ): ResizeHandle | null {
-  if (object.type !== "rectangle") {
+
+  if (
+    object.type !== "rectangle" &&
+    object.type !== "circle"
+  ) {
     return null
   }
 

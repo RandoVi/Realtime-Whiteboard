@@ -2,6 +2,9 @@ import type { Camera } from '../types/Types'
 import type { Interaction } from '../interaction/Interaction'
 import type { Object } from '../types/Object'
 import { renderRectangle } from './RenderRectangle'
+import { renderStroke } from './RenderStroke';
+import { renderCircle } from './RenderCircle';
+
 
 export type PreviewData =
   | {
@@ -65,7 +68,7 @@ export function renderObjects(
         {
           ...object,
           ...preview.updates,
-        },
+        } as Object, //temporary cast to Object, since we know that the updates will be valid for the object type
         camera
       );
     }
@@ -82,7 +85,11 @@ function renderObject(
       renderRectangle(context, object, camera)
       break
 
-    default:
-      console.warn(`Unknown object type: ${object.type}`)
+    case 'stroke':
+      renderStroke(context, object, camera);
+      break
+    case 'circle':
+      renderCircle(context, object, camera)
+      break
   }
 }

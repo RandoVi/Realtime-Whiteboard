@@ -3,10 +3,11 @@ import type { MutableRefObject } from "react"
 import type { Point } from "../types/Types"
 import type { Interaction } from "./Interaction"
 
-
+import { moveObject } from "../objects/moveObject";
 import type { Object } from "../types/Object"
 import type { Editor } from "../editor/Editor"
 import type { Presence } from "../socket/preview/Presence"
+import { getObjectMoveUpdates } from "./helpers/getObjectMoveUpdates";
 
 type Args = {
   world: Point
@@ -48,33 +49,34 @@ export function handleMovingObjectMouseMove({
   }
 
   // Update the position of the shape based on the mouse movement
+  const movedObject = {
+    ...interaction.original,
+  };
+
+  moveObject(
+    movedObject,
+    interaction.original,
+    dx,
+    dy
+  );
+
   editor.execute(
     {
       type: "updateBoardObject",
-
       boardObjectId: boardObject.id,
-
-      updates: {
-        x: interaction.original.x + dx,
-        y: interaction.original.y + dy,
-      },
+      updates: getObjectMoveUpdates(movedObject),
     },
     {
       broadcast: false,
-
     }
-
   );
   // Send the updated position to other clients for preview
-  presence.send({
-    type: "objectPreview",
-    previewType: "update",
-    boardObjectId: boardObject.id,
-    updates: {
-      x: interaction.original.x + dx,
-      y: interaction.original.y + dy,
-    }
-  });
+presence.send({
+  type: "objectPreview",
+  previewType: "update",
+  boardObjectId: boardObject.id,
+  updates: getObjectMoveUpdates(movedObject),
+});
 
 
   return true

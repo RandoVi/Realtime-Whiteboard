@@ -3,10 +3,13 @@ import type { Object } from "../types/Object"
 import type { Camera, Point } from "../types/Types"
 import { getSelectionHandle } from "../selection/getSelectionHandle"
 import type { Interaction } from "./Interaction"
+import { getResizeHandles } from "../selection/getResizeHandles"
+import { getSelectionBounds } from "../selection/getSelectionBounds"
 
 type Args = {
   selectedObject: Object | undefined
   pointer: Point
+  world: Point
   camera: Camera
   interactionRef: MutableRefObject<Interaction>
 }
@@ -14,6 +17,7 @@ type Args = {
 export function handleSelectionResizeMouseDown({
   selectedObject,
   pointer,
+  world,
   camera,
   interactionRef,
 }: Args): boolean {
@@ -31,11 +35,42 @@ export function handleSelectionResizeMouseDown({
     return false
   }
 
+  const bounds = getSelectionBounds(selectedObject)
+
+  const handles = getResizeHandles(bounds, camera)
+
+  const handlePosition = {
+    nw: {
+      x: bounds.left,
+      y: bounds.top,
+    },
+    ne: {
+      x: bounds.right,
+      y: bounds.top,
+    },
+    sw: {
+      x: bounds.left,
+      y: bounds.bottom,
+    },
+    se: {
+      x: bounds.right,
+      y: bounds.bottom,
+    },
+  }[handle]
+
+  if (!handlePosition) {
+    return false
+  }
+
   interactionRef.current = {
     type: "resizingObject",
     objectId: selectedObject.id,
     original: { ...selectedObject },
     handle,
+    offset: {
+      x: world.x - handlePosition.x,
+      y: world.y - handlePosition.y,
+    },
   }
 
   return true

@@ -1,6 +1,5 @@
 import type { Point } from '../types/Types'
 import type { Object } from '../types/Object'
-import type { Rectangle } from '../objects/Rectangle'
 import type { ResizeHandle } from '../types/selection'
 
 export type Interaction =
@@ -24,8 +23,9 @@ export type Interaction =
     | {
         type: 'resizingObject'
         objectId: string
-        original: Rectangle
+        original: Object
         handle: ResizeHandle
+        offset: Point
     }
 
     | {

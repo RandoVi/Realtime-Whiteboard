@@ -12,9 +12,19 @@ export function updatePreviewObject(
       object.height = current.y - start.y
       break
 
-    default:
-      console.warn(
-        `No preview updater for shape type: ${object.type}`
+    case "circle":
+
+      const dx = current.x - start.x
+      const dy = current.y - start.y
+
+      object.radius = Math.sqrt(
+        dx * dx + dy * dy
       )
+
+      break
+
+    case "stroke":
+      object.points.push(current)
+      break
   }
 }

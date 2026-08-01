@@ -2,7 +2,7 @@ import type { Camera } from '../types/Types'
 import type { Object } from '../types/Object'
 import { HANDLE_SIZE } from '../types/selection'
 import { getResizeHandles } from '../selection/getResizeHandles'
-import { getSelectionBounds} from "../selection/getSelectionBounds"
+import { getSelectionBounds } from "../selection/getSelectionBounds"
 import type { SelectionBounds } from '../selection/getSelectionBounds'
 
 export function renderSelection(
@@ -15,12 +15,13 @@ export function renderSelection(
 
     switch (object.type) {
         case 'rectangle':
-            renderRectangleSelection(context, bounds, camera)
+        case 'circle':
+            renderObjectSelection(context, bounds, camera)
             break
     }
 }
 
-function renderRectangleSelection(
+function renderObjectSelection(
     context: CanvasRenderingContext2D,
     bounds: SelectionBounds,
     camera: Camera,

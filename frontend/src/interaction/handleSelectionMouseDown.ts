@@ -3,9 +3,9 @@ import type { Camera, Point } from "../types/Types"
 import type { Object } from "../types/Object"
 import type { Interaction } from "./Interaction"
 
-import { hitTestObject } from "../objects/hitTest"
+import { hitTestObject } from "../objects/hitTestObject"
 import { handleSelectionResizeMouseDown } from "./handleSelectionResizeMouseDown"
-import { handleSelectionMoveMouseDown } from "../../../../handleSelectionMoveMouseDown"
+import { handleSelectionMoveMouseDown } from "./handleSelectionMoveMouseDown"
 import { handleSelectionClearMouseDown } from "./handleSelectionClearMouseDown"
 
 type Args = {
@@ -37,6 +37,7 @@ export function handleSelectionMouseDown({
     handleSelectionResizeMouseDown({
       selectedObject: getSelectedObject(),
       pointer,
+      world,
       camera,
       interactionRef,
     })

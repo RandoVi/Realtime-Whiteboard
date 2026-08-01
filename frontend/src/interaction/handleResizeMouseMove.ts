@@ -5,6 +5,7 @@ import type { Point } from "../types/Types"
 import type { Object } from "../types/Object"
 import type { Editor } from "../editor/Editor"
 import type { Presence } from "../socket/preview/Presence"
+import { getObjectResizeUpdates } from "./helpers/getObjectResizeUpdates"
 
 type Args = {
     world: Point
@@ -29,7 +30,10 @@ export function handleResizeMouseMove({
     }
 
     const interaction = interactionRef.current
-
+    const resizePoint = {
+        x: world.x - interaction.offset.x,
+        y: world.y - interaction.offset.y,
+    }
     const boardObject = getSelectedObject()
     // If there is a selected object, resize it based on the mouse movement
     if (boardObject) {
@@ -38,12 +42,11 @@ export function handleResizeMouseMove({
             ...interaction.original,
         }
 
-
         resizeObject(
             resizedObject,
             interaction.original,
             interaction.handle,
-            world
+            resizePoint
         )
 
         // Update the object's size and position in the editor
@@ -51,12 +54,7 @@ export function handleResizeMouseMove({
             {
                 type: "updateBoardObject",
                 boardObjectId: boardObject.id,
-                updates: {
-                    x: resizedObject.x,
-                    y: resizedObject.y,
-                    width: resizedObject.width,
-                    height: resizedObject.height,
-                },
+                updates: getObjectResizeUpdates(resizedObject),
             },
             {
                 broadcast: false,
@@ -67,12 +65,7 @@ export function handleResizeMouseMove({
             type: "objectPreview",
             previewType: "update",
             boardObjectId: boardObject.id,
-            updates: {
-                x: resizedObject.x,
-                y: resizedObject.y,
-                width: resizedObject.width,
-                height: resizedObject.height,
-            },
+            updates: getObjectResizeUpdates(resizedObject),
         });
     }
 
