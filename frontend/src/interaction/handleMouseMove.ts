@@ -3,12 +3,12 @@ import { handleDrawingMouseMove } from "./drawing/update"
 import { handleMovingObjectMouseMove } from "./moving/update"
 import { handlePanMouseMove } from "./panning/handlePanMouseMove"
 import { handleResizeMouseMove } from "./resizing/update"
-import type { InteractionContext } from "./InteractionContext"
+import type { CanvasInteractionContext } from "./CanvasInteractionContext"
 
 type Args = {
     world: Point;
     pointer: Point;
-    context: InteractionContext;
+    context: CanvasInteractionContext;
 }
 
 export function handleMouseMove({

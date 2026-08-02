@@ -1,16 +1,15 @@
 import type { MutableRefObject } from "react";
 import type { Interaction } from "../Interaction";
 
-
 type Args = {
     interactionRef: MutableRefObject<Interaction>;
 };
-// Handles the mouse up event for an object that is being moved
-export function handleMovingObjectMouseUp({
+
+export function handlePanMouseUp({
     interactionRef,
 }: Args): boolean {
 
-    if (interactionRef.current.type !== "moving") {
+    if (interactionRef.current.type !== "panning") {
         return false;
     }
 

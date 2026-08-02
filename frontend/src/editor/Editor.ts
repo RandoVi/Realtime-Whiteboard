@@ -11,8 +11,8 @@ export interface Editor {
     command: EditorCommand,
     options?: ExecuteOptions
   ): void;
-  
 
+  getSelectedObject(): Object | undefined;
   bind<K extends keyof Object>(
     property: K,
     transform?: (value: string) => Object[K]
@@ -23,4 +23,6 @@ export interface Editor {
   deleteSelectedObject(): void;
 
   duplicateSelectedObject(): void;
+
+  
 }

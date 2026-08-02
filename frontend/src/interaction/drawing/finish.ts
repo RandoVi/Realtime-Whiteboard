@@ -25,5 +25,9 @@ export function handleDrawingMouseUp({
     boardObject,
   })
 
+  interactionRef.current = {
+    type: "idle",
+  };
+
   return true
 }

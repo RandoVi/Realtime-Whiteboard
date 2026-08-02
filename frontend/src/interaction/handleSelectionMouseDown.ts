@@ -4,13 +4,13 @@ import type { Point } from "../types/Types"
 import { handleSelectionResizeMouseDown } from "./handleSelectionResizeMouseDown"
 import { handleSelectionMoveMouseDown } from "./handleSelectionMoveMouseDown"
 import { handleSelectionClearMouseDown } from "./handleSelectionClearMouseDown"
-import type { InteractionContext } from "./InteractionContext"
+import type { CanvasInteractionContext } from "./CanvasInteractionContext"
 import { getTopObjectAtPoint } from "../objects/getTopObjectAtPoint"
 
 type Args = {
   pointer: Point
   world: Point
-  context: InteractionContext
+  context: CanvasInteractionContext
 }
 
 

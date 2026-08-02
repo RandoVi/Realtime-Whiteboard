@@ -1,12 +1,12 @@
 
 import type { Point } from "../../types/Types"
 
-import type { InteractionContext } from "../InteractionContext";
+import type { CanvasInteractionContext } from "../CanvasInteractionContext";
 
 type Args = {
   pointer: Point;
   canvas: HTMLCanvasElement;
-  context: InteractionContext;
+  context: CanvasInteractionContext;
 }
 
 // Handle the mouse down event when starting to pan the canvas

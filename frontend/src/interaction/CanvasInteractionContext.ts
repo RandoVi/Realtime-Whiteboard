@@ -6,7 +6,7 @@ import type { Object } from "../types/Object";
 import type { Presence } from "../socket/preview/Presence";
 import type { Document } from "../document/Document";
 
-export interface InteractionContext {
+export interface CanvasInteractionContext {
 
     cameraRef: MutableRefObject<Camera>;
 

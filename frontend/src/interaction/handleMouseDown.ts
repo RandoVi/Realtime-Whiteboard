@@ -1,6 +1,6 @@
 import type { Point } from "../types/Types";
 import type { Tool } from "../types/Tool";
-import type { InteractionContext } from "./InteractionContext";
+import type { CanvasInteractionContext } from "./CanvasInteractionContext";
 
 import { handleSelectionMouseDown } from "./handleSelectionMouseDown";
 import { handlePanMouseDown } from "./panning/handlePanMouseDown";
@@ -12,7 +12,7 @@ type Args = {
     world: Point;
     tool: Tool;
     canvas: HTMLCanvasElement;
-    context: InteractionContext;
+    context: CanvasInteractionContext;
 };
 
 

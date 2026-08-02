@@ -10,6 +10,7 @@ import { createObject } from "./commands/createObject";
 import type { Document } from "../document/Document";
 import type { Collaboration } from "../socket/collaboration/Collaboration";
 import type { ExecuteOptions } from "./Editor";
+import { duplicateObject } from "./duplicateObject";
 
 type Args = {
   document: Document;
@@ -66,12 +67,7 @@ export function createEditor({
       return;
     }
 
-    const duplicated = {
-      ...object,
-      id: crypto.randomUUID(),
-      x: object.x + 20,
-      y: object.y + 20,
-    };
+    const duplicated = duplicateObject(object);
 
     execute({
       type: "createBoardObject",
@@ -122,15 +118,6 @@ export function createEditor({
           objectId: command.boardObjectId,
           updates: command.updates,
         });
-        console.table(
-          document.objectsRef.current.map(object => ({
-            id: object.id,
-            x: object.x,
-            y: object.y,
-            width: object.width,
-            height: object.height,
-          }))
-        );
         break;
 
       case "deleteBoardObject":
@@ -165,6 +152,7 @@ export function createEditor({
   return {
     bind,
     execute,
+    getSelectedObject,
     deleteSelectedObject,
     duplicateSelectedObject,
   };

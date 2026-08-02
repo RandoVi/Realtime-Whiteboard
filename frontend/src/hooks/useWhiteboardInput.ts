@@ -1,25 +1,15 @@
 import { useEffect, useRef, useState } from 'react'
 import type { UseWhiteboardInputProps } from '../types/Types'
 import type { Interaction } from '../interaction/Interaction'
-import { handleDrawingMouseDown } from '../interaction/drawing/begin'
-import { handleDrawingMouseMove } from '../interaction/drawing/update'
 import { handleKeyDown } from '../interaction/handleKeyDown'
 import { handleMouseUp } from '../interaction/handleMouseUp'
-import { handleMovingObjectMouseMove } from '../interaction/moving/update'
-import { handlePanMouseDown } from '../interaction/panning/handlePanMouseDown'
-import { handlePanMouseMove } from '../interaction/panning/handlePanMouseMove'
-import { handleResizeMouseMove } from '../interaction/resizing/update'
-import { handleSelectionMouseDown } from '../interaction/handleSelectionMouseDown'
-import { handleSelectionMouseMove } from '../interaction/handleSelectionMouseMove'
 import { handleZoom } from '../interaction/handleZoom'
-import { getObjectById } from '../objects/getObjectById'
 import type { Point } from '../types/Types'
 import { screenToWorld } from '../camera/Camera'
 import { getPointer } from '../interaction/helpers/getPointer'
 import { handleMouseMove as handleInteractionMouseMove } from '../interaction/handleMouseMove'
 import { handleMouseDown as handleInteractionMouseDown } from '../interaction/handleMouseDown'
-import type { InteractionContext } from '../interaction/InteractionContext'
-import { resetInteraction } from '../interaction/resetInteraction'
+import type { CanvasInteractionContext } from '../interaction/CanvasInteractionContext'
 
 export function useWhiteboardInput({
   cameraRef,
@@ -51,20 +41,7 @@ export function useWhiteboardInput({
     setSelectedObjectId(id)
   }
 
-
-
-  const getSelectedObject = () => {
-    if (!selectedObjectIdRef.current) {
-      return undefined
-    }
-
-    return getObjectById(
-      document.objectsRef.current,
-      selectedObjectIdRef.current
-    )
-  }
-
-  const contextRef = useRef<InteractionContext | null>(null);
+  const contextRef = useRef<CanvasInteractionContext | null>(null);
 
   contextRef.current = {
     cameraRef,
@@ -73,7 +50,7 @@ export function useWhiteboardInput({
     editor,
     presence,
     requestRender,
-    getSelectedObject,
+    getSelectedObject: editor.getSelectedObject,
     selectObject,
   };
 
@@ -141,10 +118,7 @@ export function useWhiteboardInput({
       handleMouseUp({
         interactionRef,
         editor,
-        getSelectedObject,
       });
-
-      resetInteraction(interactionRef);
 
       canvas.style.cursor = "grab";
     };
