@@ -1,20 +1,25 @@
 import { useEffect, useRef, useState } from 'react'
 import type { UseWhiteboardInputProps } from '../types/Types'
 import type { Interaction } from '../interaction/Interaction'
-import { handleDrawingMouseDown } from '../interaction/handleDrawingMouseDown'
-import { handleDrawingMouseMove } from '../interaction/handleDrawingMouseMove'
+import { handleDrawingMouseDown } from '../interaction/drawing/begin'
+import { handleDrawingMouseMove } from '../interaction/drawing/update'
 import { handleKeyDown } from '../interaction/handleKeyDown'
 import { handleMouseUp } from '../interaction/handleMouseUp'
-import { handleMovingObjectMouseMove } from '../interaction/handleMovingObjectMouseMove'
-import { handlePanMouseDown } from '../interaction/handlePanMouseDown'
-import { handlePanMouseMove } from '../interaction/handlePanMouseMove'
-import { handleResizeMouseMove } from '../interaction/handleResizeMouseMove'
+import { handleMovingObjectMouseMove } from '../interaction/moving/update'
+import { handlePanMouseDown } from '../interaction/panning/handlePanMouseDown'
+import { handlePanMouseMove } from '../interaction/panning/handlePanMouseMove'
+import { handleResizeMouseMove } from '../interaction/resizing/update'
 import { handleSelectionMouseDown } from '../interaction/handleSelectionMouseDown'
 import { handleSelectionMouseMove } from '../interaction/handleSelectionMouseMove'
 import { handleZoom } from '../interaction/handleZoom'
 import { getObjectById } from '../objects/getObjectById'
 import type { Point } from '../types/Types'
 import { screenToWorld } from '../camera/Camera'
+import { getPointer } from '../interaction/helpers/getPointer'
+import { handleMouseMove as handleInteractionMouseMove } from '../interaction/handleMouseMove'
+import { handleMouseDown as handleInteractionMouseDown } from '../interaction/handleMouseDown'
+import type { InteractionContext } from '../interaction/InteractionContext'
+import { resetInteraction } from '../interaction/resetInteraction'
 
 export function useWhiteboardInput({
   cameraRef,
@@ -46,6 +51,8 @@ export function useWhiteboardInput({
     setSelectedObjectId(id)
   }
 
+
+
   const getSelectedObject = () => {
     if (!selectedObjectIdRef.current) {
       return undefined
@@ -56,6 +63,19 @@ export function useWhiteboardInput({
       selectedObjectIdRef.current
     )
   }
+
+  const contextRef = useRef<InteractionContext | null>(null);
+
+  contextRef.current = {
+    cameraRef,
+    interactionRef,
+    document,
+    editor,
+    presence,
+    requestRender,
+    getSelectedObject,
+    selectObject,
+  };
 
   // Handle mouse and keyboard events for the whiteboard
   useEffect(() => {
@@ -81,140 +101,53 @@ export function useWhiteboardInput({
       })
     }
 
-    const endInteraction = () => {
-
-      console.log("Ending interaction");useWhiteboardInput
-      interactionRef.current = {
-        type: "idle",
-      }
-
-      canvas.style.cursor = "grab"
-    }
     // Handle mouse move events for dragging, drawing, and moving objects
     const handleMouseMove = (event: MouseEvent) => {
-      const rect = canvas.getBoundingClientRect()
-      // Update the mouse position in screen coordinates, aka screen space
-      const pointer = {
-        x: event.clientX - rect.left,
-        y: event.clientY - rect.top,
-      }
-      const world = screenToWorld(pointer, cameraRef.current)
-
-      if (handleResizeMouseMove({
-        world,
-        interactionRef,
-        getSelectedObject,
-        editor,
-        presence,
-      })
-      ) {
-        return
-      }
-
-      // Update the preview object if drawing a rectangle
-      if (handleDrawingMouseMove({
-        world,
-        interactionRef,
-        requestRender,
-        presence,
-      })
-      ) {
-        return
-      }
-      // Update the position of the object being moved if moving an object
-      if (handleMovingObjectMouseMove({
-        world,
-        interactionRef,
-        getSelectedObject,
-        editor,
-        presence,
-      })
-      ) {
-        return
-      }
-
-      mouseScreenRef.current = pointer
-
-      if (tool === 'select') {
-        handleSelectionMouseMove({
-          object: getSelectedObject(),
-          pointer,
-          camera: cameraRef.current,
-          canvas,
-        })
-      }
-
-      // Handle panning if the current interaction is panning
-      handlePanMouseMove({
-        pointer,
-        cameraRef,
-        interactionRef,
-        requestRender,
-      })
-
-      if (showCoordinates) {
-        setMouseWorld(screenToWorld(pointer, cameraRef.current))
-      }
-    }
-    // Handle mouse down events for drawing, moving, and selecting objects
-    const handleMouseDown = (event: MouseEvent) => {
-      if (event.button !== 0) return
-
-      const rect = canvas.getBoundingClientRect()
-      const pointer = {
-        x: event.clientX - rect.left,
-        y: event.clientY - rect.top,
-      }
-
-      if (tool === "select") {
-        const world = screenToWorld(
-          pointer,
-          cameraRef.current
-        )
-
-        handleSelectionMouseDown({
-          pointer,
-          world,
-          objects: document.objectsRef.current,
-          camera: cameraRef.current,
-          getSelectedObject,
-          selectObject,
-          interactionRef,
-          requestRender,
-        })
-        return
-      }
-
-      if (tool === "pan") {
-        handlePanMouseDown({
-          pointer,
-          interactionRef,
-          canvas,
-        })
-        return
-      }
+      const pointer = getPointer(event, canvas);
 
       const world = screenToWorld(
         pointer,
         cameraRef.current
-      )
+      );
 
-      handleDrawingMouseDown({
-        tool,
+      handleInteractionMouseMove({
+        pointer,
         world,
-        interactionRef,
-      })
-      return
-    }
+        context: contextRef.current!,
+      });
+    };
+    // Handle mouse down events for drawing, moving, and selecting objects
+    const handleMouseDown = (event: MouseEvent) => {
+
+      if (event.button !== 0) return;
+
+      const pointer = getPointer(event, canvas);
+
+      const world = screenToWorld(
+        pointer,
+        cameraRef.current
+      );
+
+      handleInteractionMouseDown({
+        pointer,
+        world,
+        tool,
+        canvas,
+        context: contextRef.current!,
+      });
+    };
     // Stop dragging or drawing when the mouse is released
     const handleMouseUpEvent = () => {
       handleMouseUp({
         interactionRef,
         editor,
         getSelectedObject,
-      })
-      endInteraction()
-    }
+      });
+
+      resetInteraction(interactionRef);
+
+      canvas.style.cursor = "grab";
+    };
 
     // Add event listeners for mouse and keyboard events
     window.addEventListener('mousemove', handleMouseMove)

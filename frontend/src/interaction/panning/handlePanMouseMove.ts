@@ -1,6 +1,6 @@
 import type { MutableRefObject } from "react"
-import type { Camera, Point } from "../types/Types"
-import type { Interaction } from "./Interaction"
+import type { Camera, Point } from "../../types/Types"
+import type { Interaction } from "../Interaction"
 
 type Args = {
   pointer: Point

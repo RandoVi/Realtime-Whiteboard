@@ -3,7 +3,7 @@ import type { Camera } from '../types/Types'
 import { renderGrid } from '../render/renderGrid'
 import { renderBackground } from '../render/renderBackground'
 import { useWhiteboardInput } from '../hooks/useWhiteboardInput'
-import { renderObjects } from '../render/RenderObjects'
+import { renderObjects } from '../render/renderObjects'
 import './Whiteboard.css'
 import { BottomToolbar } from '../ui/BottomToolbar'
 import type { Tool } from '../types/Tool'
@@ -16,7 +16,7 @@ import { setBoardId as setNetworkBoardId } from "../network/board";
 import { SocketCollaboration } from "../socket/collaboration/SocketCollaboration";
 import { BoardLobbyModal, type LobbyState } from '../lobby/BoardLobbyModal'
 import { SocketPresence } from '../socket/preview/SocketPresence'
-import type { PreviewData } from "../render/RenderObjects";
+import type { PreviewData } from "../render/renderObjects";
 
 function Whiteboard() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null)

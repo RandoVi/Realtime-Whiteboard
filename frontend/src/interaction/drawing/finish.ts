@@ -1,7 +1,7 @@
 import type { MutableRefObject } from "react"
-import type { Interaction } from "./Interaction"
-import { normalizeObject } from "../objects/normalizeObject"
-import type { Editor } from "../editor/Editor"
+import type { Interaction } from "../Interaction"
+import { normalizeObject } from "../../objects/normalizeObject"
+import type { Editor } from "../../editor/Editor"
 
 type Args = {
   interactionRef: MutableRefObject<Interaction>
@@ -12,7 +12,7 @@ export function handleDrawingMouseUp({
   interactionRef,
   editor
 }: Args): boolean {
-  if (interactionRef.current.type !== "drawingObject") {
+  if (interactionRef.current.type !== "drawing") {
     return false
   }
 

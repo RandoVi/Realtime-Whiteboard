@@ -1,9 +1,9 @@
 import type { Camera } from '../types/Types'
 import type { Interaction } from '../interaction/Interaction'
 import type { Object } from '../types/Object'
-import { renderRectangle } from './RenderRectangle'
-import { renderStroke } from './RenderStroke';
-import { renderCircle } from './RenderCircle';
+import { renderRectangle } from '../objects/rectangle/renderRectangle'
+import { renderStroke } from '../objects/stroke/renderStroke';
+import { renderCircle } from '../objects/circle/renderCircle';
 
 
 export type PreviewData =
@@ -32,7 +32,7 @@ export function renderObjects(
     renderObject(context, object, camera)
   }
 
-  if (interaction.type === "drawingObject") {
+  if (interaction.type === "drawing") {
     renderObject(
       context,
       interaction.preview,
@@ -88,6 +88,7 @@ function renderObject(
     case 'stroke':
       renderStroke(context, object, camera);
       break
+
     case 'circle':
       renderCircle(context, object, camera)
       break

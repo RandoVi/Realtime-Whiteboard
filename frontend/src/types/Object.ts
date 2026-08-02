@@ -1,6 +1,6 @@
-import type { Circle } from '../objects/Circle'
-import type { Rectangle } from '../objects/Rectangle'
-import type { Stroke } from '../objects/Stroke'
+import type { Circle } from '../objects/circle/Circle'
+import type { Rectangle } from '../objects/rectangle/Rectangle'
+import type { Stroke } from '../objects/stroke/Stroke'
 
 export type Object =
     | Rectangle

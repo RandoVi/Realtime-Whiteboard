@@ -1,8 +1,8 @@
 import type { MutableRefObject } from "react"
-import type { Interaction } from "./Interaction"
-import type { Object } from "../types/Object"
-import type { Editor } from "../editor/Editor"
-import { getObjectResizeUpdates } from "./helpers/getObjectResizeUpdates"
+import type { Interaction } from "../Interaction"
+import type { Object } from "../../types/Object"
+import type { Editor } from "../../editor/Editor"
+import { getObjectResizeUpdates } from "../helpers/getObjectResizeUpdates"
 
 type Args = {
   interactionRef: MutableRefObject<Interaction>
@@ -17,7 +17,7 @@ export function handleResizeMouseUp({
 }: Args) {
 
   if (
-    interactionRef.current.type !== "resizingObject"
+    interactionRef.current.type !== "resizing"
   ) {
     return false
   }

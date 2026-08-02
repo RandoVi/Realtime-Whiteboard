@@ -1,5 +1,5 @@
-import type { Camera } from "../types/Types";
-import type { Circle } from "../objects/Circle";
+import type { Camera } from "../../types/Types";
+import type { Circle } from "./Circle";
 
 export function renderCircle(
   context: CanvasRenderingContext2D,

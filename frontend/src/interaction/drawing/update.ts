@@ -1,9 +1,9 @@
 import type { MutableRefObject } from "react"
-import type { Point } from "../types/Types"
-import type { Interaction } from "./Interaction"
+import type { Point } from "../../types/Types"
+import type { Interaction } from "../Interaction"
 
-import { updatePreviewObject } from "../objects/updatePreviewObject"
-import type { Presence } from "../socket/preview/Presence"
+import { updatePreviewObject } from "../../objects/updatePreviewObject"
+import type { Presence } from "../../socket/preview/Presence"
 
 type Args = {
   world: Point
@@ -18,7 +18,7 @@ export function handleDrawingMouseMove({
   requestRender,
   presence,
 }: Args): boolean {
-  if (interactionRef.current.type !== "drawingObject") {
+  if (interactionRef.current.type !== "drawing") {
     return false
   }
 

@@ -1,5 +1,5 @@
 import type { Object } from "../types/Object"
-import { normalizeRectangle } from "./normalizeRectangle"
+import { normalizeRectangle } from "./rectangle/normalizeRectangle"
 
 export function normalizeObject(
   object: Object

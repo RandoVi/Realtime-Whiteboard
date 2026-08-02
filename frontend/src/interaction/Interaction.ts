@@ -7,13 +7,13 @@ export type Interaction =
     | { type: 'idle' }
 
     | {
-        type: 'drawingObject'
+        type: 'drawing'
         start: Point
         preview: Object
     }
 
     | {
-        type: 'movingObject'
+        type: 'moving'
         start: Point
         original: Object
         objectId: string
@@ -21,7 +21,7 @@ export type Interaction =
     }
 
     | {
-        type: 'resizingObject'
+        type: 'resizing'
         objectId: string
         original: Object
         handle: ResizeHandle

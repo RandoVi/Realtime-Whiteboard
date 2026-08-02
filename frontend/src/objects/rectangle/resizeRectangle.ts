@@ -1,6 +1,6 @@
 import type { Rectangle } from './Rectangle'
-import type { Point } from '../types/Types'
-import type { ResizeHandle } from '../types/selection'
+import type { Point } from '../../types/Types'
+import type { ResizeHandle } from '../../types/selection'
 
 export function resizeRectangle(
     rectangle: Rectangle,

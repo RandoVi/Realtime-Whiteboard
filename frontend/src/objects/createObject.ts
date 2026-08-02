@@ -1,6 +1,9 @@
 import type { Point } from '../types/Types'
 import type { Tool } from '../types/Tool'
 import type { Object } from '../types/Object'
+import { createStroke } from './stroke/createStroke'
+import { createRectangle } from './rectangle/createRectangle'
+import { createCircle } from './circle/createCircle'
 
 export function createObject(
   tool: Tool,
@@ -9,38 +12,14 @@ export function createObject(
 
   switch (tool) {
     case "rectangle":
-      return {
-        id: crypto.randomUUID(),
-        type: "rectangle",
-        x: point.x,
-        y: point.y,
-        width: 0,
-        height: 0,
-        fill: '#90caf9',
-        stroke: '#1565c0',
-      }
+      return createRectangle(point)
 
     case "stroke":
-      return {
-        id: crypto.randomUUID(),
-        type: "stroke",
-        points: [point],
-        stroke: "#1565c0",
-        strokeWidth: 2,
-      };
+      return createStroke(point)
 
     case "circle":
-
-      return {
-        id: crypto.randomUUID(),
-        type: "circle",
-        x: point.x,
-        y: point.y,
-        radius: 0,
-        fill: "#90caf9",
-        stroke: "#1565c0",
-      }
-
+      return createCircle(point)
+      
     default:
       return null
   }

@@ -25,7 +25,7 @@ export function handleSelectionMoveMouseDown({
   selectObject(clickedObject.id)
 
   interactionRef.current = {
-    type: "movingObject",
+    type: "moving",
     start: world,
     original: { ...clickedObject },
     objectId: clickedObject.id,

@@ -63,7 +63,7 @@ export function handleSelectionResizeMouseDown({
   }
 
   interactionRef.current = {
-    type: "resizingObject",
+    type: "resizing",
     objectId: selectedObject.id,
     original: { ...selectedObject },
     handle,

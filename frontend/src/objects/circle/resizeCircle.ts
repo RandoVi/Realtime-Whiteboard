@@ -1,5 +1,5 @@
 import type { Circle } from "./Circle";
-import type { ResizeHandle } from "../types/selection";
+import type { ResizeHandle } from "../../types/selection";
 
 export function resizeCircle(
   circle: Circle,

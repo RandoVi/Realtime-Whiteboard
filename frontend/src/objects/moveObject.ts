@@ -1,4 +1,7 @@
 import type { Object } from "../types/Object";
+import { moveCircle } from "./circle/moveCircle";
+import { moveRectangle } from "./rectangle/moveRectangle";
+import { moveStroke } from "./stroke/moveStroke";
 
 
 
@@ -8,33 +11,22 @@ export function moveObject(
   dx: number,
   dy: number,
 ) {
-
   switch (object.type) {
-
     case "rectangle":
       if (original.type === "rectangle") {
-        object.x = original.x + dx
-        object.y = original.y + dy
+        moveRectangle(object, original, dx, dy);
       }
       break;
-
 
     case "circle":
       if (original.type === "circle") {
-        object.x = original.x + dx
-        object.y = original.y + dy
+        moveCircle(object, original, dx, dy);
       }
       break;
 
-
     case "stroke":
       if (original.type === "stroke") {
-
-        object.points = original.points.map(point => ({
-          x: point.x + dx,
-          y: point.y + dy,
-        }))
-
+        moveStroke(object, original, dx, dy);
       }
       break;
   }
