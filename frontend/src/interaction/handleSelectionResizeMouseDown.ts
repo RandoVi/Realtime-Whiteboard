@@ -3,7 +3,6 @@ import type { Object } from "../types/Object"
 import type { Camera, Point } from "../types/Types"
 import { getSelectionHandle } from "../selection/getSelectionHandle"
 import type { Interaction } from "./Interaction"
-import { getResizeHandles } from "../selection/getResizeHandles"
 import { getSelectionBounds } from "../selection/getSelectionBounds"
 
 type Args = {
@@ -36,8 +35,6 @@ export function handleSelectionResizeMouseDown({
   }
 
   const bounds = getSelectionBounds(selectedObject)
-
-  const handles = getResizeHandles(bounds, camera)
 
   const handlePosition = {
     nw: {

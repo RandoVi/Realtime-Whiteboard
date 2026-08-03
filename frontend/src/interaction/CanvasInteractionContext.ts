@@ -1,5 +1,5 @@
 import type { MutableRefObject } from "react";
-import type { Camera, Point } from "../types/Types";
+import type { Camera } from "../types/Types";
 import type { Interaction } from "./Interaction";
 import type { Editor } from "../editor/Editor";
 import type { Object } from "../types/Object";

@@ -4,7 +4,7 @@ import type { ResizeHandle } from "../../types/selection";
 export function resizeCircle(
   circle: Circle,
   original: Circle,
-  handle: ResizeHandle,
+  _handle: ResizeHandle,
   point: { x: number; y: number }
 ) {
   circle.x = original.x

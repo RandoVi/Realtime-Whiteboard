@@ -1,27 +1,13 @@
-import type { Object } from "../../types/Object";
+import type { Object } from "../../types/Object"
+import { getObjectHandler } from "../../objects/registry/getObjectHandler"
 
 export function getObjectResizeUpdates(
   object: Object
 ): Partial<Object> {
 
-  switch (object.type) {
-
-    case "rectangle":
-      return {
-        x: object.x,
-        y: object.y,
-        width: object.width,
-        height: object.height,
-      };
-
-    case "circle":
-      return {
-        x: object.x,
-        y: object.y,
-        radius: object.radius,
-      };
-
-    default:
-      return {};
-  }
+  return (
+    getObjectHandler(object)
+      .getResizeUpdates?.(object)
+    ?? {}
+  )
 }

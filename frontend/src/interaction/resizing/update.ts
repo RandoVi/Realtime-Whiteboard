@@ -1,3 +1,4 @@
+//resize update.ts
 import type { MutableRefObject } from "react"
 import type { Interaction } from "../Interaction"
 import { resizeObject } from "../../objects/resizeObject"

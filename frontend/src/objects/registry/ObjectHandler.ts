@@ -2,6 +2,7 @@ import type { SelectionBounds } from "../../selection/getSelectionBounds"
 import type { Object } from "../../types/Object"
 import type { Camera, Point } from "../../types/Types"
 import type { ResizeHandle } from "../../types/selection"
+import type { ObjectProperty } from "../properties/ObjectProperty"
 
 export interface ObjectHandler<T extends Object = Object> {
 
@@ -53,4 +54,18 @@ export interface ObjectHandler<T extends Object = Object> {
         point: Point,
         camera: Camera
     ) => ResizeHandle | null
+
+    getMoveUpdates?: (
+        object: T
+    ) => Partial<T>
+
+    getResizeUpdates?: (
+        object: T
+    ) => Partial<T>
+
+    duplicate?: (
+        object: T
+    ) => T
+
+    properties?: ObjectProperty<T>[]
 }

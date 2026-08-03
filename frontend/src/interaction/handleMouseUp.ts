@@ -1,6 +1,5 @@
 import type { MutableRefObject } from "react"
 import type { Interaction } from "./Interaction"
-import type { Object } from "../types/Object"
 import { handleDrawingMouseUp } from "./drawing/finish"
 import { handleResizeMouseUp } from "./resizing/finish"
 import type { Editor } from "../editor/Editor"

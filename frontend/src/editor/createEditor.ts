@@ -1,5 +1,4 @@
 import type { MutableRefObject } from "react";
-import type { Object } from "../types/Object";
 import type { Editor } from "./Editor";
 import { getObjectById } from "../objects/getObjectById";
 import type { ChangeEvent } from "react";
@@ -69,6 +68,10 @@ export function createEditor({
 
     const duplicated = duplicateObject(object);
 
+    if (!duplicated) {
+      throw new Error(`Cannot duplicate ${object.type}`)
+    }
+
     execute({
       type: "createBoardObject",
       boardObject: duplicated,
@@ -76,16 +79,16 @@ export function createEditor({
   }
 
   // Bind a property of the selected object to an input field
-  function bind<K extends keyof Object>(
-    property: K,
-    transform?: (value: string) => Object[K]
+  function bindProperty(
+    property: string,
+    transform?: (value: string) => unknown
   ) {
     return (event: ChangeEvent<HTMLInputElement>) => {
       const raw = event.target.value;
 
       const value = transform
         ? transform(raw)
-        : (raw as Object[K]);
+        : raw;
 
       const object = getSelectedObject();
 
@@ -150,7 +153,7 @@ export function createEditor({
   }
 
   return {
-    bind,
+    bindProperty,
     execute,
     getSelectedObject,
     deleteSelectedObject,

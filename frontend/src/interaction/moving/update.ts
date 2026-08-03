@@ -1,10 +1,8 @@
+//move update.ts
 import type { MutableRefObject } from "react"
-
 import type { Point } from "../../types/Types"
 import type { Interaction } from "../Interaction"
-
 import { moveObject } from "../../objects/moveObject";
-import type { Object } from "../../types/Object"
 import type { Editor } from "../../editor/Editor"
 import type { Presence } from "../../socket/preview/Presence"
 import { getObjectMoveUpdates } from "../helpers/getObjectMoveUpdates";

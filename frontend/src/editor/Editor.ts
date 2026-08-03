@@ -13,9 +13,9 @@ export interface Editor {
   ): void;
 
   getSelectedObject(): Object | undefined;
-  bind<K extends keyof Object>(
-    property: K,
-    transform?: (value: string) => Object[K]
+  bindProperty(
+    property: string,
+    transform?: (value: string) => unknown
   ): (
     event: React.ChangeEvent<HTMLInputElement>
   ) => void;
@@ -24,5 +24,5 @@ export interface Editor {
 
   duplicateSelectedObject(): void;
 
-  
+
 }

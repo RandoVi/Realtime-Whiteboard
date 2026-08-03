@@ -1,35 +1,19 @@
-import type { Object } from "../types/Object";
+import type { Object } from "../types/Object"
+import { getObjectHandler } from "./../objects/registry/getObjectHandler"
 
-export function duplicateObject(object: Object): Object {
+export function duplicateObject(
+  object: Object
+): Object {
 
-    switch (object.type) {
+  const duplicate =
+    getObjectHandler(object)
+      .duplicate?.(object)
 
-        case "rectangle":
-            return {
-                ...object,
-                id: crypto.randomUUID(),
-                x: object.x + 20,
-                y: object.y + 20,
-            };
+  if (!duplicate) {
+    throw new Error(
+      `Object ${object.type} cannot be duplicated`
+    )
+  }
 
-
-        case "circle":
-            return {
-                ...object,
-                id: crypto.randomUUID(),
-                x: object.x + 20,
-                y: object.y + 20,
-            };
-
-
-        case "stroke":
-            return {
-                ...object,
-                id: crypto.randomUUID(),
-                points: object.points.map(point => ({
-                    x: point.x + 20,
-                    y: point.y + 20,
-                })),
-            };
-    }
+  return duplicate
 }
