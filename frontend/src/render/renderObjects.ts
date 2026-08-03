@@ -1,10 +1,7 @@
 import type { Camera } from '../types/Types'
 import type { Interaction } from '../interaction/Interaction'
 import type { Object } from '../types/Object'
-import { renderRectangle } from '../objects/rectangle/renderRectangle'
-import { renderStroke } from '../objects/stroke/renderStroke';
-import { renderCircle } from '../objects/circle/renderCircle';
-
+import { getObjectHandler } from '../objects/registry/getObjectHandler'
 
 export type PreviewData =
   | {
@@ -80,17 +77,10 @@ function renderObject(
   object: Object,
   camera: Camera,
 ) {
-  switch (object.type) {
-    case 'rectangle':
-      renderRectangle(context, object, camera)
-      break
-
-    case 'stroke':
-      renderStroke(context, object, camera);
-      break
-
-    case 'circle':
-      renderCircle(context, object, camera)
-      break
-  }
+  getObjectHandler(object)
+    .render?.(
+      context,
+      object,
+      camera,
+    )
 }
