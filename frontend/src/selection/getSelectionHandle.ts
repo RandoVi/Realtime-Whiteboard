@@ -1,18 +1,18 @@
 import type { Camera, Point } from '../types/Types'
-import type { Shape } from '../types/Shape'
-import { getResizeHandleForShape } from './getResizeHandleForShape'
+import type { Object } from '../types/Object'
+import { getResizeHandleForObject } from './getResizeHandleForObject'
 
 export function getSelectionHandle(
-  shape: Shape | undefined,
+  object: Object | undefined,
   pointer: Point,
   camera: Camera,
 ) {
-  if (!shape) {
+  if (!object) {
     return null
   }
 
-  return getResizeHandleForShape(
-    shape,
+  return getResizeHandleForObject(
+    object,
     pointer,
     camera,
   )

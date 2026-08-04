@@ -2,7 +2,7 @@ type SelectorIconProps = {
     color: string
 }
 
-const SelectorIcon = ({ color }: SelectorIconProps) => {
+const SelectorIcon = ({ color: _color }: SelectorIconProps) => {
     return (
         <svg
             fill="currentColor"

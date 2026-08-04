@@ -3,12 +3,12 @@ import type { Camera } from '../types/Types'
 import { renderGrid } from '../render/renderGrid'
 import { renderBackground } from '../render/renderBackground'
 import { useWhiteboardInput } from '../hooks/useWhiteboardInput'
-import { renderShapes } from '../render/RenderShapes'
+import { renderObjects } from '../render/renderObjects'
 import './Whiteboard.css'
 import { BottomToolbar } from '../ui/BottomToolbar'
 import type { Tool } from '../types/Tool'
 import { renderSelection } from '../render/renderSelection'
-import { getShapeById } from '../shapes/getShapeById'
+import { getObjectById } from '../objects/getObjectById'
 import { createEditor } from '../editor/createEditor'
 import { ObjectInspector } from '../ui/objectPanel/ObjectInspector'
 import { createDocument } from '../document/createDocument'
@@ -16,7 +16,7 @@ import { setBoardId as setNetworkBoardId } from "../network/board";
 import { SocketCollaboration } from "../socket/collaboration/SocketCollaboration";
 import { BoardLobbyModal, type LobbyState } from '../lobby/BoardLobbyModal'
 import { SocketPresence } from '../socket/preview/SocketPresence'
-import type { PreviewData } from "../render/RenderShapes";
+import type { PreviewData } from "../render/renderObjects";
 
 function Whiteboard() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
@@ -44,9 +44,9 @@ function Whiteboard() {
 
 
   const [tool, setTool] = useState<Tool>('pan')
-  const [selectedShapeId, setSelectedShapeId] =
+  const [selectedObjectId, setSelectedObjectId] =
     useState<string | null>(null);
-  const selectedShapeIdRef = useRef<string | null>(null)
+  const selectedObjectIdRef = useRef<string | null>(null)
 
 
   //--------------------- RENDERER
@@ -72,25 +72,26 @@ function Whiteboard() {
 
     renderBackground(context, { width, height })
     renderGrid(context, camera, { width, height })
-    renderShapes(
+    console.log(remotePreviews.current);
+    renderObjects(
       context,
-      document.shapesRef.current,
+      document.objectsRef.current,
       camera,
       interactionRef.current,
       remotePreviews.current
     )
 
-    const selectedShape = selectedShapeIdRef.current
-      ? getShapeById(
-        document.shapesRef.current,
-        selectedShapeIdRef.current
+    const selectedObject = selectedObjectIdRef.current
+      ? getObjectById(
+        document.objectsRef.current,
+        selectedObjectIdRef.current
       )
       : undefined
 
-    if (selectedShape) {
+    if (selectedObject) {
       renderSelection(
         context,
-        selectedShape,
+        selectedObject,
         camera,
       )
     }
@@ -132,8 +133,8 @@ function Whiteboard() {
     () =>
       createEditor({
         document,
-        selectedShapeIdRef,
-        setSelectedShapeId,
+        selectedObjectIdRef,
+        setSelectedObjectId,
         requestRender,
         collaboration
       }),
@@ -170,8 +171,8 @@ function Whiteboard() {
     tool,
     presence,
     editor,
-    setSelectedShapeId,
-    selectedShapeIdRef,
+    setSelectedObjectId,
+    selectedObjectIdRef,
   })
 
   const resizeCanvas = () => {
@@ -220,8 +221,8 @@ function Whiteboard() {
     }
   }, [])
 
-  const selectedShape = selectedShapeId
-    ? getShapeById(document.shapesRef.current, selectedShapeId)
+  const selectedObject = selectedObjectId
+    ? getObjectById(document.objectsRef.current, selectedObjectId)
     : undefined
 
   const handleCreate = () => {
@@ -253,7 +254,7 @@ function Whiteboard() {
                 command.boardObject.id,
                 {
                   type: "create",
-                  shape: command.boardObject,
+                  object: command.boardObject,
                 }
               );
 
@@ -265,7 +266,7 @@ function Whiteboard() {
                 command.boardObjectId,
                 {
                   type: "update",
-                  shapeId: command.boardObjectId,
+                  objectId: command.boardObjectId,
                   updates: command.updates,
                 }
               );
@@ -327,9 +328,9 @@ function Whiteboard() {
         tool={tool}
         setTool={setTool}
       />
-      {selectedShapeId && (
+      {selectedObjectId && (
         // <ObjectInspector editor={editor} />
-        <ObjectInspector shape={selectedShape} editor={editor} />
+        <ObjectInspector object={selectedObject} editor={editor} />
 
       )}
 

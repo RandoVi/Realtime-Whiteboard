@@ -1,4 +1,4 @@
-import type { Shape } from "../types/Shape";
+import type { Object } from "../types/Object";
 import type { EditorCommand } from "./EditorCommand";
 
 export type ExecuteOptions = {
@@ -11,16 +11,18 @@ export interface Editor {
     command: EditorCommand,
     options?: ExecuteOptions
   ): void;
-  
 
-  bind<K extends keyof Shape>(
-    property: K,
-    transform?: (value: string) => Shape[K]
+  getSelectedObject(): Object | undefined;
+  bindProperty(
+    property: string,
+    transform?: (value: string) => unknown
   ): (
     event: React.ChangeEvent<HTMLInputElement>
   ) => void;
 
-  deleteSelectedShape(): void;
+  deleteSelectedObject(): void;
 
-  duplicateSelectedShape(): void;
+  duplicateSelectedObject(): void;
+
+
 }

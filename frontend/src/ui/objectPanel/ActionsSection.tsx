@@ -14,7 +14,7 @@ export function ActionsSection({
 
       <button
         onClick={() =>
-          editor.duplicateSelectedShape()
+          editor.duplicateSelectedObject()
         }
       >
         Duplicate
@@ -22,7 +22,7 @@ export function ActionsSection({
 
       <button
         onClick={() =>
-          editor.deleteSelectedShape()
+          editor.deleteSelectedObject()
         }
       >
         Delete

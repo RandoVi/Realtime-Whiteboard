@@ -1,51 +1,46 @@
-import type { MutableRefObject } from "react"
-import type { Interaction } from "./Interaction"
-import type { Shape } from "../types/Shape"
-import { handleDrawingMouseUp } from "./handleDrawingMouseUp"
-import { handleResizeMouseUp } from "./handleResizeMouseUp"
-import type { Editor } from "../editor/Editor"
-import { handleMovingShapeMouseUp } from "./handleMovingShapeMouseUp"
+
+import { handleDrawingMouseUp } from "./drawing/finish"
+import { handleResizeMouseUp } from "./resizing/finishResize"
+
+import { handleMovingObjectMouseUp } from "./moving/finish"
+import { handlePanMouseUp } from "./panning/finishPan"
+import type { CanvasInteractionContext } from "./CanvasInteractionContext"
 
 type Args = {
-  interactionRef: MutableRefObject<Interaction>
-  editor: Editor
-  getSelectedShape: () => Shape | undefined
-
+  context: CanvasInteractionContext
 }
-// Handles the mouse up event for various interactions like drawing, moving, and resizing shapes
-export function handleMouseUp({
-  interactionRef,
-  getSelectedShape,
-  editor,
 
+// Handles the mouse up event for various interactions
+export function handleMouseUp({
+  context
 }: Args) {
 
-  if (
-    handleDrawingMouseUp({
-      interactionRef,
-      editor,
-    })
-  ) {
-    return
-  }
+  const interaction = context.interactionRef.current
 
-  if (
-    handleMovingShapeMouseUp({
-      interactionRef,
-      getSelectedShape,
-      editor,
-    })
-  ) {
-    return;
-  }
+  switch (interaction.type) {
 
-  if (
-    handleResizeMouseUp({
-      interactionRef,
-      getSelectedShape,
-      editor,
-    })
-  ) {
-    return
+    case "drawing":
+      handleDrawingMouseUp({
+        context
+      })
+      break
+
+    case "moving":
+      handleMovingObjectMouseUp({
+        context
+      })
+      break
+
+    case "resizing":
+      handleResizeMouseUp({
+        context
+      })
+      break
+
+    case "panning":
+      handlePanMouseUp({
+        context
+      })
+      break
   }
 }

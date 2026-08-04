@@ -1,4 +1,4 @@
-import type { Shape } from "../../types/Shape";
+import type { Object } from "../../types/Object";
 //TODO: Move elsewhere later!!!
 export type BoardUser = {
     id: string;
@@ -8,6 +8,6 @@ export type BoardUser = {
 export type BoardStateDTO = {
     boardId: string;
     ownerId: string;
-    objects: Shape[];
+    objects: Object[];
     users: BoardUser[];
 };

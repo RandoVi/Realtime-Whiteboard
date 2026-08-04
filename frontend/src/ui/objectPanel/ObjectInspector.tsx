@@ -1,21 +1,19 @@
 import type { Editor } from "../../editor/Editor";
-import type { Shape } from "../../types/Shape";
-import { PropertyRow } from "./PropertyRow";
+import type { Object } from "../../types/Object";
 import "./ObjectInspector.css";
 import { ActionsSection } from "./ActionsSection";
-import { AppearanceSection } from "./AppearanceSection";
-import { TransformSection } from "./TransformSection";
+import { PropertySection } from "./PropertySection";
 
 type Props = {
-    shape?: Shape;
+    object?: Object;
     editor: Editor;
 };
 
 export function ObjectInspector({
-    shape,
+    object,
     editor,
 }: Props) {
-    if (!shape) {
+    if (!object) {
         return null;
     }
 
@@ -26,17 +24,21 @@ export function ObjectInspector({
 
                 <h3>Selected</h3>
 
-                <span>{shape.type}</span>
+                <span>{object.type}</span>
 
             </header>
 
-            <TransformSection
-                shape={shape}
+            <PropertySection
+                title="Transform"
+                section="transform"
+                object={object}
                 editor={editor}
             />
 
-            <AppearanceSection
-                shape={shape}
+            <PropertySection
+                title="Appearance"
+                section="appearance"
+                object={object}
                 editor={editor}
             />
 
