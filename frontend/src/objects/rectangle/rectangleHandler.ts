@@ -15,37 +15,45 @@ import { getRectangleMoveUpdates } from "./getRectangleMoveUpdates"
 import type { ObjectProperty } from "../properties/ObjectProperty"
 
 const rectangleProperties: ObjectProperty<Rectangle>[] = [
-  {
-    key: "x",
-    label: "X",
-    type: "number",
-  },
-  {
-    key: "y",
-    label: "Y",
-    type: "number",
-  },
-  {
-    key: "width",
-    label: "Width",
-    type: "number",
-  },
-  {
-    key: "height",
-    label: "Height",
-    type: "number",
-  },
-  {
-    key: "fill",
-    label: "Fill",
-    type: "color",
-  },
-  {
-    key: "stroke",
-    label: "Stroke",
-    type: "color",
-  },
-]
+    {
+        key: "x",
+        label: "X",
+        type: "number",
+        section: "transform",
+    },
+    {
+        key: "y",
+        label: "Y",
+        type: "number",
+        section: "transform",
+    },
+    {
+        key: "width",
+        label: "Width",
+        type: "number",
+        section: "transform",
+        min: 1,
+    },
+    {
+        key: "height",
+        label: "Height",
+        type: "number",
+        section: "transform",
+        min: 1,
+    },
+    {
+        key: "fill",
+        label: "Fill",
+        type: "color",
+        section: "appearance",
+    },
+    {
+        key: "stroke",
+        label: "Stroke",
+        type: "color",
+        section: "appearance",
+    },
+];
 
 export const rectangleHandler: ObjectHandler<Rectangle> = {
     create: createRectangle,

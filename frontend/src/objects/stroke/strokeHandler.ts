@@ -12,8 +12,13 @@ const strokeProperties: ObjectProperty<Stroke>[] = [
         key: "stroke",
         label: "Stroke",
         type: "color",
+        section: "appearance",
+        min: 1,
+        max: 20,
     },
-]
+];
+
+
 
 export const strokeHandler: ObjectHandler<Stroke> = {
     create: createStroke,

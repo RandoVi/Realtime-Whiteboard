@@ -18,23 +18,28 @@ const circleProperties: ObjectProperty<Circle>[] = [
     key: "x",
     label: "X",
     type: "number",
+    section: "transform",
   },
   {
     key: "y",
     label: "Y",
     type: "number",
+    section: "transform",
   },
   {
     key: "radius",
     label: "Radius",
     type: "number",
+    section: "transform",
+    min: 1,
   },
   {
     key: "fill",
     label: "Fill",
     type: "color",
+    section: "appearance",
   },
-]
+];
 
 export const circleHandler: ObjectHandler<Circle> = {
     create: createCircle,

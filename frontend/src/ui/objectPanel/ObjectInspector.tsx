@@ -2,8 +2,7 @@ import type { Editor } from "../../editor/Editor";
 import type { Object } from "../../types/Object";
 import "./ObjectInspector.css";
 import { ActionsSection } from "./ActionsSection";
-import { AppearanceSection } from "./AppearanceSection";
-import { TransformSection } from "./TransformSection";
+import { PropertySection } from "./PropertySection";
 
 type Props = {
     object?: Object;
@@ -29,12 +28,16 @@ export function ObjectInspector({
 
             </header>
 
-            <TransformSection
+            <PropertySection
+                title="Transform"
+                section="transform"
                 object={object}
                 editor={editor}
             />
 
-            <AppearanceSection
+            <PropertySection
+                title="Appearance"
+                section="appearance"
                 object={object}
                 editor={editor}
             />

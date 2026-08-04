@@ -1,7 +1,22 @@
-export type ObjectProperty<T = any> = {
-    key: Extract<keyof T, string>
-    label: string
-    type: "color" | "text" | "number"
+export type PropertySection =
+    | "transform"
+    | "appearance";
 
-    editable?: boolean
-}
+export type PropertyType =
+    | "number"
+    | "color"
+    | "text";
+
+export type ObjectProperty<T = any> = {
+    key: Extract<keyof T, string>;
+    label: string;
+
+    type: PropertyType;
+    section: PropertySection;
+
+    editable?: boolean;
+
+    min?: number;
+    max?: number;
+    step?: number;
+};
