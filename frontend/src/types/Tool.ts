@@ -4,4 +4,5 @@ export type Tool =
   | 'select'
   | 'stroke'
   | 'circle'
+  | 'triangle'
   // | 'arrow'

@@ -17,7 +17,7 @@ export function BottomToolbar({
 
   return (
     <div className="bottom-toolbar">
-      <button className="tool-button" onClick={() => setTool('circle')}>
+      <button className="tool-button" onClick={() => setTool('triangle')}>
         <RectangleIcon color={'none'} />
       </button>
 
