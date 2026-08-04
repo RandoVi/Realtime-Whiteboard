@@ -5,7 +5,7 @@ type Args = {
     context: CanvasInteractionContext;
 };
 // Handles the mouse up event for an object that is being moved
-export function handleMovingObjectMouseUp({
+export function finishMoving({
     context
 }: Args): boolean {
 

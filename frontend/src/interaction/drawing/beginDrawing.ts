@@ -9,7 +9,7 @@ type Args = {
   context: CanvasInteractionContext;
 }
 // Handles the mouse down event when starting to draw an object
-export function handleDrawingMouseDown({
+export function beginDrawing({
   tool,
   world,
   context,

@@ -10,7 +10,7 @@ type Args = {
 }
 
 // Handle the mouse down event when starting to pan the canvas
-export function handlePanMouseDown({
+export function beginPan({
   pointer,
   canvas,
   context,

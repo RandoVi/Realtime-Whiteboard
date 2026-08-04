@@ -11,7 +11,7 @@ type Args = {
   requestRender: () => void
 }
 // Handles the mouse down event when moving a selected object
-export function beginMove({
+export function beginMoving({
   clickedObject,
   world,
   interactionRef,

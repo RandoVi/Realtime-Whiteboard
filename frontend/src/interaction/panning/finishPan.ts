@@ -4,7 +4,7 @@ type Args = {
     context: CanvasInteractionContext;
 };
 
-export function handlePanMouseUp({
+export function finishPan({
     context
 }: Args): boolean {
     const { interactionRef } = context;

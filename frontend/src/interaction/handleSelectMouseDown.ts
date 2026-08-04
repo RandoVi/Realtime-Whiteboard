@@ -2,8 +2,8 @@
 import type { Point } from "../types/Types"
 
 import { beginResize } from "./resizing/beginResize"
-import { beginMove } from "./moving/beginMove"
-import { handleSelectionClearMouseDown } from "./clearSelection"
+import { beginMoving } from "./moving/beginMoving"
+import { handleSelectionClearMouseDown } from "./selection/clearSelection"
 import type { CanvasInteractionContext } from "./CanvasInteractionContext"
 import { getTopObjectAtPoint } from "../objects/getTopObjectAtPoint"
 
@@ -15,7 +15,7 @@ type Args = {
 
 
 // Handles the mouse down event for selecting, moving, or resizing objects on the whiteboard
-export function handleSelectionMouseDown({
+export function handleSelectMouseDown({
   pointer,
   world,
   context,
@@ -51,7 +51,7 @@ export function handleSelectionMouseDown({
   );
   // If the user clicked on a object, select it and start moving it
   if (
-    beginMove({
+    beginMoving({
       clickedObject,
       world,
       interactionRef,

@@ -7,7 +7,7 @@ type Args = {
   context: CanvasInteractionContext
 }
 // Handles the mouse move event when drawing a object
-export function handleDrawingMouseMove({
+export function updateDrawing({
   world,
   context,
 }: Args): boolean {

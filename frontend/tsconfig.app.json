@@ -22,5 +22,5 @@
     "erasableSyntaxOnly": true,
     "noFallthroughCasesInSwitch": true
   },
-  "include": ["src", "src/interaction/moving/beginMove.ts"]
+  "include": ["src", "src/interaction/moving/beginMoving.ts"]
 }

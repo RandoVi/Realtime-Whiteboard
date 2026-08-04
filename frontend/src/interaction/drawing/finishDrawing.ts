@@ -5,7 +5,7 @@ type Args = {
   context: CanvasInteractionContext
 }
 // Handles the mouse up event when drawing a object
-export function handleDrawingMouseUp({
+export function finishDrawing({
   context
 }: Args): boolean {
   const { interactionRef, editor } = context

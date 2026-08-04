@@ -11,7 +11,7 @@ type Args = {
   context: CanvasInteractionContext;
 }
 // Handles the mouse move event for an object that is being moved
-export function handleMovingObjectMouseMove({
+export function updateMoving({
   world,
   context,
 }: Args) {
