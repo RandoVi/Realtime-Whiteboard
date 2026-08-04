@@ -1,31 +1,22 @@
 //resize update.ts
-import type { MutableRefObject } from "react"
-import type { Interaction } from "../Interaction"
 import { resizeObject } from "../../objects/resizeObject"
 import type { Point } from "../../types/Types"
-import type { Editor } from "../../editor/Editor"
-import type { Presence } from "../../socket/preview/Presence"
 import { getObjectResizeUpdates } from "../helpers/getObjectResizeUpdates"
-import type { Document } from "../../document/Document"
 import { getObjectById } from "../../objects/getObjectById"
 import { updateObjectWithPreview } from "../helpers/updateObjectWithPreview"
+import type { CanvasInteractionContext } from "../CanvasInteractionContext"
 
 type Args = {
     world: Point
-    interactionRef: MutableRefObject<Interaction>
-    document: Document
-    editor: Editor
-    presence: Presence
+    context: CanvasInteractionContext
 }
 
 export function handleResizeMouseMove({
     world,
-    interactionRef,
-    document,
-    editor,
-    presence,
+    context,
 }: Args): boolean {
-
+    
+    const { interactionRef, document, editor, presence } = context;
     if (
         interactionRef.current.type !== "resizing"
     ) {

@@ -1,9 +1,9 @@
 import type { MutableRefObject } from "react"
-import type { Object } from "../types/Object"
-import type { Camera, Point } from "../types/Types"
-import { getSelectionHandle } from "../selection/getSelectionHandle"
-import type { Interaction } from "./Interaction"
-import { getSelectionBounds } from "../selection/getSelectionBounds"
+import type { Object } from "../../types/Object"
+import type { Camera, Point } from "../../types/Types"
+import { getSelectionHandle } from "../../selection/getSelectionHandle"
+import type { Interaction } from "../Interaction"
+import { getSelectionBounds } from "../../selection/getSelectionBounds"
 
 type Args = {
   selectedObject: Object | undefined
@@ -13,7 +13,7 @@ type Args = {
   interactionRef: MutableRefObject<Interaction>
 }
 // Handles the mouse down event for resizing a selected object
-export function handleSelectionResizeMouseDown({
+export function beginResize({
   selectedObject,
   pointer,
   world,

@@ -1,17 +1,14 @@
-import type { MutableRefObject } from "react"
-import type { Interaction } from "../Interaction"
 import { normalizeObject } from "../../objects/normalizeObject"
-import type { Editor } from "../../editor/Editor"
+import type { CanvasInteractionContext } from "../CanvasInteractionContext"
 
 type Args = {
-  interactionRef: MutableRefObject<Interaction>
-  editor: Editor
+  context: CanvasInteractionContext
 }
 // Handles the mouse up event when drawing a object
 export function handleDrawingMouseUp({
-  interactionRef,
-  editor
+  context
 }: Args): boolean {
+  const { interactionRef, editor } = context
   if (interactionRef.current.type !== "drawing") {
     return false
   }

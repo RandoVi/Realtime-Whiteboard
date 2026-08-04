@@ -1,13 +1,13 @@
-import type { MutableRefObject } from "react";
-import type { Interaction } from "../Interaction";
+import type { CanvasInteractionContext } from "../CanvasInteractionContext";
 
 type Args = {
-    interactionRef: MutableRefObject<Interaction>;
+    context: CanvasInteractionContext;
 };
 
 export function handlePanMouseUp({
-    interactionRef,
+    context
 }: Args): boolean {
+    const { interactionRef } = context;
 
     if (interactionRef.current.type !== "panning") {
         return false;

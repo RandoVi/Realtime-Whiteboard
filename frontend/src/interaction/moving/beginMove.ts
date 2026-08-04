@@ -1,7 +1,7 @@
 import type { MutableRefObject } from "react"
-import type { Object } from "../types/Object"
-import type { Point } from "../types/Types"
-import type { Interaction } from "./Interaction"
+import type { Object } from "../../types/Object"
+import type { Point } from "../../types/Types"
+import type { Interaction } from "../Interaction"
 
 type Args = {
   clickedObject: Object | undefined
@@ -11,7 +11,7 @@ type Args = {
   requestRender: () => void
 }
 // Handles the mouse down event when moving a selected object
-export function handleSelectionMoveMouseDown({
+export function beginMove({
   clickedObject,
   world,
   interactionRef,

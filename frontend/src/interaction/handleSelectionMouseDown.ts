@@ -1,9 +1,9 @@
 
 import type { Point } from "../types/Types"
 
-import { handleSelectionResizeMouseDown } from "./handleSelectionResizeMouseDown"
-import { handleSelectionMoveMouseDown } from "./handleSelectionMoveMouseDown"
-import { handleSelectionClearMouseDown } from "./handleSelectionClearMouseDown"
+import { beginResize } from "./resizing/beginResize"
+import { beginMove } from "./moving/beginMove"
+import { handleSelectionClearMouseDown } from "./clearSelection"
 import type { CanvasInteractionContext } from "./CanvasInteractionContext"
 import { getTopObjectAtPoint } from "../objects/getTopObjectAtPoint"
 
@@ -33,7 +33,7 @@ export function handleSelectionMouseDown({
   const selectedObject = getSelectedObject();
   // Check if the user is trying to resize the selected object
   if (
-    handleSelectionResizeMouseDown({
+    beginResize({
       selectedObject,
       pointer,
       world,
@@ -51,7 +51,7 @@ export function handleSelectionMouseDown({
   );
   // If the user clicked on a object, select it and start moving it
   if (
-    handleSelectionMoveMouseDown({
+    beginMove({
       clickedObject,
       world,
       interactionRef,

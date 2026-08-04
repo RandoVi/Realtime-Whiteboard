@@ -1,30 +1,27 @@
-//move update.ts
-import type { MutableRefObject } from "react"
+
 import type { Point } from "../../types/Types"
-import type { Interaction } from "../Interaction"
 import { moveObject } from "../../objects/moveObject";
-import type { Editor } from "../../editor/Editor"
-import type { Presence } from "../../socket/preview/Presence"
 import { getObjectMoveUpdates } from "../helpers/getObjectMoveUpdates";
 import { getObjectById } from "../../objects/getObjectById";
-import type { Document } from "../../document/Document";
 import { updateObjectWithPreview } from "../helpers/updateObjectWithPreview";
+import type { CanvasInteractionContext } from "../CanvasInteractionContext";
 
 type Args = {
-  world: Point
-  interactionRef: MutableRefObject<Interaction>
-  document: Document
-  editor: Editor
-  presence: Presence
+  world: Point;
+  context: CanvasInteractionContext;
 }
 // Handles the mouse move event for an object that is being moved
 export function handleMovingObjectMouseMove({
   world,
-  interactionRef,
-  document,
-  editor,
-  presence,
+  context,
 }: Args) {
+
+    const {
+    interactionRef,
+    document,
+    editor,
+    presence,
+  } = context;
 
   const interaction = interactionRef.current
 

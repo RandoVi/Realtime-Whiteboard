@@ -1,14 +1,15 @@
-import type { MutableRefObject } from "react";
-import type { Interaction } from "../Interaction";
+import type { CanvasInteractionContext } from "../CanvasInteractionContext";
 
 
 type Args = {
-    interactionRef: MutableRefObject<Interaction>;
+    context: CanvasInteractionContext;
 };
 // Handles the mouse up event for an object that is being moved
 export function handleMovingObjectMouseUp({
-    interactionRef,
+    context
 }: Args): boolean {
+
+    const { interactionRef } = context;
 
     if (interactionRef.current.type !== "moving") {
         return false;

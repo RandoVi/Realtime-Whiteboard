@@ -1,8 +1,8 @@
 import type { Point } from "../types/Types"
 import { handleDrawingMouseMove } from "./drawing/update"
 import { handleMovingObjectMouseMove } from "./moving/update"
-import { handlePanMouseMove } from "./panning/handlePanMouseMove"
-import { handleResizeMouseMove } from "./resizing/update"
+import { handlePanMouseMove } from "./panning/updatePan"
+import { handleResizeMouseMove } from "./resizing/updateResize"
 import type { CanvasInteractionContext } from "./CanvasInteractionContext"
 
 type Args = {
@@ -24,10 +24,7 @@ export function handleMouseMove({
         case "resizing":
             handleResizeMouseMove({
                 world,
-                interactionRef: context.interactionRef,
-                document: context.document,
-                editor: context.editor,
-                presence: context.presence,
+                context,
             });
             break;
 
@@ -35,9 +32,7 @@ export function handleMouseMove({
         case "drawing":
             handleDrawingMouseMove({
                 world,
-                interactionRef: context.interactionRef,
-                requestRender: context.requestRender,
-                presence: context.presence,
+                context,
             });
             break;
 
@@ -45,10 +40,7 @@ export function handleMouseMove({
         case "moving":
             handleMovingObjectMouseMove({
                 world,
-                interactionRef: context.interactionRef,
-                document: context.document,
-                editor: context.editor,
-                presence: context.presence,
+                context,
             });
             break;
 
@@ -56,9 +48,7 @@ export function handleMouseMove({
         case "panning":
             handlePanMouseMove({
                 pointer,
-                cameraRef: context.cameraRef,
-                interactionRef: context.interactionRef,
-                requestRender: context.requestRender,
+                context,
             });
             break;
 

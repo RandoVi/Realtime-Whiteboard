@@ -1,23 +1,17 @@
-import type { MutableRefObject } from "react"
 import type { Point } from "../../types/Types"
-import type { Interaction } from "../Interaction"
-
 import { updatePreviewObject } from "../../objects/updatePreviewObject"
-import type { Presence } from "../../socket/preview/Presence"
+import type { CanvasInteractionContext } from "../CanvasInteractionContext"
 
 type Args = {
   world: Point
-  interactionRef: MutableRefObject<Interaction>
-  requestRender: () => void
-  presence: Presence
+  context: CanvasInteractionContext
 }
 // Handles the mouse move event when drawing a object
 export function handleDrawingMouseMove({
   world,
-  interactionRef,
-  requestRender,
-  presence,
+  context,
 }: Args): boolean {
+  const { interactionRef, presence, requestRender } = context;
   if (interactionRef.current.type !== "drawing") {
     return false
   }

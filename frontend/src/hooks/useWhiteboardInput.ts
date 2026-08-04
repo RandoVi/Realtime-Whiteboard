@@ -116,8 +116,7 @@ export function useWhiteboardInput({
     // Stop dragging or drawing when the mouse is released
     const handleMouseUpEvent = () => {
       handleMouseUp({
-        interactionRef,
-        editor,
+        context: contextRef.current!,
       });
 
       canvas.style.cursor = "grab";

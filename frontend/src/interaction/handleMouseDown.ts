@@ -3,7 +3,7 @@ import type { Tool } from "../types/Tool";
 import type { CanvasInteractionContext } from "./CanvasInteractionContext";
 
 import { handleSelectionMouseDown } from "./handleSelectionMouseDown";
-import { handlePanMouseDown } from "./panning/handlePanMouseDown";
+import { handlePanMouseDown } from "./panning/beginPan";
 import { handleDrawingMouseDown } from "./drawing/begin";
 
 

@@ -1,15 +1,15 @@
-//resize finish.ts
-import type { MutableRefObject } from "react"
-import type { Interaction } from "../Interaction"
+import type { CanvasInteractionContext } from "../CanvasInteractionContext"
 
 type Args = {
-  interactionRef: MutableRefObject<Interaction>
+  context: CanvasInteractionContext
 
 }
 // Handles the mouse up event for resizing a object
 export function handleResizeMouseUp({
-  interactionRef,
+  context
 }: Args): boolean  {
+
+  const { interactionRef } = context;
 
   if (
     interactionRef.current.type !== "resizing"

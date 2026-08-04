@@ -1,20 +1,20 @@
-import type { MutableRefObject } from "react"
-import type { Camera, Point } from "../../types/Types"
-import type { Interaction } from "../Interaction"
+
+import type { Point } from "../../types/Types"
+
+import type { CanvasInteractionContext } from "../CanvasInteractionContext"
 
 type Args = {
   pointer: Point
-  cameraRef: MutableRefObject<Camera>
-  interactionRef: MutableRefObject<Interaction>
-  requestRender: () => void
+  context: CanvasInteractionContext
 }
 // Handle the mouse move event when panning the canvas
 export function handlePanMouseMove({
   pointer,
-  cameraRef,
-  interactionRef,
-  requestRender,
+  context,
 }: Args): boolean {
+
+  const { interactionRef, cameraRef, requestRender } = context
+
   if (interactionRef.current.type !== "panning") {
     return false
   }
