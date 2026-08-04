@@ -20,12 +20,14 @@ const rectangleProperties: ObjectProperty<Rectangle>[] = [
         label: "X",
         type: "number",
         section: "transform",
+        editable: false,
     },
     {
         key: "y",
         label: "Y",
         type: "number",
         section: "transform",
+        editable: false,
     },
     {
         key: "width",
@@ -33,6 +35,7 @@ const rectangleProperties: ObjectProperty<Rectangle>[] = [
         type: "number",
         section: "transform",
         min: 1,
+        editable: false,
     },
     {
         key: "height",
@@ -40,18 +43,21 @@ const rectangleProperties: ObjectProperty<Rectangle>[] = [
         type: "number",
         section: "transform",
         min: 1,
+        editable: false,
     },
     {
         key: "fill",
         label: "Fill",
         type: "color",
         section: "appearance",
+        editable: true,
     },
     {
         key: "stroke",
         label: "Stroke",
         type: "color",
         section: "appearance",
+        editable: true,
     },
 ];
 

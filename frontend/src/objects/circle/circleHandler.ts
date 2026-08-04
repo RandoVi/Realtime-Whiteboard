@@ -19,12 +19,14 @@ const circleProperties: ObjectProperty<Circle>[] = [
     label: "X",
     type: "number",
     section: "transform",
+    editable: false,
   },
   {
     key: "y",
     label: "Y",
     type: "number",
     section: "transform",
+    editable: false,
   },
   {
     key: "radius",
@@ -32,12 +34,14 @@ const circleProperties: ObjectProperty<Circle>[] = [
     type: "number",
     section: "transform",
     min: 1,
+    editable: true,
   },
   {
     key: "fill",
     label: "Fill",
     type: "color",
     section: "appearance",
+    editable: true,
   },
 ];
 

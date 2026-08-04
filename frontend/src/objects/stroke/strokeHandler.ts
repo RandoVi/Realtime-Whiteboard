@@ -15,6 +15,7 @@ const strokeProperties: ObjectProperty<Stroke>[] = [
         section: "appearance",
         min: 1,
         max: 20,
+        editable: true,
     },
 ];
 
