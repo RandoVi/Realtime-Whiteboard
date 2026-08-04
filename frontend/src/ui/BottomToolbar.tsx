@@ -8,16 +8,18 @@ import PencilIcon from './icons/PencilIcon'
 type Props = {
   tool: Tool
   setTool: (tool: Tool) => void
+  onShapeClick?: () => void
 }
 export function BottomToolbar({
-  setTool
+  setTool,
+  onShapeClick
 }: Props) {
 
 
 
   return (
     <div className="bottom-toolbar">
-      <button className="tool-button" onClick={() => setTool('triangle')}>
+      <button className="tool-button" onClick={onShapeClick}>
         <RectangleIcon color={'none'} />
       </button>
 

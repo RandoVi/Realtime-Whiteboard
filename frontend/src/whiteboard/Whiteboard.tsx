@@ -17,6 +17,7 @@ import { SocketCollaboration } from "../socket/collaboration/SocketCollaboration
 import { BoardLobbyModal, type LobbyState } from '../lobby/BoardLobbyModal'
 import { SocketPresence } from '../socket/preview/SocketPresence'
 import type { PreviewData } from "../render/renderObjects";
+import { ShapeMenu } from '../ui/ShapeMenu'
 
 function Whiteboard() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
@@ -42,7 +43,7 @@ function Whiteboard() {
   const [lobbyState, setLobbyState] = useState<LobbyState>("lobby");
   const [boardId, setBoardId] = useState("");
 
-
+  const [showShapeMenu, setShowShapeMenu] = useState(false);
   const [tool, setTool] = useState<Tool>('pan')
   const [selectedObjectId, setSelectedObjectId] =
     useState<string | null>(null);
@@ -324,9 +325,17 @@ function Whiteboard() {
         onStart={handleStart}
       />
       {/* <ObjectPanel /> */}
+      {showShapeMenu && (
+        <ShapeMenu
+          setTool={setTool}
+          setShowShapeMenu={setShowShapeMenu}
+        />
+      )}
+
       <BottomToolbar
         tool={tool}
         setTool={setTool}
+        onShapeClick={() => setShowShapeMenu(prev => !prev)}
       />
       {selectedObjectId && (
         // <ObjectInspector editor={editor} />
