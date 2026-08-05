@@ -32,14 +32,14 @@ export class BoardGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
     this.logger.log("Initialized");
   }
       
-  handleConnection(client: any) {
+  handleConnection(client: Socket) {
     const { sockets } = this.io.sockets;
 
     this.logger.log(`CONNECTED - Client id: ${client.id} connected`);
     this.logger.debug(`Number of connected clients: ${sockets.size}`);
   }
 
-  handleDisconnect(client: any) {
+  handleDisconnect(client: Socket) {
     this.logger.log(`DISCONNECTED - Client id:${client.id} disconnected`);
   }
 

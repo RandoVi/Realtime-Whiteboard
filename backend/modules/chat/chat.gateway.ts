@@ -8,7 +8,7 @@ import {
   WebSocketServer,
 } from "@nestjs/websockets";
 
-import { Server } from "socket.io";
+import { Server, Socket } from "socket.io";
 
 @WebSocketGateway({
   transports: ["websocket"],
@@ -29,19 +29,19 @@ export class ChatGateway
     this.logger.log("Initialized");
   }
 
-  handleConnection(client: any) {
+  handleConnection(client: Socket) {
     const { sockets } = this.io.sockets;
 
     this.logger.log(`Client id: ${client.id} connected`);
     this.logger.debug(`Number of connected clients: ${sockets.size}`);
   }
 
-  handleDisconnect(client: any) {
+  handleDisconnect(client: Socket) {
     this.logger.log(`Client id:${client.id} disconnected`);
   }
 
   @SubscribeMessage("ping")
-  handleMessage(client: any, data: any) {
+  handleMessage(client: Socket, data: JSON) {
     this.logger.log(`Message received from client id: ${client.id}`);
     this.logger.debug(`Payload: ${data}`);
     return {
