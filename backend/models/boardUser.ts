@@ -9,5 +9,5 @@ export class BoardUser {
     username!: string;
 
     @IsString()
-    colour!: UserColors;
+    color!: UserColors;
 }
