@@ -1,6 +1,5 @@
 import { IsString } from "class-validator";
-import { UserColors } from "../common/enum/UserColors";
-
+import { UserColor } from "../managers/ColorManager";
 export class BoardUser {
     @IsString()
     id!: string;
@@ -9,5 +8,5 @@ export class BoardUser {
     username!: string;
 
     @IsString()
-    color!: UserColors;
+    color?: UserColor;
 }
