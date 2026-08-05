@@ -7,7 +7,7 @@ import { randomUUID } from "crypto";
 import { BoardCommandDTO } from "./dto/BoardCommandDTO";
 import { BoardCommand } from "../../common/enum/BoardCommand";
 import { BoardObjectCommandDTO } from "../../models/boardObjectCommandDTO";
-import { BoardUser } from "../../models/user";
+import { BoardUser } from "../../models/boardUser";
 import { io } from "socket.io-client";
 import { BoardStateDTO } from "./dto/BoardStateDTO";
 

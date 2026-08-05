@@ -8,7 +8,7 @@ type Args = {
   context: CanvasInteractionContext
 }
 // Handle the mouse move event when panning the canvas
-export function handlePanMouseMove({
+export function updatePan({
   pointer,
   context,
 }: Args): boolean {

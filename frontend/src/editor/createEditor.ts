@@ -5,7 +5,7 @@ import type { ChangeEvent } from "react";
 import { updateObject } from "./commands/updateObject";
 import { deleteObject } from "./commands/deleteObject";
 import type { EditorCommand } from "./EditorCommand";
-import { createObject } from "./commands/createObject";
+import { insertObject } from "./commands/insertObject";
 import type { Document } from "../document/Document";
 import type { Collaboration } from "../socket/collaboration/Collaboration";
 import type { ExecuteOptions } from "./Editor";
@@ -109,7 +109,7 @@ export function createEditor({
   function apply(command: EditorCommand) {
     switch (command.type) {
       case "createBoardObject":
-        createObject({
+        insertObject({
           objects: document.objectsRef.current,
           object: command.boardObject,
         });

@@ -5,7 +5,7 @@ import { renderBackground } from '../render/renderBackground'
 import { useWhiteboardInput } from '../hooks/useWhiteboardInput'
 import { renderObjects } from '../render/renderObjects'
 import './Whiteboard.css'
-import { BottomToolbar } from '../ui/BottomToolbar'
+import { BottomToolbar } from '../ui/toolbars/BottomToolbar'
 import type { Tool } from '../types/Tool'
 import { renderSelection } from '../render/renderSelection'
 import { getObjectById } from '../objects/getObjectById'
@@ -17,6 +17,8 @@ import { SocketCollaboration } from "../socket/collaboration/SocketCollaboration
 import { BoardLobbyModal, type LobbyState } from '../lobby/BoardLobbyModal'
 import { SocketPresence } from '../socket/preview/SocketPresence'
 import type { PreviewData } from "../render/renderObjects";
+import { ShapeMenu } from '../ui/ShapeMenu'
+import { ShapeSettings } from '../ui/ShapeSettings'
 
 function Whiteboard() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
@@ -41,6 +43,17 @@ function Whiteboard() {
   //lobby state and id
   const [lobbyState, setLobbyState] = useState<LobbyState>("lobby");
   const [boardId, setBoardId] = useState("");
+
+  const [showShapeMenu, setShowShapeMenu] = useState(false);
+  const [showShapeSettings, setShowShapeSettings] = useState(false);
+  const [shapeSettings, setShapeSettings] = useState({
+    fill: "#ffffff",
+    stroke: "#000000",
+  });
+  const closeShapeSettings = () => {
+    setShowShapeSettings(false);
+  };
+
 
 
   const [tool, setTool] = useState<Tool>('pan')
@@ -72,14 +85,28 @@ function Whiteboard() {
 
     renderBackground(context, { width, height })
     renderGrid(context, camera, { width, height })
-    console.log(remotePreviews.current);
-    renderObjects(
+    const {
+      hasAnimatedObjects,
+      finishedObjects,
+    } = renderObjects(
       context,
       document.objectsRef.current,
       camera,
       interactionRef.current,
       remotePreviews.current
-    )
+    );
+
+    for (const object of finishedObjects) {
+      editor.execute({
+        type: "deleteBoardObject",
+        boardObjectId: object.id,
+      });
+    }
+
+    if (hasAnimatedObjects) {
+      requestRender();
+    }
+
 
     const selectedObject = selectedObjectIdRef.current
       ? getObjectById(
@@ -173,6 +200,8 @@ function Whiteboard() {
     editor,
     setSelectedObjectId,
     selectedObjectIdRef,
+    onStartInteraction: closeShapeSettings,
+    objectStyle: shapeSettings,
   })
 
   const resizeCanvas = () => {
@@ -324,9 +353,40 @@ function Whiteboard() {
         onStart={handleStart}
       />
       {/* <ObjectPanel /> */}
+      {showShapeMenu && (
+        <ShapeMenu
+          onSelectShape={(tool) => {
+            console.log("Shape selected:", tool);
+            setTool(tool);
+            setShowShapeMenu(false);
+            setShowShapeSettings(true);
+          }}
+        />
+      )}
+
+      {showShapeSettings && (
+        <ShapeSettings
+          fill={shapeSettings.fill}
+          stroke={shapeSettings.stroke}
+          setFill={(fill) =>
+            setShapeSettings(prev => ({
+              ...prev,
+              fill
+            }))
+          }
+          setStroke={(stroke) =>
+            setShapeSettings(prev => ({
+              ...prev,
+              stroke
+            }))
+          }
+        />
+      )}
+
       <BottomToolbar
         tool={tool}
         setTool={setTool}
+        onShapeClick={() => setShowShapeMenu(prev => !prev)}
       />
       {selectedObjectId && (
         // <ObjectInspector editor={editor} />

@@ -2,12 +2,18 @@ import type { SelectionBounds } from "../../selection/getSelectionBounds"
 import type { Object } from "../../types/Object"
 import type { Camera, Point } from "../../types/Types"
 import type { ResizeHandle } from "../../types/selection"
+import type { ObjectStyle } from "../ObjectStyle"
 import type { ObjectProperty } from "../properties/ObjectProperty"
 
+// Interface for handling different object types in the whiteboard application. 
+// It defines methods for creating, moving, resizing, rendering, hit testing, 
+// normalizing, updating previews, getting bounds, getting resize handles, 
+// getting move and resize updates, duplicating objects, and managing object properties.
 export interface ObjectHandler<T extends Object = Object> {
 
     create?: (
-        point: Point
+        point: Point,
+        style: ObjectStyle
     ) => T
 
     move?: (
@@ -66,6 +72,14 @@ export interface ObjectHandler<T extends Object = Object> {
     duplicate?: (
         object: T
     ) => T
+
+    isAnimated?: (
+        object: T
+    ) => boolean
+
+    isFinished?: (
+        object: T
+    ) => boolean
 
     properties?: ObjectProperty<T>[]
 }

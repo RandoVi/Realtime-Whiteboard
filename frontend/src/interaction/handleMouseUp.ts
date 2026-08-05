@@ -1,9 +1,8 @@
 
-import { handleDrawingMouseUp } from "./drawing/finish"
+import { finishDrawing } from "./drawing/finishDrawing"
 import { handleResizeMouseUp } from "./resizing/finishResize"
-
-import { handleMovingObjectMouseUp } from "./moving/finish"
-import { handlePanMouseUp } from "./panning/finishPan"
+import { finishMoving } from "./moving/finishMoving"
+import { finishPan } from "./panning/finishPan"
 import type { CanvasInteractionContext } from "./CanvasInteractionContext"
 
 type Args = {
@@ -20,13 +19,13 @@ export function handleMouseUp({
   switch (interaction.type) {
 
     case "drawing":
-      handleDrawingMouseUp({
+      finishDrawing({
         context
       })
       break
 
     case "moving":
-      handleMovingObjectMouseUp({
+      finishMoving({
         context
       })
       break
@@ -38,7 +37,7 @@ export function handleMouseUp({
       break
 
     case "panning":
-      handlePanMouseUp({
+      finishPan({
         context
       })
       break

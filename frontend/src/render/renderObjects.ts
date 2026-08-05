@@ -20,13 +20,29 @@ export function renderObjects(
   camera: Camera,
   interaction: Interaction,
   remotePreviews: Map<string, PreviewData>
-) {
+): {
+  hasAnimatedObjects: boolean;
+  finishedObjects: Object[];
+} {
+
+  let hasAnimatedObjects = false;
+  const finishedObjects: Object[] = [];
+
   for (const object of objects) {
     if (remotePreviews.has(object.id)) {
       continue;
     }
 
     renderObject(context, object, camera)
+    const handler = getObjectHandler(object);
+
+    if (handler.isAnimated?.(object)) {
+      hasAnimatedObjects = true;
+    }
+
+    if (handler.isFinished?.(object)) {
+      finishedObjects.push(object);
+    }
   }
 
   if (interaction.type === "drawing") {
@@ -70,6 +86,10 @@ export function renderObjects(
       );
     }
   }
+  return {
+    hasAnimatedObjects,
+    finishedObjects,
+  };
 }
 
 function renderObject(

@@ -1,7 +1,7 @@
 import type { Point } from "../types/Types"
-import { handleDrawingMouseMove } from "./drawing/update"
-import { handleMovingObjectMouseMove } from "./moving/update"
-import { handlePanMouseMove } from "./panning/updatePan"
+import { updateDrawing } from "./drawing/updateDrawing"
+import { updateMoving } from "./moving/updateMove"
+import { updatePan } from "./panning/updatePan"
 import { handleResizeMouseMove } from "./resizing/updateResize"
 import type { CanvasInteractionContext } from "./CanvasInteractionContext"
 
@@ -30,7 +30,7 @@ export function handleMouseMove({
 
 
         case "drawing":
-            handleDrawingMouseMove({
+            updateDrawing({
                 world,
                 context,
             });
@@ -38,7 +38,7 @@ export function handleMouseMove({
 
 
         case "moving":
-            handleMovingObjectMouseMove({
+            updateMoving({
                 world,
                 context,
             });
@@ -46,7 +46,7 @@ export function handleMouseMove({
 
 
         case "panning":
-            handlePanMouseMove({
+            updatePan({
                 pointer,
                 context,
             });

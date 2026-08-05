@@ -1,4 +1,4 @@
-import { BoardUser } from "../models/user";
+import { BoardUser } from "../models/boardUser";
 
 export class UserManager {
 

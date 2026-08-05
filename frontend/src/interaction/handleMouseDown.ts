@@ -2,9 +2,9 @@ import type { Point } from "../types/Types";
 import type { Tool } from "../types/Tool";
 import type { CanvasInteractionContext } from "./CanvasInteractionContext";
 
-import { handleSelectionMouseDown } from "./handleSelectionMouseDown";
-import { handlePanMouseDown } from "./panning/beginPan";
-import { handleDrawingMouseDown } from "./drawing/begin";
+import { handleSelectMouseDown } from "./handleSelectMouseDown";
+import { beginPan } from "./panning/beginPan";
+import { beginDrawing } from "./drawing/beginDrawing";
 
 
 type Args = {
@@ -27,7 +27,7 @@ export function handleMouseDown({
     switch (tool) {
 
         case "select":
-            handleSelectionMouseDown({
+            handleSelectMouseDown({
                 pointer,
                 world,
                 context,
@@ -36,7 +36,7 @@ export function handleMouseDown({
 
 
         case "pan":
-            handlePanMouseDown({
+            beginPan({
                 pointer,
                 context,
                 canvas,
@@ -45,7 +45,7 @@ export function handleMouseDown({
 
 
         default:
-            handleDrawingMouseDown({
+            beginDrawing({
                 tool,
                 world,
                 context,

@@ -62,8 +62,8 @@ export class SocketCollaboration implements Collaboration {
                 type: "JOIN",
                 id: boardId,
                 user: {
-                    id: clientId,
-                    username: "HOST" // or whatever you'll use later
+                    // id: clientId,
+                    username: "Pirate" // or whatever you'll use later
                 }
             }
         );
