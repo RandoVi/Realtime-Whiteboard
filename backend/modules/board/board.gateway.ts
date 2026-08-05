@@ -8,7 +8,6 @@ import { BoardCommandDTO } from "./dto/BoardCommandDTO";
 import { BoardCommand } from "../../common/enum/BoardCommand";
 import { BoardObjectCommandDTO } from "../../models/boardObjectCommandDTO";
 import { BoardUser } from "../../models/boardUser";
-import { io } from "socket.io-client";
 import { BoardStateDTO } from "./dto/BoardStateDTO";
 
 @WebSocketGateway({
@@ -33,7 +32,7 @@ export class BoardGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
     this.logger.log("Initialized");
   }
       
-  handleConnection(client: any, ...args: any[]) {
+  handleConnection(client: any) {
     const { sockets } = this.io.sockets;
 
     this.logger.log(`CONNECTED - Client id: ${client.id} connected`);
@@ -50,12 +49,12 @@ export class BoardGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
         @MessageBody() data: BoardCommandDTO
     ) {
         switch (data.type) {
-            case BoardCommand.CREATE:
+            case BoardCommand.CREATE: {
 
                 const boardId = randomUUID();
                 const hostId = randomUUID();
                 const board = await this.boards.createBoardAndPersist(boardId, hostId);
-                
+
                 if (!board) {
                     console.log('No "board" in socket(CREATE - BOARD)')
                     break;
@@ -74,7 +73,8 @@ export class BoardGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
                 });
                 console.log("Board created with id: " + board.id)
                 break;
-            case BoardCommand.JOIN:
+            }
+            case BoardCommand.JOIN:{
                 if (!data.id) {
                     console.log('No "id" in socket(JOIN - BOARD)')
                     socket.emit("join-board-response", "No boardId sent with socket(missing)")
@@ -108,7 +108,8 @@ export class BoardGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
                     console.log("User " + data.user.username + " joined  the board: " + data.id)
                 }
                 break;
-            case BoardCommand.LEAVE:
+            }
+            case BoardCommand.LEAVE:{
                 if (!data.id) {
                     console.log('No "id" in socket(LEAVE - BOARD)')
                     break
@@ -135,6 +136,7 @@ export class BoardGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
                     console.log("User " + data.user.username + " left  the board: " + data.id)
                 }
                 break;
+            }
             case BoardCommand.GET: {
                 if (!data.id) {
                     console.log('No "id" in socket(GET - BOARD)')

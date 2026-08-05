@@ -1,4 +1,3 @@
-import { userInfo } from "node:os";
 import { BoardUser } from "../models/boardUser";
 import { UserColor, ColorManager } from "./ColorManager";
 

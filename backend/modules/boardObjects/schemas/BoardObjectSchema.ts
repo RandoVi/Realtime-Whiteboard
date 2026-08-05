@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
-import { HydratedDocument, Types } from "mongoose";
+import { HydratedDocument } from "mongoose";
 
 
 export type BoardObjectDocument = HydratedDocument<BoardObject>;
@@ -14,31 +14,31 @@ export class BoardObject {
   color?: string;
 
   @Prop({ required: false, type: Number })
-  x?: Number;
+  x?: number;
 
   @Prop({ required: false, type: Number })
-  y?: Number;
+  y?: number;
 
   @Prop({ required: false, type: Number })
-  width?: Number;
+  width?: number;
 
   @Prop({ required: false, type: Number })
-  height?: Number;
+  height?: number;
 
   @Prop({ required: false, type: Number })
-  radius?: Number;
+  radius?: number;
 
   @Prop({ required: false, type: String })
-  fill?: String;
+  fill?: string;
 
   @Prop({ required: false, type: String })
-  stroke?: String;
+  stroke?: string;
 
   @Prop({ required: false, type: Number })
-  updatedAt?: Number;
+  updatedAt?: number;
 
   @Prop({ required: false, type: Number })
-  createdAt?: Number;
+  createdAt?: number;
 }
 
 export const BoardObjectSchema = SchemaFactory.createForClass(BoardObject);
