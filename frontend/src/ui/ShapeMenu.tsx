@@ -1,18 +1,19 @@
 import type { Tool } from "../types/Tool";
 
 type Props = {
-    setTool: (tool: Tool) => void;
-    setShowShapeMenu: (show: boolean) => void;
+    onSelectShape: (tool: Tool) => void;
 };
 
-export function ShapeMenu({ setTool, setShowShapeMenu }: Props) {
+export function ShapeMenu({ onSelectShape }: Props) {
+    console.log("ShapeMenu rendered");
     return (
         <div className="shape-menu">
             <button
                 className="tool-button"
                 onClick={() => {
-                    setTool("rectangle");
-                    setShowShapeMenu(false);
+                    onSelectShape("rectangle");
+                    // setShowShapeMenu(false);
+                    // setShowShapeSettings(true);
                 }}
             >
                 Rectangle
@@ -21,8 +22,9 @@ export function ShapeMenu({ setTool, setShowShapeMenu }: Props) {
             <button
                 className="tool-button"
                 onClick={() => {
-                    setTool("triangle");
-                    setShowShapeMenu(false);
+                    onSelectShape("triangle");
+                    // setShowShapeMenu(false);
+                    // setShowShapeSettings(true);
                 }}
             >
                 Triangle
@@ -31,11 +33,21 @@ export function ShapeMenu({ setTool, setShowShapeMenu }: Props) {
             <button
                 className="tool-button"
                 onClick={() => {
-                    setTool("circle");
-                    setShowShapeMenu(false);
+                    onSelectShape("circle");
+                    // setShowShapeMenu(false);
+                    // setShowShapeSettings(true);
                 }}
             >
                 Circle
+            </button>
+
+            <button
+                className="tool-button"
+                onClick={() => {
+                    onSelectShape("laser");
+                }}
+            >
+                Laser
             </button>
         </div>
     );

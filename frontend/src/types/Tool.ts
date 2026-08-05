@@ -5,4 +5,5 @@ export type Tool =
   | 'stroke'
   | 'circle'
   | 'triangle'
+  | 'laser'
   // | 'arrow'

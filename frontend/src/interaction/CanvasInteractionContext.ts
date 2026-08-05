@@ -5,6 +5,7 @@ import type { Editor } from "../editor/Editor";
 import type { Object } from "../types/Object";
 import type { Presence } from "../socket/preview/Presence";
 import type { Document } from "../document/Document";
+import type { ObjectStyle } from "../objects/ObjectStyle";
 
 export interface CanvasInteractionContext {
 
@@ -23,4 +24,6 @@ export interface CanvasInteractionContext {
     getSelectedObject: () => Object | undefined;
 
     selectObject: (id: string | null) => void;
+
+    objectStyle: ObjectStyle;
 }

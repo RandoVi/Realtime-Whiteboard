@@ -1,15 +1,25 @@
 import type { Point } from "../../types/Types";
 import { DEFAULT_STROKE_WIDTH } from "../defaults";
-import type { Stroke } from "./Stroke";
 import type { ObjectStyle } from "../ObjectStyle";
+import type { Laser } from "./Laser";
 
 
-export function createStroke(point: Point, style: ObjectStyle): Stroke {
+export function createLaser(
+    point: Point,
+    style: ObjectStyle
+): Laser {
+
     return {
         id: crypto.randomUUID(),
-        type: "stroke",
+
+        type: "laser",
+
         points: [point],
+
         stroke: style.stroke,
+
         strokeWidth: DEFAULT_STROKE_WIDTH,
+
+        createdAt: performance.now(),
     };
 }

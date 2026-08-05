@@ -18,9 +18,11 @@ export function useWhiteboardInput({
   tool,
   editor,
   presence,
-
   setSelectedObjectId,
   selectedObjectIdRef,
+  onStartInteraction,
+  objectStyle,
+  
 }: UseWhiteboardInputProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
 
@@ -52,6 +54,7 @@ export function useWhiteboardInput({
     requestRender,
     getSelectedObject: editor.getSelectedObject,
     selectObject,
+    objectStyle,
   };
 
   // Handle mouse and keyboard events for the whiteboard
@@ -97,7 +100,7 @@ export function useWhiteboardInput({
     const handleMouseDown = (event: MouseEvent) => {
 
       if (event.button !== 0) return;
-
+      onStartInteraction();
       const pointer = getPointer(event, canvas);
 
       const world = screenToWorld(

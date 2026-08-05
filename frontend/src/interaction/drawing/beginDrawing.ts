@@ -14,7 +14,7 @@ export function beginDrawing({
   world,
   context,
 }: Args): boolean {
-  const object = createObject(tool, world)
+  const object = createObject(tool, world, context.objectStyle)
 
   if (!object) {
     return false

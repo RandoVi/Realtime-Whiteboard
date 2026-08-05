@@ -7,7 +7,7 @@ type Args = {
 }
 
 
-export function createObject({
+export function insertObject({
   objects,
   object,
 }: Args) {

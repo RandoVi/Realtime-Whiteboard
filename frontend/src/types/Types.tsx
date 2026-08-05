@@ -1,9 +1,9 @@
 import type { Editor } from "../editor/Editor"
 import type { Interaction } from "../interaction/Interaction"
-
 import type { Tool } from "./Tool"
 import type { RefObject } from "react"
 import type { Document } from "../document/Document"
+import type { ObjectStyle } from "../objects/ObjectStyle"
 
 export type Point = {
   x: number
@@ -39,4 +39,6 @@ export type UseWhiteboardInputProps = {
     React.SetStateAction<string | null>
   >
   selectedObjectIdRef: React.RefObject<string | null>
+  onStartInteraction: () => void;
+  objectStyle: ObjectStyle;
 }

@@ -18,6 +18,7 @@ import { BoardLobbyModal, type LobbyState } from '../lobby/BoardLobbyModal'
 import { SocketPresence } from '../socket/preview/SocketPresence'
 import type { PreviewData } from "../render/renderObjects";
 import { ShapeMenu } from '../ui/ShapeMenu'
+import { ShapeSettings } from '../ui/ShapeSettings'
 
 function Whiteboard() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
@@ -44,6 +45,17 @@ function Whiteboard() {
   const [boardId, setBoardId] = useState("");
 
   const [showShapeMenu, setShowShapeMenu] = useState(false);
+  const [showShapeSettings, setShowShapeSettings] = useState(false);
+  const [shapeSettings, setShapeSettings] = useState({
+    fill: "#ffffff",
+    stroke: "#000000",
+  });
+  const closeShapeSettings = () => {
+    setShowShapeSettings(false);
+  };
+
+
+
   const [tool, setTool] = useState<Tool>('pan')
   const [selectedObjectId, setSelectedObjectId] =
     useState<string | null>(null);
@@ -73,14 +85,28 @@ function Whiteboard() {
 
     renderBackground(context, { width, height })
     renderGrid(context, camera, { width, height })
-    console.log(remotePreviews.current);
-    renderObjects(
+    const {
+      hasAnimatedObjects,
+      finishedObjects,
+    } = renderObjects(
       context,
       document.objectsRef.current,
       camera,
       interactionRef.current,
       remotePreviews.current
-    )
+    );
+
+    for (const object of finishedObjects) {
+      editor.execute({
+        type: "deleteBoardObject",
+        boardObjectId: object.id,
+      });
+    }
+
+    if (hasAnimatedObjects) {
+      requestRender();
+    }
+
 
     const selectedObject = selectedObjectIdRef.current
       ? getObjectById(
@@ -174,6 +200,8 @@ function Whiteboard() {
     editor,
     setSelectedObjectId,
     selectedObjectIdRef,
+    onStartInteraction: closeShapeSettings,
+    objectStyle: shapeSettings,
   })
 
   const resizeCanvas = () => {
@@ -327,8 +355,31 @@ function Whiteboard() {
       {/* <ObjectPanel /> */}
       {showShapeMenu && (
         <ShapeMenu
-          setTool={setTool}
-          setShowShapeMenu={setShowShapeMenu}
+          onSelectShape={(tool) => {
+            console.log("Shape selected:", tool);
+            setTool(tool);
+            setShowShapeMenu(false);
+            setShowShapeSettings(true);
+          }}
+        />
+      )}
+
+      {showShapeSettings && (
+        <ShapeSettings
+          fill={shapeSettings.fill}
+          stroke={shapeSettings.stroke}
+          setFill={(fill) =>
+            setShapeSettings(prev => ({
+              ...prev,
+              fill
+            }))
+          }
+          setStroke={(stroke) =>
+            setShapeSettings(prev => ({
+              ...prev,
+              stroke
+            }))
+          }
         />
       )}
 
