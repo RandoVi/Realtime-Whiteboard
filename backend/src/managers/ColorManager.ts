@@ -17,7 +17,7 @@ export class ColorManager {
     private readonly validColors: UserColor[];
 
     constructor(initialColors: UserColor[]) {
-        this.validColors = Object.values(initialColors);
+        this.validColors = [...initialColors];
         this.availableColors = [...initialColors];
         this.inUseColors = new Set();
     }
@@ -43,7 +43,7 @@ export class ColorManager {
     }
 
     returnColor(color:UserColor): boolean {
-        if(this.validColors.includes(color)) {
+        if(!this.validColors.includes(color)) {
             console.error(`Cannot return invalid color: ${color}`)
             return false;
         }

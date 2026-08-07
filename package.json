@@ -1,0 +1,8 @@
+{
+  "name": "realtime-whiteboard",
+  "private": true,
+  "workspaces": [
+    "backend",
+    "common"
+  ]
+}

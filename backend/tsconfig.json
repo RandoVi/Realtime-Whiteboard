@@ -1,7 +1,6 @@
 {
-  // Visit https://aka.ms/tsconfig to read more about this file
   "compilerOptions": {
-    "rootDir": "..",
+    "rootDir": "./src",
     "outDir": "./dist",
 
     "module": "commonjs",
@@ -26,10 +25,11 @@
     "skipLibCheck": true,
 
     "experimentalDecorators": true,
-    "emitDecoratorMetadata": true,
-    "paths": {
-      "@common/*": ["../common/*"]
-    }
+    "emitDecoratorMetadata": true
   },
-  "include": ["**/*", "common/**/*"]
+  "watchOptions": {
+    "watchFile": "priorityPollingInterval",
+    "watchDirectory": "dynamicPriorityPolling",
+    "fallbackPolling": "dynamicPriority"
+  }
 }

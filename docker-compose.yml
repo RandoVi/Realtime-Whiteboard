@@ -15,11 +15,10 @@ services:
     depends_on:
       - mongo
     volumes:
-      - ./backend:/app # Mounts backend code to /app
-      - ./common:/common
+      - ./:/app # Mounts backend code to /app
       - /app/node_modules
 
-    command: npm run start-dev
+    command: sh -c "npm run build --workspace=@whiteboard/common && npm run start-dev --workspace=backend"
 
   mongo:
     image: mongo:8

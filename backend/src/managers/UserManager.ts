@@ -5,17 +5,17 @@ export class UserManager {
 
     private readonly users = new Map<string, BoardUser>();
 
-    private readonly colors = new ColorManager([UserColor.BLACK, UserColor.BLUE, UserColor.BROWN, UserColor.CYAN,
-        UserColor.GREEN, UserColor.ORANGE, UserColor.PINK, UserColor.PURPLE, UserColor.RED, UserColor.YELLOW]);
+    private readonly colors = new ColorManager([UserColor.RED, UserColor.GREEN, UserColor.BLUE, UserColor.BROWN, UserColor.CYAN,
+        UserColor.ORANGE, UserColor.PINK, UserColor.PURPLE, UserColor.BLACK,  UserColor.YELLOW]);
     
     add(user: BoardUser) {
         const color = this.colors.takeColor();
         if (color !== null) {
             user.color = color;
-            this.users.set(user.id, user);
+            this.users.set(user.userId, user);
         } else {
-            console.log("No colors available, falling back to default(BLACK).")
-            user.color = UserColor.BLACK;
+            console.log("No colors available, falling back to default(RED).")
+            user.color = UserColor.RED;
         }
     }
 

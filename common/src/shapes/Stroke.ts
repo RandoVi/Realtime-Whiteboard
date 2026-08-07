@@ -1,5 +1,4 @@
-import type { Point } from "../../types/Types"
-
+import type { Point } from "../types/Object";
 export type Stroke = {
   id: string
 

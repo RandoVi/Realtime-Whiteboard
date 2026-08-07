@@ -1,5 +1,5 @@
 import { BoardObject } from "../modules/boardObjects/schemas/BoardObjectSchema";
-import { ObjectSelectionCommand } from "../../common/types/ObjectSelectionCommand"
+import { ObjectSelectionCommand } from  "@whiteboard/common";
 export type DocumentCommand = {
   id: string;
   userId: string;

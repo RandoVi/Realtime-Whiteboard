@@ -60,13 +60,14 @@ export class BoardGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
                     break;
                 }
 
-                const hostUser = new BoardUser(hostId, "HOST");
+                const hostUser = new BoardUser(hostId, data.user!.username);
 
                 if (!hostUser) {
                     console.error("ERROR:No user to add, breaking the flow")
                     break;
                 }
                 board.users.add(hostUser);
+                console.log("Host color = " + hostUser.color + "  Host name: " + hostUser.username)
                 socket.join(board.id);
 
                 const dto = new BoardStateDTO(hostId, boardId, hostId, board.objects.getAll(), board.users.getAll());
@@ -106,10 +107,7 @@ export class BoardGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
                     const dto = new BoardStateDTO(newUserId, board.id, board.ownerId, board.objects.getAll(), board.users.getAll());
                     console.log(dto);
                     socket.emit("board-state", dto);
-                    socket.broadcast.to(board.id).emit("user-joined-board", {
-                        userId: newUser.id,
-                        username: newUser.username
-                    })
+                    socket.broadcast.to(board.id).emit("user-joined-board", newUser)
                     console.log("User " + newUser.username + " joined  the board(with id): " + data.id)
                 }
                 break;
@@ -132,10 +130,10 @@ export class BoardGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
                         console.error('ERROR: No "user" in socket(JOIN)')
                         break
                     }
-                    board.users.remove(data.user.id);
+                    board.users.remove(data.user.userId);
                     socket.leave(board.id);
                     socket.broadcast.to(board.id).emit("user-left-board", {
-                        userId: data.user.id,
+                        userId: data.user.userId,
                         username: data.user.username
                     })
                     console.log("User " + data.user.username + " left  the board: " + data.id)

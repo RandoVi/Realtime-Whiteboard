@@ -2,7 +2,7 @@ import { IsString } from "class-validator";
 import { UserColor } from "../managers/ColorManager";
 export class BoardUser {
     @IsString()
-    id!: string;
+    userId!: string;
 
     @IsString()
     username!: string;
@@ -11,7 +11,7 @@ export class BoardUser {
     color?: UserColor;
 
     constructor (id: string,username: string) {
-        this.id = id;
+        this.userId = id;
         this.username = username;
     }
 }
