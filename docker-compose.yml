@@ -1,8 +1,8 @@
 services:
   backend:
     build:
-      context: ./backend
-      dockerfile: Dockerfile
+      context: . # 1. Set build context to repo root
+      dockerfile: backend/Dockerfile
     environment:
       MONGO_URI: mongodb://mongo:27017/realtime-whiteboard
       CHOKIDAR_USEPOLLING: "true"
@@ -15,7 +15,8 @@ services:
     depends_on:
       - mongo
     volumes:
-      - ./backend:/app
+      - ./backend:/app # Mounts backend code to /app
+      - ./common:/common
       - /app/node_modules
 
     command: npm run start-dev
