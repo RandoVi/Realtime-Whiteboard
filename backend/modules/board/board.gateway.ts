@@ -67,10 +67,10 @@ export class BoardGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
                 board.users.add(hostUser);
 
                 socket.join(board.id);
-                socket.emit("created", {
-                    hostId: board.ownerId,
-                    boardId: board.id,
-                });
+
+                const dto = new BoardStateDTO(data.user!.id, boardId, hostId, board.objects.getAll(), board.users.getAll());
+                
+                socket.emit("board-state", dto);
                 console.log("Board created with id: " + board.id)
                 break;
             }
@@ -98,7 +98,7 @@ export class BoardGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
                     board.users.add(data.user);
                     socket.join(board.id);
 
-                    const dto = new BoardStateDTO(data.id, board.id, board.ownerId, board.objects.getAll(), board.users.getAll());
+                    const dto = new BoardStateDTO(data.user.id, board.id, board.ownerId, board.objects.getAll(), board.users.getAll());
 
                     socket.emit("board-state", dto);
                     socket.broadcast.to(board.id).emit("user-joined-board", {
