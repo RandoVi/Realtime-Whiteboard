@@ -4,6 +4,9 @@ export interface Presence {
     send(command: PresenceCommand): void;
 
     onCommand(
-        handler: (command: PresenceCommand) => void
+        handler: (
+            userId: string,
+            command: PresenceCommand,
+        ) => void
     ): void;
 }

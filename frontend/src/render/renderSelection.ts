@@ -9,6 +9,8 @@ export function renderSelection(
     context: CanvasRenderingContext2D,
     object: Object,
     camera: Camera,
+    color = '#3b82f6',
+    showHandles = true,
 ) {
 
     const bounds = getSelectionBounds(object)
@@ -16,7 +18,7 @@ export function renderSelection(
     switch (object.type) {
         case 'rectangle':
         case 'circle':
-            renderObjectSelection(context, bounds, camera)
+            renderObjectSelection(context, bounds, camera, color, showHandles)
             break
     }
 }
@@ -25,6 +27,8 @@ function renderObjectSelection(
     context: CanvasRenderingContext2D,
     bounds: SelectionBounds,
     camera: Camera,
+    color: string,
+    showHandles: boolean
 ) {
     const screenX = bounds.left * camera.scale + camera.offsetX
     const screenY = bounds.top * camera.scale + camera.offsetY
@@ -34,7 +38,7 @@ function renderObjectSelection(
 
     context.save()
 
-    context.strokeStyle = '#3b82f6'
+    context.strokeStyle = color
     context.lineWidth = 2
 
     const padding = 2
@@ -47,6 +51,10 @@ function renderObjectSelection(
     )
 
     context.restore()
+
+    if (!showHandles) {
+        return;
+    }
 
     context.fillStyle = 'white'
     context.strokeStyle = '#3b82f6'

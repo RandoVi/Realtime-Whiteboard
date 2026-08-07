@@ -1,11 +1,9 @@
 import type { Object } from "../../types/Object";
-//TODO: Move elsewhere later!!!
-export type BoardUser = {
-    id: string;
-    username: string;
-};
+import type { BoardUser } from "../../board/BoardUser";
+
 
 export type BoardStateDTO = {
+    userId: string;
     boardId: string;
     ownerId: string;
     objects: Object[];

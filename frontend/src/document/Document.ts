@@ -1,3 +1,4 @@
+import type { BoardUser } from "../board/BoardUser";
 import type { Object } from "../types/Object";
 
 
@@ -6,5 +7,12 @@ export type Document = {
         current: Object[];
     };
 
-    load(objects: Object[]): void;
+    usersRef: {
+        current: BoardUser[];
+    };
+
+    load(
+        objects: Object[],
+        users: BoardUser[]
+    ): void;
 };

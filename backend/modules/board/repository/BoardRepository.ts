@@ -28,7 +28,7 @@ export class BoardRepository {
     // Map each BoardManager instance into a Mongoose bulkWrite operation
     const bulkOps: AnyBulkWriteOperation<BoardDocument>[] = boards.map((board) => {
       // Extract pure data from the in-memory board manager instance
-      const data = board.toPersistence(); 
+      const data = board.toPersistence();
 
       return {
         updateOne: {
@@ -60,13 +60,13 @@ export class BoardRepository {
     return this.boardModel.find({ ownerId, status: 'active' }).exec();
   }
 
-  //  Push(add) a new shape into the embedded shapes array (Atomic)
-  async pushShape(boardId: string, shape: BoardObject): Promise<BoardDocument> {
+  //  Push(add) a new BoardObject into the embedded BoardObjects array (Atomic)
+  async pushBoardObject(boardId: string, BoardObject: BoardObject): Promise<BoardDocument> {
     const updatedBoard = await this.boardModel
       .findByIdAndUpdate(
         boardId,
         {
-          $push: { shapes: shape },
+          $push: { BoardObjects: BoardObject },
           $inc: { version: 1 },
         },
         { new: true, runValidators: true },
@@ -80,35 +80,35 @@ export class BoardRepository {
     return updatedBoard;
   }
 
-  // Update an existing shape inside the array or push it if missing (Upsert behavior)
-  async upsertShape(boardId: string, shape: BoardObject & { id: string }): Promise<BoardDocument> {
-    // Try updating shape in-place first matching array element by id
+  // Update an existing BoardObject inside the array or push it if missing (Upsert behavior)
+  async upsertBoardObject(boardId: string, boardObject: BoardObject & { id: string }): Promise<BoardDocument> {
+    // Try updating BoardObject in-place first matching array element by id
     const updatedBoard = await this.boardModel
       .findOneAndUpdate(
-        { id: boardId, 'shapes.id': shape.id },
+        { id: boardId, 'BoardObjects.id': boardObject.id },
         {
-          $set: { 'shapes.$': shape },
+          $set: { 'boardObjects.$': boardObject },
           $inc: { version: 1 },
         },
         { new: true },
       )
       .exec();
 
-    // If shape.id wasn't in array, push it as new
+    // If BoardObject.id wasn't in array, push it as new
     if (!updatedBoard) {
-      return this.pushShape(boardId, shape);
+      return this.pushBoardObject(boardId, boardObject);
     }
 
     return updatedBoard;
   }
 
-// Remove a shape by its ID from the board array (Atomic)
-  async pullShape(boardId: string, shapeId: string): Promise<BoardDocument> {
+// Remove a BoardObject by its ID from the board array (Atomic)
+  async pullBoardObject(boardId: string, boardObjectId: string): Promise<BoardDocument> {
     const updatedBoard = await this.boardModel
       .findByIdAndUpdate(
         boardId,
         {
-          $pull: { shapes: { id: shapeId } },
+          $pull: { boardObjects: { id: boardObjectId } },
           $inc: { version: 1 },
         },
         { new: true },
@@ -123,12 +123,12 @@ export class BoardRepository {
   }
 
   // Full canvas state overwrite (Used when saving bulk canvas imports or snapshots)
-  async replaceShapes(boardId: string, shapes: BoardObject[]): Promise<BoardDocument> {
+  async replaceBoardObjects(boardId: string, boardObjects: BoardObject[]): Promise<BoardDocument> {
     const updatedBoard = await this.boardModel
       .findByIdAndUpdate(
         boardId,
         {
-          $set: { shapes },
+          $set: { boardObjects },
           $inc: { version: 1 },
         },
         { new: true },

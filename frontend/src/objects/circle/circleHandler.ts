@@ -12,6 +12,7 @@ import { getResizeHandleCircle } from "./getResizeHandleCircle"
 import { getCircleResizeUpdates } from "./getCircleResizeUpdates"
 import { getCircleMoveUpdates } from "./getCircleMoveUpdates"
 import type { ObjectProperty } from "../properties/ObjectProperty"
+import { duplicateCircle } from "./duplicateCircle"
 
 const circleProperties: ObjectProperty<Circle>[] = [
   {
@@ -56,5 +57,6 @@ export const circleHandler: ObjectHandler<Circle> = {
     getResizeHandle: getResizeHandleCircle,
     getMoveUpdates: getCircleMoveUpdates,
     getResizeUpdates: getCircleResizeUpdates,
+    duplicate: duplicateCircle,
     properties: circleProperties,
 }

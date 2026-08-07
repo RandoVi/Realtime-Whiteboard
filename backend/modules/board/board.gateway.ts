@@ -7,8 +7,7 @@ import { randomUUID } from "crypto";
 import { BoardCommandDTO } from "./dto/BoardCommandDTO";
 import { BoardCommand } from "../../common/enum/BoardCommand";
 import { BoardObjectCommandDTO } from "../../models/boardObjectCommandDTO";
-import { BoardUser } from "../../models/user";
-import { io } from "socket.io-client";
+import { BoardUser } from "../../models/boardUser";
 import { BoardStateDTO } from "./dto/BoardStateDTO";
 
 @WebSocketGateway({
@@ -33,14 +32,14 @@ export class BoardGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
     this.logger.log("Initialized");
   }
       
-  handleConnection(client: any, ...args: any[]) {
+  handleConnection(client: Socket) {
     const { sockets } = this.io.sockets;
 
     this.logger.log(`CONNECTED - Client id: ${client.id} connected`);
     this.logger.debug(`Number of connected clients: ${sockets.size}`);
   }
 
-  handleDisconnect(client: any) {
+  handleDisconnect(client: Socket) {
     this.logger.log(`DISCONNECTED - Client id:${client.id} disconnected`);
   }
 
@@ -50,12 +49,12 @@ export class BoardGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
         @MessageBody() data: BoardCommandDTO
     ) {
         switch (data.type) {
-            case BoardCommand.CREATE:
+            case BoardCommand.CREATE: {
 
                 const boardId = randomUUID();
                 const hostId = randomUUID();
                 const board = await this.boards.createBoardAndPersist(boardId, hostId);
-                
+
                 if (!board) {
                     console.log('No "board" in socket(CREATE - BOARD)')
                     break;
@@ -68,13 +67,14 @@ export class BoardGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
                 board.users.add(hostUser);
 
                 socket.join(board.id);
-                socket.emit("created", {
-                    hostId: board.ownerId,
-                    boardId: board.id,
-                });
+
+                const dto = new BoardStateDTO(hostId, boardId, hostId, board.objects.getAll(), board.users.getAll());
+
+                socket.emit("board-state", dto);
                 console.log("Board created with id: " + board.id)
                 break;
-            case BoardCommand.JOIN:
+            }
+            case BoardCommand.JOIN:{
                 if (!data.id) {
                     console.log('No "id" in socket(JOIN - BOARD)')
                     socket.emit("join-board-response", "No boardId sent with socket(missing)")
@@ -98,7 +98,7 @@ export class BoardGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
                     board.users.add(data.user);
                     socket.join(board.id);
 
-                    const dto = new BoardStateDTO(board.id, board.ownerId, board.objects.getAll(), board.users.getAll());
+                    const dto = new BoardStateDTO(data.user.id, board.id, board.ownerId, board.objects.getAll(), board.users.getAll());
 
                     socket.emit("board-state", dto);
                     socket.broadcast.to(board.id).emit("user-joined-board", {
@@ -108,7 +108,8 @@ export class BoardGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
                     console.log("User " + data.user.username + " joined  the board: " + data.id)
                 }
                 break;
-            case BoardCommand.LEAVE:
+            }
+            case BoardCommand.LEAVE:{
                 if (!data.id) {
                     console.log('No "id" in socket(LEAVE - BOARD)')
                     break
@@ -135,6 +136,7 @@ export class BoardGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
                     console.log("User " + data.user.username + " left  the board: " + data.id)
                 }
                 break;
+            }
             case BoardCommand.GET: {
                 if (!data.id) {
                     console.log('No "id" in socket(GET - BOARD)')

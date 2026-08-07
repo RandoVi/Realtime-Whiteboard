@@ -1,6 +1,6 @@
 import { IsString, IsOptional, IsEnum, ValidateNested } from 'class-validator';
 import { Type } from 'class-transformer';
-import { BoardUser } from '../../../models/user';
+import { BoardUser } from '../../../models/boardUser';
 import { BoardCommand } from '../../../common/enum/BoardCommand';
 
 export class BoardCommandDTO {

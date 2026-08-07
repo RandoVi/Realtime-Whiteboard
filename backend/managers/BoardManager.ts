@@ -18,7 +18,7 @@ export class BoardManager {
             // Skip invalid updates that lack an ID
             if (!boardObjectUpdate.id) continue;
 
-            // Apply each shape update to the ObjectManager individually
+            // Apply each boardObject update to the ObjectManager individually
             this.objects.update(boardObjectUpdate.id, boardObjectUpdate);
         }
         }

@@ -10,7 +10,11 @@ async function bootstrap() {
     credentials:true,
   });
 
-  app.useGlobalPipes(new ValidationPipe()); // enforce DTO validation on every route
+  app.useGlobalPipes(new ValidationPipe({
+    whitelist: true,
+    forbidNonWhitelisted: true,
+    transform: true,
+  })); // enforce DTO validation on every route
   //For database persistence on shutdown
   app.enableShutdownHooks();
   await app.listen(3000);
