@@ -9,4 +9,9 @@ export class BoardUser {
 
     @IsString()
     color?: UserColor;
+
+    constructor (id: string,username: string) {
+        this.id = id;
+        this.username = username;
+    }
 }

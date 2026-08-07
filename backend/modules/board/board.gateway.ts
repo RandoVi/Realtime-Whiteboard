@@ -60,9 +60,7 @@ export class BoardGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
                     break;
                 }
 
-                const hostUser = new BoardUser();
-                hostUser.id = hostId;
-                hostUser.username = "HOST";
+                const hostUser = new BoardUser(hostId, "HOST");
 
                 board.users.add(hostUser);
 
@@ -95,17 +93,21 @@ export class BoardGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
                         socket.emit("join-board-response", "No user data available (missing)")
                         break
                     }
-                    board.users.add(data.user);
+
+                    const newUserId = randomUUID();
+                    const newUser = new BoardUser(newUserId, data.user.username);
+                    
+                    board.users.add(newUser);
                     socket.join(board.id);
 
-                    const dto = new BoardStateDTO(data.user.id.toString(), board.id, board.ownerId, board.objects.getAll(), board.users.getAll());
-
+                    const dto = new BoardStateDTO(newUserId, board.id, board.ownerId, board.objects.getAll(), board.users.getAll());
+                    console.log(dto);
                     socket.emit("board-state", dto);
                     socket.broadcast.to(board.id).emit("user-joined-board", {
-                        userId: data.user.id,
-                        username: data.user.username
+                        userId: newUser.id,
+                        username: newUser.username
                     })
-                    console.log("User " + data.user.username + " joined  the board: " + data.id)
+                    console.log("User " + newUser.username + " joined  the board(with id): " + data.id)
                 }
                 break;
             }
