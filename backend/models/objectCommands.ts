@@ -2,7 +2,7 @@ import { BoardObject } from "../modules/boardObjects/schemas/BoardObjectSchema";
 
 export type DocumentCommand = {
   id: string;
-  clientId: string;
+  userId: string;
   timestamp: number;
 
   command: EditorCommand;
