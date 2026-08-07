@@ -133,27 +133,24 @@ function Whiteboard() {
         document.objectsRef.current,
         presence.selectedObjectId,
       );
-      // console.log(
-      //   "FOUND OBJECT",
-      //   object
-      // );
+      console.log({
+        "FOUND OBJECT": object,
+        selectedObjectId: presence.selectedObjectId,
+        object,
+      });
 
       if (!object) {
         continue;
       }
 
-      // console.log(
-      //   "REMOTE USERS",
-      //   document.usersRef.current
-      // );
-
-      // console.log(
-      //   "LOOKING FOR USER",
-      //   userId
-      // );
+      console.log({
+        receivedUserId: userId,
+        users: document.usersRef.current,
+        found: document.usersRef.current.find(u => u.userId === userId),
+      });
 
       const user = document.usersRef.current.find(
-        user => user.id === userId
+        user => user.userId === userId
       );
 
       if (!user) {
@@ -314,9 +311,9 @@ function Whiteboard() {
           boardState.objects,
           boardState.users,
         );
-
+        console.log("DOCUMENT USERS:", document.usersRef.current);
         const currentUser = boardState.users.find(
-          user => user.id === boardState.userId
+          user => user.userId === boardState.userId
         );
 
         if (!currentUser) {
@@ -333,13 +330,20 @@ function Whiteboard() {
   };
 
   useEffect(() => {
+    collaboration.onUserJoined(user => {
+      document.addUser(user);
+      requestRender();
+    });
+  }, [collaboration, document]);
+
+  useEffect(() => {
     presence.onCommand(
       (userId, command) => {
-        // console.log(
-        //   "presence received:",
-        //   userId,
-        //   command
-        // );
+        console.log(
+          "presence received:",
+          userId,
+          command
+        );
         switch (command.type) {
 
           case "objectPreview":
@@ -417,7 +421,7 @@ function Whiteboard() {
         );
 
         const currentUser = boardState.users.find(
-          user => user.id === boardState.userId
+          user => user.userId === boardState.userId
         );
 
         if (!currentUser) {

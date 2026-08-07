@@ -6,6 +6,7 @@ import { getBoardId } from "../../network/board";
 import type { BoardStateDTO } from "./BoardStateDTO";
 import { socket } from "../SocketClient";
 import { getCurrentUser } from "../../network/currentUser";
+import type { BoardUser } from "../../board/BoardUser";
 
 
 // Implements the Collaboration interface using WebSocket for real-time collaboration
@@ -16,6 +17,8 @@ export class SocketCollaboration implements Collaboration {
     private commandHandler?:
         (command: EditorCommand) => void;
 
+    private userJoinedHandler?: (user: BoardUser) => void;
+
     constructor() {
 
 
@@ -25,6 +28,13 @@ export class SocketCollaboration implements Collaboration {
                 this.commandHandler?.(
                     message.command
                 );
+            }
+        );
+
+        socket.on(
+            "user-joined-board",
+            (user: BoardUser) => {
+                this.userJoinedHandler?.(user);
             }
         );
     }
@@ -43,6 +53,8 @@ export class SocketCollaboration implements Collaboration {
             }
         );
 
+
+
         socket.once(
             "board-state",
             (boardState: BoardStateDTO) => {
@@ -50,8 +62,8 @@ export class SocketCollaboration implements Collaboration {
                     boardState,
                     "COMPARE(create)",
                     JSON.stringify(boardState.userId),
-                    JSON.stringify(boardState.users[0].id),
-                    boardState.userId === boardState.users[0].id
+                    JSON.stringify(boardState.users[0].userId),
+                    boardState.userId === boardState.users[0].userId
                 );
                 callback(boardState);
             }
@@ -77,18 +89,19 @@ export class SocketCollaboration implements Collaboration {
         socket.once(
             "board-state",
             (boardState: BoardStateDTO) => {
-                                console.log(
+                console.log(
                     "log", boardState,
                     "COMPARE(join)",
                     JSON.stringify(boardState.userId),
-                    JSON.stringify(boardState.users[0].id),
-                    boardState.userId === boardState.users[0].id
+                    JSON.stringify(boardState.users[0].userId),
+                    boardState.userId === boardState.users[0].userId
                 );
                 callback(boardState);
             }
         );
 
     }
+
 
     //Board Specific Commands
     send(command: EditorCommand): void {
@@ -103,7 +116,7 @@ export class SocketCollaboration implements Collaboration {
 
         const message: NetworkCommand = {
             id: crypto.randomUUID(),
-            userId: currentUser.id,
+            userId: currentUser.userId,
             boardId: getBoardId(),
             command,
         };
@@ -114,6 +127,12 @@ export class SocketCollaboration implements Collaboration {
         );
         console.log(SOCKET_EVENTS.COMMAND);
         console.log(message);
+    }
+
+    onUserJoined(
+        handler: (user: BoardUser) => void
+    ) {
+        this.userJoinedHandler = handler;
     }
 
     onCommand(

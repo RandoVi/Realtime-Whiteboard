@@ -1,0 +1,34 @@
+import { BoardUpdateDTO } from "../modules/board/dto/BoardUpdateDTO";
+import { ObjectManager } from "./ObjectManager";
+import { UserManager } from "./UserManager";
+
+export class BoardManager {
+
+    users = new UserManager();
+    objects = new ObjectManager();
+
+    constructor(
+        public readonly id: string,
+        public readonly ownerId: string,
+    ) {}
+
+    applyUpdate(changes: BoardUpdateDTO): void {
+        if (Array.isArray(changes.boardObjects)) {
+        for (const boardObjectUpdate of changes.boardObjects) {
+            // Skip invalid updates that lack an ID
+            if (!boardObjectUpdate.id) continue;
+
+            // Apply each boardObject update to the ObjectManager individually
+            this.objects.update(boardObjectUpdate.id, boardObjectUpdate);
+        }
+        }
+    }
+
+    toPersistence() {
+        return {
+        id: this.id,
+        ownerId: this.ownerId,
+        objects: this.objects.toJSON(),
+        };
+    }
+}

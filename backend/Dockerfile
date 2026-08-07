@@ -3,11 +3,12 @@ FROM node:22-alpine
 WORKDIR /app
 
 COPY package*.json ./
+COPY common/package*.json ./common/
+COPY backend/package*.json ./backend/
 
 RUN npm install
 
-COPY . .
+COPY common ./common
+COPY backend ./backend
 
 EXPOSE 3000
-
-CMD ["npm", "run", "start-dev"]

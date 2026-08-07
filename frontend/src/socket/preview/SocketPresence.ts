@@ -42,7 +42,7 @@ export class SocketPresence implements Presence {
 
         const message = {
             id: crypto.randomUUID(),
-            userId: currentUser.id,
+            userId: currentUser.userId,
             boardId,
             command,
         };
