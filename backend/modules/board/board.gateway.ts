@@ -68,8 +68,8 @@ export class BoardGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
 
                 socket.join(board.id);
 
-                const dto = new BoardStateDTO(data.user!.id, boardId, hostId, board.objects.getAll(), board.users.getAll());
-                
+                const dto = new BoardStateDTO(hostId, boardId, hostId, board.objects.getAll(), board.users.getAll());
+
                 socket.emit("board-state", dto);
                 console.log("Board created with id: " + board.id)
                 break;
