@@ -22,7 +22,7 @@ export function useWhiteboardInput({
   selectedObjectIdRef,
   onStartInteraction,
   objectStyle,
-  
+
 }: UseWhiteboardInputProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
 
@@ -41,6 +41,11 @@ export function useWhiteboardInput({
   const selectObject = (id: string | null) => {
     selectedObjectIdRef.current = id
     setSelectedObjectId(id)
+    // console.log("sending selection:", id);
+    presence.send({
+      type: "selection",
+      objectId: id,
+    });
   }
 
   const contextRef = useRef<CanvasInteractionContext | null>(null);

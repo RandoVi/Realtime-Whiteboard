@@ -16,9 +16,10 @@ import { setBoardId as setNetworkBoardId } from "../network/board";
 import { SocketCollaboration } from "../socket/collaboration/SocketCollaboration";
 import { BoardLobbyModal, type LobbyState } from '../lobby/BoardLobbyModal'
 import { SocketPresence } from '../socket/preview/SocketPresence'
-import type { PreviewData } from "../render/renderObjects";
 import { ShapeMenu } from '../ui/ShapeMenu'
 import { ShapeSettings } from '../ui/ShapeSettings'
+import type { RemotePresence } from '../socket/preview/RemotePresence'
+import { setCurrentUser } from '../network/currentUser'
 
 function Whiteboard() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
@@ -28,8 +29,8 @@ function Whiteboard() {
     offsetY: 0,
   })
 
-  const remotePreviews = useRef(
-    new Map<string, PreviewData>()
+  const remotePresence = useRef(
+    new Map<string, RemotePresence>()
   );
 
   const viewportRef = useRef({ width: 0, height: 0, dpr: 1 }) // dpr = device pixel ratio
@@ -93,7 +94,7 @@ function Whiteboard() {
       document.objectsRef.current,
       camera,
       interactionRef.current,
-      remotePreviews.current
+      remotePresence.current
     );
 
     for (const object of finishedObjects) {
@@ -122,7 +123,51 @@ function Whiteboard() {
         camera,
       )
     }
+    for (const [userId, presence] of remotePresence.current) {
 
+      if (!presence.selectedObjectId) {
+        continue;
+      }
+
+      const object = getObjectById(
+        document.objectsRef.current,
+        presence.selectedObjectId,
+      );
+      // console.log(
+      //   "FOUND OBJECT",
+      //   object
+      // );
+
+      if (!object) {
+        continue;
+      }
+
+      // console.log(
+      //   "REMOTE USERS",
+      //   document.usersRef.current
+      // );
+
+      // console.log(
+      //   "LOOKING FOR USER",
+      //   userId
+      // );
+
+      const user = document.usersRef.current.find(
+        user => user.id === userId
+      );
+
+      if (!user) {
+        continue;
+      }
+
+      renderSelection(
+        context,
+        object,
+        camera,
+        user.color,
+        false,
+      );
+    }
   }
 
   const requestRender = () => {
@@ -258,9 +303,30 @@ function Whiteboard() {
     setLobbyState("creating");
 
     collaboration.createBoard(
-      (id) => {
-        setBoardId(id);
-        setNetworkBoardId(id);
+      (boardState) => {
+        console.log("BOARD STATE:", boardState);
+        console.log("MY USER ID:", boardState.userId);
+        console.log("USERS:", boardState.users);
+        setBoardId(boardState.boardId);
+        setNetworkBoardId(boardState.boardId);
+
+        document.load(
+          boardState.objects,
+          boardState.users,
+        );
+
+        const currentUser = boardState.users.find(
+          user => user.id === boardState.userId
+        );
+
+        if (!currentUser) {
+          throw new Error("Current user not found.");
+        }
+
+        setCurrentUser(currentUser);
+
+        requestRender();
+
         setLobbyState("created");
       }
     );
@@ -268,43 +334,66 @@ function Whiteboard() {
 
   useEffect(() => {
     presence.onCommand(
-      command => {
-
+      (userId, command) => {
+        // console.log(
+        //   "presence received:",
+        //   userId,
+        //   command
+        // );
         switch (command.type) {
 
           case "objectPreview":
 
+            const userPresence = remotePresence.current.get(userId) ?? {};
             if (
-              command.previewType === "create" &&
-              command.boardObject
+              command.previewType === "create"
             ) {
 
-              remotePreviews.current.set(
-                command.boardObject.id,
-                {
-                  type: "create",
-                  object: command.boardObject,
-                }
-              );
-
+              userPresence.preview = {
+                type: "create",
+                object: command.boardObject,
+              };
             }
 
             if (command.previewType === "update") {
 
-              remotePreviews.current.set(
-                command.boardObjectId,
-                {
-                  type: "update",
-                  objectId: command.boardObjectId,
-                  updates: command.updates,
-                }
-              );
+              userPresence.preview = {
+                type: "update",
+                objectId: command.boardObjectId,
+                updates: command.updates,
+              };
 
             }
+
+            remotePresence.current.set(
+              userId,
+              userPresence,
+            );
 
             requestRender();
 
             break;
+
+          case "selection": {
+
+            const userPresence =
+              remotePresence.current.get(userId) ?? {};
+
+            userPresence.selectedObjectId =
+              command.objectId;
+
+            remotePresence.current.set(
+              userId,
+              userPresence,
+            );
+            // console.log(
+            //   "REMOTE PRESENCE AFTER SELECTION",
+            //   remotePresence.current
+            // );
+            requestRender();
+
+            break;
+          }
         }
 
       }
@@ -318,10 +407,24 @@ function Whiteboard() {
     collaboration.joinBoard(
       boardId,
       (boardState) => {
-        console.log("Joined board with id: " + boardState.boardId);
+
         setBoardId(boardState.boardId);
         setNetworkBoardId(boardState.boardId);
-        document.load(boardState.objects);
+
+        document.load(
+          boardState.objects,
+          boardState.users,
+        );
+
+        const currentUser = boardState.users.find(
+          user => user.id === boardState.userId
+        );
+
+        if (!currentUser) {
+          throw new Error("Current user not found.");
+        }
+
+        setCurrentUser(currentUser);
 
         requestRender();
 

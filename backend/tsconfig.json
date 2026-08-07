@@ -46,5 +46,6 @@
 
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true
-  }
+  },
+  "references": [{ "path": "../common" }]
 }

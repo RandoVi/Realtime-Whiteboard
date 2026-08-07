@@ -1,11 +1,11 @@
 import { BoardObject } from "../modules/boardObjects/schemas/BoardObjectSchema";
-
+import { ObjectSelectionCommand } from "../../common/types/ObjectSelectionCommand"
 export type DocumentCommand = {
   id: string;
   userId: string;
   timestamp: number;
 
-  command: EditorCommand;
+  command: Command;
 };
 
 export type CreateBoardObjectCommand = {
@@ -53,9 +53,10 @@ export  type CursorMovementCommand = {
 //     BoardObjectId: string;
 // };
 
-export type EditorCommand =
+export type Command =
     | CreateBoardObjectCommand
     | UpdateBoardObjectCommand
     | DeleteBoardObjectCommand
     | ObjectPreviewCommand
-    | CursorMovementCommand;
+    | CursorMovementCommand
+    | ObjectSelectionCommand;

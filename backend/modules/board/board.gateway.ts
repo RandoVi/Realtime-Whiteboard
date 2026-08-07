@@ -56,14 +56,17 @@ export class BoardGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
                 const board = await this.boards.createBoardAndPersist(boardId, hostId);
 
                 if (!board) {
-                    console.log('No "board" in socket(CREATE - BOARD)')
+                    console.error('ERROR:No "board" in socket(CREATE - BOARD)')
                     break;
                 }
 
                 const hostUser = new BoardUser(hostId, "HOST");
 
+                if (!hostUser) {
+                    console.error("ERROR:No user to add, breaking the flow")
+                    break;
+                }
                 board.users.add(hostUser);
-
                 socket.join(board.id);
 
                 const dto = new BoardStateDTO(hostId, boardId, hostId, board.objects.getAll(), board.users.getAll());
@@ -74,7 +77,7 @@ export class BoardGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
             }
             case BoardCommand.JOIN:{
                 if (!data.id) {
-                    console.log('No "id" in socket(JOIN - BOARD)')
+                    console.error('ERROR: No "id" in socket(JOIN - BOARD)')
                     socket.emit("join-board-response", "No boardId sent with socket(missing)")
                     break
                 }
@@ -83,13 +86,13 @@ export class BoardGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
                     const board = this.boards.getBoard(data.id);
 
                     if (!board) {
-                        console.log('No "board" in socket(JOIN - BOARD)')
+                        console.error('ERROR: No "board" in socket(JOIN - BOARD)')
                         socket.emit("join-board-response", "No board with id: " + data.id + " exists.")
                         break
                     }
                         
                     if (!data.user) {
-                        console.log('No "user" in socket(JOIN - BOARD)')
+                        console.error('ERROR: No "user" in socket(JOIN - BOARD)')
                         socket.emit("join-board-response", "No user data available (missing)")
                         break
                     }
@@ -113,7 +116,7 @@ export class BoardGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
             }
             case BoardCommand.LEAVE:{
                 if (!data.id) {
-                    console.log('No "id" in socket(LEAVE - BOARD)')
+                    console.error('ERROR: No "id" in socket(LEAVE - BOARD)')
                     break
                 }
 
@@ -121,12 +124,12 @@ export class BoardGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
                     const board = this.boards.getBoard(data.id);
 
                     if (!board) {
-                        console.log('No "board" in socket(JOIN)')
+                        console.error('ERROR: No "board" in socket(JOIN)')
                         break
                     }
                         
                     if (!data.user) {
-                        console.log('No "user" in socket(JOIN)')
+                        console.error('ERROR: No "user" in socket(JOIN)')
                         break
                     }
                     board.users.remove(data.user.id);
@@ -141,7 +144,7 @@ export class BoardGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
             }
             case BoardCommand.GET: {
                 if (!data.id) {
-                    console.log('No "id" in socket(GET - BOARD)')
+                    console.error('ERROR: No "id" in socket(GET - BOARD)')
                     break
                 }
 
@@ -149,7 +152,7 @@ export class BoardGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
                     const board = this.boards.getBoard(data.id);
 
                     if (!board) {
-                        console.log('No "board" in socket(GET - BOARD)')
+                        console.error('ERROR: No "board" in socket(GET - BOARD)')
                         break
                     }
                     socket.emit("get-board-response", {
@@ -162,7 +165,7 @@ export class BoardGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
                 }
             case BoardCommand.DELETE:
                 if (!data.id) {
-                    console.log('No "id" in socket(DELETE - BOARD)')
+                    console.error('ERROR: No "id" in socket(DELETE - BOARD)')
                     break
                 }
 
@@ -170,12 +173,12 @@ export class BoardGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
                     const board = this.boards.getBoard(data.id);
 
                     if (!board) {
-                        console.log('No "board" in socket(DELETE - BOARD)')
+                        console.error('ERROR: No "board" in socket(DELETE - BOARD)')
                         break
                     }
                         
                     if (!data.user) {
-                        console.log('No "user" in socket(DELETE - BOARD)')
+                        console.error('ERROR: No "user" in socket(DELETE - BOARD)')
                         break
                     }
                     this.boards.deleteBoard(data.id)
@@ -198,11 +201,11 @@ export class BoardGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
         switch (data.command.type){
             case "createBoardObject": {
                 if(!this.boards.hasBoard(data.boardId)) {
-                    console.log('No "board" in socket(CREATE - OBJECT)')
+                    console.error('ERROR: No "board" in socket(CREATE - OBJECT)')
                     break
                 }
                 if(!data.command.boardObject) {
-                    console.log('No "boardObject" in socket(CREATE - OBJECT)')
+                    console.error('ERROR: No "boardObject" in socket(CREATE - OBJECT)')
                     break
                 }
                 const board = this.boards.getBoard(data.boardId);
@@ -213,10 +216,10 @@ export class BoardGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
             }
             case "updateBoardObject": {
                 if(!this.boards.hasBoard(data.boardId)) {
-                    console.log('No "board" in socket(UPDATE - OBJECT)')
+                    console.error('ERROR: No "board" in socket(UPDATE - OBJECT)')
                 }
                 if(!data.command.updates) {
-                    console.log('No "updates" in socket(UPDATE - OBJECT)')
+                    console.error('ERROR: No "updates" in socket(UPDATE - OBJECT)')
                 }
                 const board = this.boards.getBoard(data.boardId);
                 board!.objects.update(data.command.boardObjectId, data.command.updates);
@@ -226,10 +229,10 @@ export class BoardGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
             }
             case "deleteBoardObject": {
                 if(!this.boards.hasBoard(data.boardId)) {
-                    console.log('No "board" in socket(DELETE - OBJECT)')
+                    console.error('ERROR: No "board" in socket(DELETE - OBJECT)')
                 }
                 if(!data.command.boardObjectId) {
-                    console.log('No "boardObjectId" in socket(DELETE - OBJECT)')
+                    console.error('ERROR: No "boardObjectId" in socket(DELETE - OBJECT)')
                 }
                 const board = this.boards.getBoard(data.boardId);
                 board!.objects.delete(data.command.boardObjectId);
@@ -254,6 +257,10 @@ export class BoardGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
             }
             case ("cursorMovement"): {
                 //TODO socket.broadcast.to(data.boardId).emit("boardPresenceCommand", data);
+                break;
+            }
+            case ("selection"): {
+                socket.broadcast.to(data.boardId).emit("selection", data)
                 break;
             }
             default: {

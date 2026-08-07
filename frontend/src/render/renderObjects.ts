@@ -2,6 +2,8 @@ import type { Camera } from '../types/Types'
 import type { Interaction } from '../interaction/Interaction'
 import type { Object } from '../types/Object'
 import { getObjectHandler } from '../objects/registry/getObjectHandler'
+import type { RemotePresence } from '../socket/preview/RemotePresence';
+
 
 export type PreviewData =
   | {
@@ -19,7 +21,7 @@ export function renderObjects(
   objects: Object[],
   camera: Camera,
   interaction: Interaction,
-  remotePreviews: Map<string, PreviewData>
+  remotePresence: Map<string, RemotePresence>
 ): {
   hasAnimatedObjects: boolean;
   finishedObjects: Object[];
@@ -29,11 +31,20 @@ export function renderObjects(
   const finishedObjects: Object[] = [];
 
   for (const object of objects) {
-    if (remotePreviews.has(object.id)) {
+
+    const isPreviewed = Array.from(
+      remotePresence.values()
+    ).some(
+      presence =>
+        presence.preview?.type === "update" &&
+        presence.preview.objectId === object.id
+    );
+
+    if (isPreviewed) {
       continue;
     }
 
-    renderObject(context, object, camera)
+    renderObject(context, object, camera);
     const handler = getObjectHandler(object);
 
     if (handler.isAnimated?.(object)) {
@@ -53,7 +64,18 @@ export function renderObjects(
     )
   }
 
-  for (const preview of remotePreviews.values()) {
+  for (const [userId, presence] of remotePresence) {
+    console.log(
+      "RENDER PRESENCE",
+      userId,
+      presence
+    );
+
+    const preview = presence.preview;
+
+    if (!preview) {
+      continue;
+    }
 
     if (preview.type === "create") {
 
@@ -81,7 +103,7 @@ export function renderObjects(
         {
           ...object,
           ...preview.updates,
-        } as Object, //temporary cast to Object, since we know that the updates will be valid for the object type
+        } as Object,
         camera
       );
     }

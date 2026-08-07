@@ -13,6 +13,7 @@ import { getTriangleMoveUpdates } from "./getTriangleMoveUpdates";
 import { getTriangleResizeUpdates } from "./getTriangleResizeUpdates";
 import { getResizeHandleTriangle } from "./getResizeHandleTriangle";
 import { updateTrianglePreview } from "./updateTrianglePreview";
+import { duplicateTriangle } from "./duplicateTriangle";
 
 
 
@@ -76,5 +77,6 @@ export const triangleHandler: ObjectHandler<Triangle> = {
     getResizeHandle: getResizeHandleTriangle,
     getMoveUpdates: getTriangleMoveUpdates,
     getResizeUpdates: getTriangleResizeUpdates,
+    duplicate: duplicateTriangle,
     properties: triangleProperties,
 }

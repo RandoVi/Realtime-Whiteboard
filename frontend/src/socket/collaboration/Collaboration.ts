@@ -1,5 +1,5 @@
-
 import type { EditorCommand } from "../../editor/EditorCommand";
+import type { BoardStateDTO } from "./BoardStateDTO";
 
 
 export interface Collaboration {
@@ -14,11 +14,11 @@ export interface Collaboration {
     ): void;
 
     createBoard(
-        callback: (boardId: string) => void
+        callback: (boardState: BoardStateDTO) => void
     ): void;
 
     joinBoard(
         boardId: string,
-        callback: () => void
+        callback: (boardState: BoardStateDTO) => void
     ): void;
 }

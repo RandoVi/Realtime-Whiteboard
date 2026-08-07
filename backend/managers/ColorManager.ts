@@ -24,7 +24,7 @@ export class ColorManager {
 
     takeColor(preferredColor?: UserColor):UserColor | null {
         if(this.availableColors.length === 0) {
-            console.warn("No colors available! Pool exhausted!")
+            console.error("No colors available! Pool exhausted!")
             return null;
         }
         let selectedIndex = 0;
@@ -32,7 +32,7 @@ export class ColorManager {
         if(preferredColor) {
             selectedIndex = this.availableColors.indexOf(preferredColor);
             if(selectedIndex === -1) {
-                console.warn(`Color ${preferredColor} is already in use or invalid.`)
+                console.error(`Color ${preferredColor} is already in use or invalid.`)
                 return null;
             }
         }
@@ -44,12 +44,12 @@ export class ColorManager {
 
     returnColor(color:UserColor): boolean {
         if(this.validColors.includes(color)) {
-            console.warn(`Cannot return invalid color: ${color}`)
+            console.error(`Cannot return invalid color: ${color}`)
             return false;
         }
 
         if (!this.inUseColors.has(color)) {
-            console.warn(`Color ${color} is not currently checked out`)
+            console.error(`Color ${color} is not currently checked out`)
             return false;
         }
 

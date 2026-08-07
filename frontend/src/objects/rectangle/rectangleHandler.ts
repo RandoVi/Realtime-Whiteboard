@@ -13,6 +13,7 @@ import { getResizeHandleRectangle } from "./getResizeHandleRectangle"
 import { getRectangleResizeUpdates } from "./getRectangleResizeUpdates"
 import { getRectangleMoveUpdates } from "./getRectangleMoveUpdates"
 import type { ObjectProperty } from "../properties/ObjectProperty"
+import { duplicateRectangle } from "./duplicateRectangle"
 
 const rectangleProperties: ObjectProperty<Rectangle>[] = [
     {
@@ -73,6 +74,7 @@ export const rectangleHandler: ObjectHandler<Rectangle> = {
     getResizeHandle: getResizeHandleRectangle,
     getMoveUpdates: getRectangleMoveUpdates,
     getResizeUpdates: getRectangleResizeUpdates,
+    duplicate: duplicateRectangle,
     properties: rectangleProperties,
 }
 
