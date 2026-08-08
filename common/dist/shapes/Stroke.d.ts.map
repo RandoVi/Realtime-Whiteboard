@@ -1,0 +1,1 @@
+{"version":3,"file":"Stroke.d.ts","sourceRoot":"","sources":["../../src/shapes/Stroke.ts"],"names":[],"mappings":"AAAA,OAAO,KAAK,EAAE,KAAK,EAAE,MAAM,iBAAiB,CAAC;AAC7C,MAAM,MAAM,MAAM,GAAG;IACnB,EAAE,EAAE,MAAM,CAAA;IAEV,IAAI,EAAE,QAAQ,CAAA;IAEd,MAAM,EAAE,KAAK,EAAE,CAAA;IAEf,MAAM,EAAE,MAAM,CAAA;IAEd,WAAW,EAAE,MAAM,CAAA;CACpB,CAAA"}
