@@ -5,7 +5,6 @@ type Props = {
 };
 
 export function ShapeMenu({ onSelectShape }: Props) {
-    console.log("ShapeMenu rendered");
     return (
         <div className="shape-menu">
             <button

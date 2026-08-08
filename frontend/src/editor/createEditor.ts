@@ -76,6 +76,9 @@ export function createEditor({
       type: "createBoardObject",
       boardObject: duplicated,
     });
+
+    selectedObjectIdRef.current = duplicated.id;
+    setSelectedObjectId(duplicated.id);
   }
 
   // Bind a property of the selected object to an input field
@@ -142,7 +145,6 @@ export function createEditor({
     command: EditorCommand,
     options?: ExecuteOptions
   ) {
-    console.log(command.type);
     apply(command);
 
     if (options?.broadcast !== false) {

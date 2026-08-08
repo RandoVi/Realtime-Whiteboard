@@ -19,7 +19,10 @@ import { SocketPresence } from '../socket/preview/SocketPresence'
 import { ShapeMenu } from '../ui/ShapeMenu'
 import { ShapeSettings } from '../ui/ShapeSettings'
 import type { RemotePresence } from '../socket/preview/RemotePresence'
-import { setCurrentUser } from '../network/currentUser'
+import { getCurrentUser, setCurrentUser } from '../network/currentUser'
+import { getRenderedObject } from '../objects/getRenderedObjects'
+import type { Object } from '../types/Object'
+
 
 function Whiteboard() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
@@ -109,18 +112,40 @@ function Whiteboard() {
     }
 
 
-    const selectedObject = selectedObjectIdRef.current
-      ? getObjectById(
+    let selectedObject: Object | undefined;
+
+    if (interactionRef.current.type === "moving") {
+      selectedObject = interactionRef.current.preview;
+    } else if (selectedObjectIdRef.current) {
+      selectedObject = getObjectById(
         document.objectsRef.current,
         selectedObjectIdRef.current
-      )
-      : undefined
+      );
 
-    if (selectedObject) {
+      if (selectedObject) {
+        for (const presence of remotePresence.current.values()) {
+          if (
+            presence.preview?.type === "update" &&
+            presence.preview.objectId === selectedObject.id
+          ) {
+            selectedObject = getRenderedObject(
+              selectedObject,
+              presence
+            );
+
+            break;
+          }
+        }
+      }
+    }
+    const currentUser = getCurrentUser();
+
+    if (selectedObject && currentUser) {
       renderSelection(
         context,
         selectedObject,
         camera,
+        currentUser.color,
       )
     }
     for (const [userId, presence] of remotePresence.current) {
@@ -133,21 +158,10 @@ function Whiteboard() {
         document.objectsRef.current,
         presence.selectedObjectId,
       );
-      console.log({
-        "FOUND OBJECT": object,
-        selectedObjectId: presence.selectedObjectId,
-        object,
-      });
 
       if (!object) {
         continue;
       }
-
-      console.log({
-        receivedUserId: userId,
-        users: document.usersRef.current,
-        found: document.usersRef.current.find(u => u.userId === userId),
-      });
 
       const user = document.usersRef.current.find(
         user => user.userId === userId
@@ -157,9 +171,14 @@ function Whiteboard() {
         continue;
       }
 
+      const renderedObject = getRenderedObject(
+        object,
+        presence,
+      );
+
       renderSelection(
         context,
-        object,
+        renderedObject,
         camera,
         user.color,
         false,
@@ -244,6 +263,7 @@ function Whiteboard() {
     selectedObjectIdRef,
     onStartInteraction: closeShapeSettings,
     objectStyle: shapeSettings,
+    remotePresence: remotePresence.current,
   })
 
   const resizeCanvas = () => {
@@ -301,9 +321,6 @@ function Whiteboard() {
 
     collaboration.createBoard(
       (boardState) => {
-        console.log("BOARD STATE:", boardState);
-        console.log("MY USER ID:", boardState.userId);
-        console.log("USERS:", boardState.users);
         setBoardId(boardState.boardId);
         setNetworkBoardId(boardState.boardId);
 
@@ -311,7 +328,6 @@ function Whiteboard() {
           boardState.objects,
           boardState.users,
         );
-        console.log("DOCUMENT USERS:", document.usersRef.current);
         const currentUser = boardState.users.find(
           user => user.userId === boardState.userId
         );
@@ -339,11 +355,7 @@ function Whiteboard() {
   useEffect(() => {
     presence.onCommand(
       (userId, command) => {
-        console.log(
-          "presence received:",
-          userId,
-          command
-        );
+
         switch (command.type) {
 
           case "objectPreview":
@@ -369,6 +381,10 @@ function Whiteboard() {
 
             }
 
+            if (command.previewType === "clear") {
+              userPresence.preview = undefined;
+            }
+
             remotePresence.current.set(
               userId,
               userPresence,
@@ -379,6 +395,41 @@ function Whiteboard() {
             break;
 
           case "selection": {
+            const interaction = interactionRef.current;
+
+            if (
+              command.objectId !== null &&
+              command.objectId === selectedObjectIdRef.current
+            ) {
+              console.log("CANCELLING MY SELECTION");
+
+              selectedObjectIdRef.current = null;
+              setSelectedObjectId(null);
+
+              if (
+                interaction.type === "moving" &&
+                interaction.objectId === command.objectId
+              ) {
+                interactionRef.current = {
+                  type: "idle",
+                };
+              }
+
+              if (
+                interaction.type === "resizing" &&
+                interaction.objectId === command.objectId
+              ) {
+                interactionRef.current = {
+                  type: "idle",
+                };
+              }
+
+              // Tell everyone that I no longer own this selection.
+              presence.send({
+                type: "selection",
+                objectId: null,
+              });
+            }
 
             const userPresence =
               remotePresence.current.get(userId) ?? {};
@@ -390,10 +441,7 @@ function Whiteboard() {
               userId,
               userPresence,
             );
-            // console.log(
-            //   "REMOTE PRESENCE AFTER SELECTION",
-            //   remotePresence.current
-            // );
+
             requestRender();
 
             break;
@@ -463,7 +511,6 @@ function Whiteboard() {
       {showShapeMenu && (
         <ShapeMenu
           onSelectShape={(tool) => {
-            console.log("Shape selected:", tool);
             setTool(tool);
             setShowShapeMenu(false);
             setShowShapeSettings(true);

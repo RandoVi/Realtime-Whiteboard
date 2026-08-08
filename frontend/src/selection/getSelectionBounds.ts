@@ -17,16 +17,5 @@ export type SelectionBounds = {
 export function getSelectionBounds(
   object: Object
 ): SelectionBounds {
-
-  const bounds =
-    getObjectHandler(object)
-      .getBounds?.(object)
-
-  if (!bounds) {
-    throw new Error(
-      `Object type ${object.type} has no bounds`
-    )
-  }
-
-  return bounds
+  return getObjectHandler(object).getBounds(object);
 }

@@ -8,6 +8,7 @@ export function resizeObject(
   handle: ResizeHandle,
   point: { x: number; y: number },
 ) {
+  console.log("Resizing object", object, original, handle, point)
   getObjectHandler(object).resize?.(
     object,
     original,

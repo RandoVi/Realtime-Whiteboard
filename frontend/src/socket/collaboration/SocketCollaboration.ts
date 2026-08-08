@@ -58,13 +58,6 @@ export class SocketCollaboration implements Collaboration {
         socket.once(
             "board-state",
             (boardState: BoardStateDTO) => {
-                console.log(
-                    boardState,
-                    "COMPARE(create)",
-                    JSON.stringify(boardState.userId),
-                    JSON.stringify(boardState.users[0].userId),
-                    boardState.userId === boardState.users[0].userId
-                );
                 callback(boardState);
             }
         );;
@@ -89,13 +82,6 @@ export class SocketCollaboration implements Collaboration {
         socket.once(
             "board-state",
             (boardState: BoardStateDTO) => {
-                console.log(
-                    "log", boardState,
-                    "COMPARE(join)",
-                    JSON.stringify(boardState.userId),
-                    JSON.stringify(boardState.users[0].userId),
-                    boardState.userId === boardState.users[0].userId
-                );
                 callback(boardState);
             }
         );
@@ -125,8 +111,6 @@ export class SocketCollaboration implements Collaboration {
             SOCKET_EVENTS.COMMAND,
             message
         );
-        console.log(SOCKET_EVENTS.COMMAND);
-        console.log(message);
     }
 
     onUserJoined(

@@ -1,31 +1,18 @@
-import type { Editor } from "../../editor/Editor";
+
 import type { Presence } from "../../socket/preview/Presence";
 import type { ObjectUpdate } from "../../types/ObjectUpdate";
 
 type Args = {
-    editor: Editor;
     presence: Presence;
     objectId: string;
     updates: ObjectUpdate;
 };
 
-export function updateObjectWithPreview({
-    editor,
+export function sendObjectPreview({
     presence,
     objectId,
     updates,
 }: Args) {
-
-    editor.execute(
-        {
-            type: "updateBoardObject",
-            boardObjectId: objectId,
-            updates,
-        },
-        {
-            broadcast: false,
-        }
-    );
 
     presence.send({
         type: "objectPreview",

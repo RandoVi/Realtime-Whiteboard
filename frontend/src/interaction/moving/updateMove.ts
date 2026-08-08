@@ -3,7 +3,7 @@ import type { Point } from "../../types/Types"
 import { moveObject } from "../../objects/moveObject";
 import { getObjectMoveUpdates } from "../helpers/getObjectMoveUpdates";
 import { getObjectById } from "../../objects/getObjectById";
-import { updateObjectWithPreview } from "../helpers/updateObjectWithPreview";
+import { sendObjectPreview } from "../helpers/sendObjectPreview";
 import type { CanvasInteractionContext } from "../CanvasInteractionContext";
 
 type Args = {
@@ -19,8 +19,8 @@ export function updateMoving({
     const {
     interactionRef,
     document,
-    editor,
     presence,
+    requestRender,
   } = context;
 
   const interaction = interactionRef.current
@@ -48,24 +48,24 @@ export function updateMoving({
     interaction.moved = true;
   }
 
-  // Update the position of the shape based on the mouse movement
-  const movedObject = {
-    ...interaction.original,
-  };
-
   moveObject(
-    movedObject,
+    interaction.preview,
     interaction.original,
     dx,
-    dy
-  );
+    dy,
+);
+console.log(
+  "LOCAL PREVIEW",
+  interaction.preview
+);
 
-  updateObjectWithPreview({
-    editor,
+  sendObjectPreview({
     presence,
     objectId: boardObject.id,
-    updates: getObjectMoveUpdates(movedObject),
+    updates: getObjectMoveUpdates(interaction.preview),
   });
 
-  return true
+  requestRender();
+
+return true;
 }

@@ -11,4 +11,9 @@ export type ObjectPreviewCommand =
     previewType: "update"; //indicates update of an existing object
     boardObjectId: string;
     updates: Partial<Object>; //bcs object already exists, we send only the updates(partial)
+    
+  }
+  | {
+    type: "objectPreview";
+    previewType: "clear";
   };

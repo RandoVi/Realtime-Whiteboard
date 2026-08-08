@@ -6,6 +6,7 @@ import type { Object } from "../types/Object";
 import type { Presence } from "../socket/preview/Presence";
 import type { Document } from "../document/Document";
 import type { ObjectStyle } from "../objects/ObjectStyle";
+import type { RemotePresence } from "../socket/preview/RemotePresence";
 
 export interface CanvasInteractionContext {
 
@@ -26,4 +27,6 @@ export interface CanvasInteractionContext {
     selectObject: (id: string | null) => void;
 
     objectStyle: ObjectStyle;
+
+    remotePresence: Map<string, RemotePresence>;
 }

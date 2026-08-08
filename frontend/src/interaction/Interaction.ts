@@ -16,6 +16,7 @@ export type Interaction =
         type: 'moving'
         start: Point
         original: Object
+        preview: Object
         objectId: string
         moved: boolean
     }
@@ -24,6 +25,7 @@ export type Interaction =
         type: 'resizing'
         objectId: string
         original: Object
+        preview: Object
         handle: ResizeHandle
         offset: Point
     }
