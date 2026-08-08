@@ -14,7 +14,12 @@ export function createLaser(
 
         type: "laser",
 
-        points: [point],
+        points: [
+            {
+                point,
+                createdAt: performance.now(),
+            }
+        ],
 
         stroke: style.stroke,
 

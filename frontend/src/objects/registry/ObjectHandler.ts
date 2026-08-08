@@ -51,7 +51,7 @@ export interface ObjectHandler<T extends Object = Object> {
         current: Point
     ) => void
 
-    getBounds: (
+    getBounds?: (
         object: T
     ) => SelectionBounds
 
@@ -69,7 +69,7 @@ export interface ObjectHandler<T extends Object = Object> {
         object: T
     ) => Partial<T>
 
-    duplicate: (
+    duplicate?: (
         object: T
     ) => T
 
