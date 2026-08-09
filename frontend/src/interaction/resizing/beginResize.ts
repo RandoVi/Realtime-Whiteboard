@@ -59,16 +59,17 @@ export function beginResize({
     return false
   }
 
-  interactionRef.current = {
+interactionRef.current = {
     type: "resizing",
     objectId: selectedObject.id,
-    original: { ...selectedObject },
+    original: structuredClone(selectedObject),
+    preview: structuredClone(selectedObject),
     handle,
     offset: {
-      x: world.x - handlePosition.x,
-      y: world.y - handlePosition.y,
+        x: world.x - handlePosition.x,
+        y: world.y - handlePosition.y,
     },
-  }
+}
 
   return true
 }

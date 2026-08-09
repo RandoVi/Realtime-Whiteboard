@@ -23,14 +23,15 @@ export function beginMoving({
   }
 
   selectObject(clickedObject.id)
-
+  
   interactionRef.current = {
     type: "moving",
     start: world,
-    original: { ...clickedObject },
+    original: clickedObject,
+    preview: structuredClone(clickedObject),
     objectId: clickedObject.id,
     moved: false,
-  }
+  };
 
   requestRender()
 

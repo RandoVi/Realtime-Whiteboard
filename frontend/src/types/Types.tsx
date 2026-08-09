@@ -4,6 +4,8 @@ import type { Tool } from "./Tool"
 import type { RefObject } from "react"
 import type { Document } from "../document/Document"
 import type { ObjectStyle } from "../objects/ObjectStyle"
+import type { RemotePresence } from "../socket/preview/RemotePresence"
+import type { Laser } from "../objects/laser/Laser"
 
 export type Point = {
   x: number
@@ -41,4 +43,6 @@ export type UseWhiteboardInputProps = {
   selectedObjectIdRef: React.RefObject<string | null>
   onStartInteraction: () => void;
   objectStyle: ObjectStyle;
+  remotePresence: Map<string, RemotePresence>;
+  localLasers: Laser[];
 }

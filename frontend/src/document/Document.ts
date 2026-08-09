@@ -11,6 +11,10 @@ export type Document = {
         current: BoardUser[];
     };
 
+    addUser(
+        user: BoardUser
+    ): void;
+
     load(
         objects: Object[],
         users: BoardUser[]

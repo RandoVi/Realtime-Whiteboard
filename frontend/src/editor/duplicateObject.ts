@@ -7,7 +7,7 @@ export function duplicateObject(
 
   const duplicate =
     getObjectHandler(object)
-      .duplicate?.(object)
+      .duplicate(object)
 
   if (!duplicate) {
     throw new Error(

@@ -7,5 +7,8 @@ export function updateLaserPreview(
     _start: Point,
     current: Point,
 ) {
-    laser.points.push(current);
+    laser.points.push({
+        point: current,
+        createdAt: performance.now(),
+    });
 }

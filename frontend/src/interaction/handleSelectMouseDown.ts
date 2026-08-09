@@ -49,6 +49,7 @@ export function handleSelectMouseDown({
     document.objectsRef.current,
     world,
   );
+
   // If the user clicked on a object, select it and start moving it
   if (
     beginMoving({

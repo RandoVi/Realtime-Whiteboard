@@ -22,7 +22,8 @@ export function useWhiteboardInput({
   selectedObjectIdRef,
   onStartInteraction,
   objectStyle,
-
+  remotePresence,
+  localLasers,
 }: UseWhiteboardInputProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
 
@@ -60,6 +61,8 @@ export function useWhiteboardInput({
     getSelectedObject: editor.getSelectedObject,
     selectObject,
     objectStyle,
+    remotePresence,
+    localLasers,
   };
 
   // Handle mouse and keyboard events for the whiteboard

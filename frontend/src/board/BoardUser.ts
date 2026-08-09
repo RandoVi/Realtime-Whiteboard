@@ -1,5 +1,5 @@
 export type BoardUser = {
-    id: string;
+    userId: string;
     username: string;
     color: string;
 };

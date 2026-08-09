@@ -253,9 +253,9 @@ export class BoardGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
                 socket.broadcast.to(data.boardId).emit("boardPresenceCommand", data);
                 break;
             }
-            case ("cursorMovement"): {
-                //TODO socket.broadcast.to(data.boardId).emit("boardPresenceCommand", data);
-                break;
+            case ("laser"): {
+                socket.broadcast.to(data.boardId).emit("boardPresenceCommand", data);
+                break
             }
             case ("selection"): {
                 socket.broadcast.to(data.boardId).emit("selection", data)

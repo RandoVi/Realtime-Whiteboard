@@ -27,5 +27,16 @@ export function createDocument(
             objectsRef.current = objects;
             usersRef.current = users;
         },
+        addUser(user) {
+            const exists = usersRef.current.some(
+                u => u.userId === user.userId
+            );
+
+            if (exists) {
+                return;
+            }
+
+            usersRef.current.push(user);
+        },
     };
 }

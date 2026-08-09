@@ -22,7 +22,6 @@ export class SocketPresence implements Presence {
                     message.command,
 
                 );
-                // console.log("Received presence command:", message);
             }
         );
     }
@@ -30,7 +29,6 @@ export class SocketPresence implements Presence {
 
     send(command: PresenceCommand): void {
 
-        // console.log("SEND PRESENCE:", command);
         const currentUser = getCurrentUser();
 
 
@@ -42,15 +40,12 @@ export class SocketPresence implements Presence {
 
         const message = {
             id: crypto.randomUUID(),
-            userId: currentUser.id,
+            userId: currentUser.userId,
             boardId,
             command,
         };
         // console.log("Sending presence command:", message);
-        console.log(
-            "PRESENCE SEND",
-            message
-        );
+
         socket.emit(
             "boardPresenceCommand",
             message

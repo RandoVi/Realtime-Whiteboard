@@ -1,4 +1,5 @@
 import type { CanvasInteractionContext } from "../CanvasInteractionContext"
+import { getObjectResizeUpdates } from "../helpers/getObjectResizeUpdates";
 
 type Args = {
   context: CanvasInteractionContext
@@ -6,18 +7,28 @@ type Args = {
 }
 // Handles the mouse up event for resizing a object
 export function handleResizeMouseUp({
-  context
-}: Args): boolean  {
+  context,
+}: Args): boolean {
 
-  const { interactionRef } = context;
+  const {
+    interactionRef,
+    editor,
+  } = context;
 
-  if (
-    interactionRef.current.type !== "resizing"
-  ) {
-    return false
+  const interaction = interactionRef.current;
+
+  if (interaction.type !== "resizing") {
+    return false;
   }
-  
-  // Reset the interaction state to idle after resizing is complete
+
+  editor.execute({
+    type: "updateBoardObject",
+    boardObjectId: interaction.objectId,
+    updates: getObjectResizeUpdates(
+      interaction.preview
+    ),
+  });
+
   interactionRef.current = {
     type: "idle",
   };

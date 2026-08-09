@@ -19,7 +19,12 @@ import { SocketPresence } from '../socket/preview/SocketPresence'
 import { ShapeMenu } from '../ui/ShapeMenu'
 import { ShapeSettings } from '../ui/ShapeSettings'
 import type { RemotePresence } from '../socket/preview/RemotePresence'
-import { setCurrentUser } from '../network/currentUser'
+import { getCurrentUser, setCurrentUser } from '../network/currentUser'
+import { getRenderedObject } from '../objects/getRenderedObjects'
+import type { Object } from '../types/Object'
+import { createRemotePresence } from "../socket/preview/createRemotePresence";
+import type { Laser } from "../objects/laser/Laser";
+
 
 function Whiteboard() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
@@ -32,6 +37,7 @@ function Whiteboard() {
   const remotePresence = useRef(
     new Map<string, RemotePresence>()
   );
+  const localLasers = useRef<Laser[]>([]);
 
   const viewportRef = useRef({ width: 0, height: 0, dpr: 1 }) // dpr = device pixel ratio
   const resizeInitializedRef = useRef(false)
@@ -89,12 +95,15 @@ function Whiteboard() {
     const {
       hasAnimatedObjects,
       finishedObjects,
+      finishedLocalLasers,
+      finishedRemoteLasers,
     } = renderObjects(
       context,
       document.objectsRef.current,
       camera,
       interactionRef.current,
-      remotePresence.current
+      remotePresence.current,
+      localLasers.current,
     );
 
     for (const object of finishedObjects) {
@@ -103,24 +112,75 @@ function Whiteboard() {
         boardObjectId: object.id,
       });
     }
+    // Remove finished lasers from local and remote presence
+    for (const laser of finishedLocalLasers) {
+
+      const index = localLasers.current.findIndex(
+        item => item.id === laser.id
+      );
+
+      if (index !== -1) {
+        localLasers.current.splice(index, 1);
+      }
+    }
+    // Remove finished lasers from remote presence
+    for (const { userId, laser } of finishedRemoteLasers) {
+
+      const presence =
+        remotePresence.current.get(userId);
+
+      if (!presence) {
+        continue;
+      }
+
+      const index = presence.lasers.findIndex(
+        item => item.id === laser.id
+      );
+
+      if (index !== -1) {
+        presence.lasers.splice(index, 1);
+      }
+    }
 
     if (hasAnimatedObjects) {
       requestRender();
     }
 
 
-    const selectedObject = selectedObjectIdRef.current
-      ? getObjectById(
+    let selectedObject: Object | undefined;
+
+    if (interactionRef.current.type === "moving") {
+      selectedObject = interactionRef.current.preview;
+    } else if (selectedObjectIdRef.current) {
+      selectedObject = getObjectById(
         document.objectsRef.current,
         selectedObjectIdRef.current
-      )
-      : undefined
+      );
 
-    if (selectedObject) {
+      if (selectedObject) {
+        for (const presence of remotePresence.current.values()) {
+          if (
+            presence.preview?.type === "update" &&
+            presence.preview.objectId === selectedObject.id
+          ) {
+            selectedObject = getRenderedObject(
+              selectedObject,
+              presence
+            );
+
+            break;
+          }
+        }
+      }
+    }
+    const currentUser = getCurrentUser();
+
+    if (selectedObject && currentUser) {
       renderSelection(
         context,
         selectedObject,
         camera,
+        currentUser.color,
       )
     }
     for (const [userId, presence] of remotePresence.current) {
@@ -133,36 +193,27 @@ function Whiteboard() {
         document.objectsRef.current,
         presence.selectedObjectId,
       );
-      // console.log(
-      //   "FOUND OBJECT",
-      //   object
-      // );
 
       if (!object) {
         continue;
       }
 
-      // console.log(
-      //   "REMOTE USERS",
-      //   document.usersRef.current
-      // );
-
-      // console.log(
-      //   "LOOKING FOR USER",
-      //   userId
-      // );
-
       const user = document.usersRef.current.find(
-        user => user.id === userId
+        user => user.userId === userId
       );
 
       if (!user) {
         continue;
       }
 
+      const renderedObject = getRenderedObject(
+        object,
+        presence,
+      );
+
       renderSelection(
         context,
-        object,
+        renderedObject,
         camera,
         user.color,
         false,
@@ -247,6 +298,8 @@ function Whiteboard() {
     selectedObjectIdRef,
     onStartInteraction: closeShapeSettings,
     objectStyle: shapeSettings,
+    remotePresence: remotePresence.current,
+    localLasers: localLasers.current,
   })
 
   const resizeCanvas = () => {
@@ -304,9 +357,6 @@ function Whiteboard() {
 
     collaboration.createBoard(
       (boardState) => {
-        console.log("BOARD STATE:", boardState);
-        console.log("MY USER ID:", boardState.userId);
-        console.log("USERS:", boardState.users);
         setBoardId(boardState.boardId);
         setNetworkBoardId(boardState.boardId);
 
@@ -314,9 +364,8 @@ function Whiteboard() {
           boardState.objects,
           boardState.users,
         );
-
         const currentUser = boardState.users.find(
-          user => user.id === boardState.userId
+          user => user.userId === boardState.userId
         );
 
         if (!currentUser) {
@@ -333,22 +382,25 @@ function Whiteboard() {
   };
 
   useEffect(() => {
+    collaboration.onUserJoined(user => {
+      document.addUser(user);
+      requestRender();
+    });
+  }, [collaboration, document]);
+
+  useEffect(() => {
     presence.onCommand(
       (userId, command) => {
-        // console.log(
-        //   "presence received:",
-        //   userId,
-        //   command
-        // );
+
         switch (command.type) {
 
-          case "objectPreview":
+          case "objectPreview": {
 
-            const userPresence = remotePresence.current.get(userId) ?? {};
-            if (
-              command.previewType === "create"
-            ) {
+            const userPresence =
+              remotePresence.current.get(userId)
+              ?? createRemotePresence();
 
+            if (command.previewType === "create") {
               userPresence.preview = {
                 type: "create",
                 object: command.boardObject,
@@ -356,13 +408,15 @@ function Whiteboard() {
             }
 
             if (command.previewType === "update") {
-
               userPresence.preview = {
                 type: "update",
                 objectId: command.boardObjectId,
                 updates: command.updates,
               };
+            }
 
+            if (command.previewType === "clear") {
+              userPresence.preview = undefined;
             }
 
             remotePresence.current.set(
@@ -373,11 +427,48 @@ function Whiteboard() {
             requestRender();
 
             break;
+          }
 
           case "selection": {
+            const interaction = interactionRef.current;
+
+            if (
+              command.objectId !== null &&
+              command.objectId === selectedObjectIdRef.current
+            ) {
+              console.log("CANCELLING MY SELECTION");
+
+              selectedObjectIdRef.current = null;
+              setSelectedObjectId(null);
+
+              if (
+                interaction.type === "moving" &&
+                interaction.objectId === command.objectId
+              ) {
+                interactionRef.current = {
+                  type: "idle",
+                };
+              }
+
+              if (
+                interaction.type === "resizing" &&
+                interaction.objectId === command.objectId
+              ) {
+                interactionRef.current = {
+                  type: "idle",
+                };
+              }
+
+              // Tell everyone that I no longer own this selection.
+              presence.send({
+                type: "selection",
+                objectId: null,
+              });
+            }
 
             const userPresence =
-              remotePresence.current.get(userId) ?? {};
+              remotePresence.current.get(userId)
+              ?? createRemotePresence();
 
             userPresence.selectedObjectId =
               command.objectId;
@@ -386,10 +477,60 @@ function Whiteboard() {
               userId,
               userPresence,
             );
-            // console.log(
-            //   "REMOTE PRESENCE AFTER SELECTION",
-            //   remotePresence.current
-            // );
+
+            requestRender();
+
+            break;
+          }
+
+          case "laser": {
+
+            const userPresence =
+              remotePresence.current.get(userId)
+              ?? createRemotePresence();
+
+            if (command.laserType === "create") {
+
+              userPresence.lasers.push(
+                command.laser
+              );
+            }
+
+            if (command.laserType === "point") {
+
+              console.log("RECEIVED LASER POINT", {
+                userId,
+                laserId: command.laserId,
+                point: command.point,
+              });
+
+              const laser = userPresence.lasers.find(
+                laser => laser.id === command.laserId
+              );
+
+              if (!laser) {
+                console.log("LASER NOT FOUND FOR POINT", {
+                  laserId: command.laserId,
+                  lasers: userPresence.lasers,
+                });
+                break;
+              }
+
+              if (!laser) {
+                break;
+              }
+
+              laser.points.push({
+                point: command.point,
+                createdAt: performance.now(),
+              });
+            }
+
+            remotePresence.current.set(
+              userId,
+              userPresence,
+            );
+
             requestRender();
 
             break;
@@ -417,7 +558,7 @@ function Whiteboard() {
         );
 
         const currentUser = boardState.users.find(
-          user => user.id === boardState.userId
+          user => user.userId === boardState.userId
         );
 
         if (!currentUser) {
@@ -459,7 +600,6 @@ function Whiteboard() {
       {showShapeMenu && (
         <ShapeMenu
           onSelectShape={(tool) => {
-            console.log("Shape selected:", tool);
             setTool(tool);
             setShowShapeMenu(false);
             setShowShapeSettings(true);

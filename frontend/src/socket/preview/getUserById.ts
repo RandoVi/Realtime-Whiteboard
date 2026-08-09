@@ -5,6 +5,6 @@ export function getUserById(
     id: string,
 ) {
     return users.find(
-        user => user.id === id
+        user => user.userId === id
     );
 }

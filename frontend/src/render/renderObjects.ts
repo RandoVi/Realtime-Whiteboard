@@ -3,6 +3,9 @@ import type { Interaction } from '../interaction/Interaction'
 import type { Object } from '../types/Object'
 import { getObjectHandler } from '../objects/registry/getObjectHandler'
 import type { RemotePresence } from '../socket/preview/RemotePresence';
+import { getRenderedObject } from '../objects/getRenderedObjects';
+import type { Laser } from "../objects/laser/Laser";
+import { renderLaser } from "../objects/laser/renderLaser";
 
 
 export type PreviewData =
@@ -21,17 +24,54 @@ export function renderObjects(
   objects: Object[],
   camera: Camera,
   interaction: Interaction,
-  remotePresence: Map<string, RemotePresence>
+  remotePresence: Map<string, RemotePresence>,
+  localLasers: Laser[],
 ): {
   hasAnimatedObjects: boolean;
   finishedObjects: Object[];
+  finishedLocalLasers: Laser[];
+  finishedRemoteLasers: {
+    userId: string;
+    laser: Laser;
+  }[];
 } {
 
+  // console.log(
+  //   "RENDER INTERACTION",
+  //   interaction
+  // );
   let hasAnimatedObjects = false;
+
   const finishedObjects: Object[] = [];
+
+  const finishedLocalLasers: Laser[] = [];
+
+  const finishedRemoteLasers: {
+    userId: string;
+    laser: Laser;
+  }[] = [];
 
   for (const object of objects) {
 
+    // LOCAL moving preview
+    if (
+      (
+        interaction.type === "moving" ||
+        interaction.type === "resizing"
+      ) &&
+      interaction.preview.id === object.id
+    ) {
+      renderObject(
+        context,
+        interaction.preview,
+        camera,
+      );
+
+      continue;
+    }
+
+
+    // REMOTE moving preview
     const isPreviewed = Array.from(
       remotePresence.values()
     ).some(
@@ -41,10 +81,26 @@ export function renderObjects(
     );
 
     if (isPreviewed) {
+      console.log(
+        "REMOTE PREVIEW HIDING COMMITTED OBJECT",
+        {
+          objectId: object.id,
+          object,
+          remotePreviews: Array.from(remotePresence.entries()),
+        }
+      );
       continue;
     }
 
-    renderObject(context, object, camera);
+
+    // NORMAL committed object
+    renderObject(
+      context,
+      object,
+      camera
+    );
+
+
     const handler = getObjectHandler(object);
 
     if (handler.isAnimated?.(object)) {
@@ -53,6 +109,21 @@ export function renderObjects(
 
     if (handler.isFinished?.(object)) {
       finishedObjects.push(object);
+    }
+  }
+
+  for (const laser of localLasers) {
+
+    const active = renderLaser(
+      context,
+      laser,
+      camera,
+    );
+
+    if (active) {
+      hasAnimatedObjects = true;
+    } else {
+      finishedLocalLasers.push(laser);
     }
   }
 
@@ -65,11 +136,24 @@ export function renderObjects(
   }
 
   for (const [userId, presence] of remotePresence) {
-    console.log(
-      "RENDER PRESENCE",
-      userId,
-      presence
-    );
+
+    for (const laser of presence.lasers) {
+
+      const active = renderLaser(
+        context,
+        laser,
+        camera,
+      );
+
+      if (active) {
+        hasAnimatedObjects = true;
+      } else {
+        finishedRemoteLasers.push({
+          userId,
+          laser,
+        });
+      }
+    }
 
     const preview = presence.preview;
 
@@ -100,10 +184,7 @@ export function renderObjects(
 
       renderObject(
         context,
-        {
-          ...object,
-          ...preview.updates,
-        } as Object,
+        getRenderedObject(object, presence),
         camera
       );
     }
@@ -111,6 +192,8 @@ export function renderObjects(
   return {
     hasAnimatedObjects,
     finishedObjects,
+    finishedLocalLasers,
+    finishedRemoteLasers,
   };
 }
 

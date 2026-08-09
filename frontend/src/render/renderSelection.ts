@@ -4,23 +4,32 @@ import { HANDLE_SIZE } from '../types/selection'
 import { getResizeHandles } from '../selection/getResizeHandles'
 import { getSelectionBounds } from "../selection/getSelectionBounds"
 import type { SelectionBounds } from '../selection/getSelectionBounds'
+import { getObjectHandler } from '../objects/registry/getObjectHandler'
 
 export function renderSelection(
     context: CanvasRenderingContext2D,
     object: Object,
     camera: Camera,
-    color = '#3b82f6',
+    color: string,
     showHandles = true,
 ) {
-
     const bounds = getSelectionBounds(object)
 
-    switch (object.type) {
-        case 'rectangle':
-        case 'circle':
-            renderObjectSelection(context, bounds, camera, color, showHandles)
-            break
-    }
+    const handler = getObjectHandler(object)
+
+    const canResize =
+        handler.resize !== undefined &&
+        handler.getResizeHandle !== undefined &&
+        handler.getResizeUpdates !== undefined
+
+    renderObjectSelection(
+        context,
+        bounds,
+        camera,
+        color,
+        showHandles,
+        canResize
+    )
 }
 
 function renderObjectSelection(
@@ -28,7 +37,8 @@ function renderObjectSelection(
     bounds: SelectionBounds,
     camera: Camera,
     color: string,
-    showHandles: boolean
+    showHandles: boolean,
+    canResize: boolean
 ) {
     const screenX = bounds.left * camera.scale + camera.offsetX
     const screenY = bounds.top * camera.scale + camera.offsetY
@@ -53,11 +63,15 @@ function renderObjectSelection(
     context.restore()
 
     if (!showHandles) {
-        return;
+        return
+    }
+
+    if (!canResize) {
+        return
     }
 
     context.fillStyle = 'white'
-    context.strokeStyle = '#3b82f6'
+    context.strokeStyle = color
 
     const handles = getResizeHandles(bounds, camera)
 

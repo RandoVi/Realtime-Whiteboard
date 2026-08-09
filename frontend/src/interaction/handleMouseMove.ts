@@ -4,6 +4,7 @@ import { updateMoving } from "./moving/updateMove"
 import { updatePan } from "./panning/updatePan"
 import { handleResizeMouseMove } from "./resizing/updateResize"
 import type { CanvasInteractionContext } from "./CanvasInteractionContext"
+import { updateLaser } from "./laser/updateLaser"
 
 type Args = {
     world: Point;
@@ -31,6 +32,13 @@ export function handleMouseMove({
 
         case "drawing":
             updateDrawing({
+                world,
+                context,
+            });
+            break;
+
+        case "laser":
+            updateLaser({
                 world,
                 context,
             });

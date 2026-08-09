@@ -1,5 +1,5 @@
 import { BoardObject } from "../modules/boardObjects/schemas/BoardObjectSchema";
-import { ObjectSelectionCommand } from  "@whiteboard/common";
+import { Laser, ObjectSelectionCommand, Point } from  "@whiteboard/common";
 export type DocumentCommand = {
   id: string;
   userId: string;
@@ -48,10 +48,18 @@ export  type CursorMovementCommand = {
     //TODO customization
 }
 
-// export type DuplicateBoardObjectCommand = {
-//     type: "duplicateBoardObject";
-//     BoardObjectId: string;
-// };
+export type LaserCommand =
+    | {
+        type: "laser";
+        laserType: "create";
+        laser: Laser;
+    }
+    | {
+        type: "laser";
+        laserType: "point";
+        laserId: string;
+        point: Point;
+    };
 
 export type Command =
     | CreateBoardObjectCommand
@@ -59,4 +67,5 @@ export type Command =
     | DeleteBoardObjectCommand
     | ObjectPreviewCommand
     | CursorMovementCommand
-    | ObjectSelectionCommand;
+    | ObjectSelectionCommand
+    | LaserCommand;
