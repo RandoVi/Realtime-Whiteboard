@@ -1,4 +1,4 @@
-import { getObjectById } from "../../objects/getObjectById";
+// import { getObjectById } from "../../objects/getObjectById";
 import type { CanvasInteractionContext } from "../CanvasInteractionContext";
 import { clearObjectPreview } from "../clearObjectPreview";
 import { getObjectMoveUpdates } from "../helpers/getObjectMoveUpdates";

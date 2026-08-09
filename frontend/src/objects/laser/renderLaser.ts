@@ -7,16 +7,30 @@ export function renderLaser(
     context: CanvasRenderingContext2D,
     laser: Laser,
     camera: Camera,
-) {
+): boolean {
+
     const now = performance.now();
+
+    // Laser was created, but no points have arrived yet.
+    // It must remain alive so incoming points can be appended.
+    if (laser.points.length === 0) {
+        return true;
+    }
 
     const visiblePoints = laser.points.filter(
         ({ createdAt }) =>
             now - createdAt < POINT_LIFETIME
     );
 
+    // Points existed, but they have all expired.
+    if (visiblePoints.length === 0) {
+        return false;
+    }
+
+    // One point isn't enough to draw a line,
+    // but the laser is still alive.
     if (visiblePoints.length < 2) {
-        return;
+        return true;
     }
 
     context.beginPath();
@@ -34,6 +48,7 @@ export function renderLaser(
     );
 
     for (let i = 1; i < visiblePoints.length; i++) {
+
         const point = visiblePoints[i].point;
 
         context.lineTo(
@@ -43,4 +58,6 @@ export function renderLaser(
     }
 
     context.stroke();
+
+    return true;
 }

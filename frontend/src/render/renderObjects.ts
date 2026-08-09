@@ -4,6 +4,8 @@ import type { Object } from '../types/Object'
 import { getObjectHandler } from '../objects/registry/getObjectHandler'
 import type { RemotePresence } from '../socket/preview/RemotePresence';
 import { getRenderedObject } from '../objects/getRenderedObjects';
+import type { Laser } from "../objects/laser/Laser";
+import { renderLaser } from "../objects/laser/renderLaser";
 
 
 export type PreviewData =
@@ -22,18 +24,32 @@ export function renderObjects(
   objects: Object[],
   camera: Camera,
   interaction: Interaction,
-  remotePresence: Map<string, RemotePresence>
+  remotePresence: Map<string, RemotePresence>,
+  localLasers: Laser[],
 ): {
   hasAnimatedObjects: boolean;
   finishedObjects: Object[];
+  finishedLocalLasers: Laser[];
+  finishedRemoteLasers: {
+    userId: string;
+    laser: Laser;
+  }[];
 } {
 
-  console.log(
-    "RENDER INTERACTION",
-    interaction
-  );
+  // console.log(
+  //   "RENDER INTERACTION",
+  //   interaction
+  // );
   let hasAnimatedObjects = false;
+
   const finishedObjects: Object[] = [];
+
+  const finishedLocalLasers: Laser[] = [];
+
+  const finishedRemoteLasers: {
+    userId: string;
+    laser: Laser;
+  }[] = [];
 
   for (const object of objects) {
 
@@ -96,6 +112,21 @@ export function renderObjects(
     }
   }
 
+  for (const laser of localLasers) {
+
+    const active = renderLaser(
+      context,
+      laser,
+      camera,
+    );
+
+    if (active) {
+      hasAnimatedObjects = true;
+    } else {
+      finishedLocalLasers.push(laser);
+    }
+  }
+
   if (interaction.type === "drawing") {
     renderObject(
       context,
@@ -105,6 +136,24 @@ export function renderObjects(
   }
 
   for (const [userId, presence] of remotePresence) {
+
+    for (const laser of presence.lasers) {
+
+      const active = renderLaser(
+        context,
+        laser,
+        camera,
+      );
+
+      if (active) {
+        hasAnimatedObjects = true;
+      } else {
+        finishedRemoteLasers.push({
+          userId,
+          laser,
+        });
+      }
+    }
 
     const preview = presence.preview;
 
@@ -143,6 +192,8 @@ export function renderObjects(
   return {
     hasAnimatedObjects,
     finishedObjects,
+    finishedLocalLasers,
+    finishedRemoteLasers,
   };
 }
 

@@ -1,11 +1,14 @@
 import type { Point } from "../../types/Types";
 
+export type LaserPoint = {
+    point: Point;
+    createdAt: number;
+};
+
 export interface Laser {
     id: string;
     type: "laser";
-    points: Point[];
+    points: LaserPoint[];
     stroke: string;
     strokeWidth: number;
-    createdAt: number;
-    // createdBy:string
 }

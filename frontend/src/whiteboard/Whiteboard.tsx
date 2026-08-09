@@ -22,6 +22,8 @@ import type { RemotePresence } from '../socket/preview/RemotePresence'
 import { getCurrentUser, setCurrentUser } from '../network/currentUser'
 import { getRenderedObject } from '../objects/getRenderedObjects'
 import type { Object } from '../types/Object'
+import { createRemotePresence } from "../socket/preview/createRemotePresence";
+import type { Laser } from "../objects/laser/Laser";
 
 
 function Whiteboard() {
@@ -35,6 +37,7 @@ function Whiteboard() {
   const remotePresence = useRef(
     new Map<string, RemotePresence>()
   );
+  const localLasers = useRef<Laser[]>([]);
 
   const viewportRef = useRef({ width: 0, height: 0, dpr: 1 }) // dpr = device pixel ratio
   const resizeInitializedRef = useRef(false)
@@ -92,12 +95,15 @@ function Whiteboard() {
     const {
       hasAnimatedObjects,
       finishedObjects,
+      finishedLocalLasers,
+      finishedRemoteLasers,
     } = renderObjects(
       context,
       document.objectsRef.current,
       camera,
       interactionRef.current,
-      remotePresence.current
+      remotePresence.current,
+      localLasers.current,
     );
 
     for (const object of finishedObjects) {
@@ -105,6 +111,35 @@ function Whiteboard() {
         type: "deleteBoardObject",
         boardObjectId: object.id,
       });
+    }
+    // Remove finished lasers from local and remote presence
+    for (const laser of finishedLocalLasers) {
+
+      const index = localLasers.current.findIndex(
+        item => item.id === laser.id
+      );
+
+      if (index !== -1) {
+        localLasers.current.splice(index, 1);
+      }
+    }
+    // Remove finished lasers from remote presence
+    for (const { userId, laser } of finishedRemoteLasers) {
+
+      const presence =
+        remotePresence.current.get(userId);
+
+      if (!presence) {
+        continue;
+      }
+
+      const index = presence.lasers.findIndex(
+        item => item.id === laser.id
+      );
+
+      if (index !== -1) {
+        presence.lasers.splice(index, 1);
+      }
     }
 
     if (hasAnimatedObjects) {
@@ -264,6 +299,7 @@ function Whiteboard() {
     onStartInteraction: closeShapeSettings,
     objectStyle: shapeSettings,
     remotePresence: remotePresence.current,
+    localLasers: localLasers.current,
   })
 
   const resizeCanvas = () => {
@@ -358,13 +394,13 @@ function Whiteboard() {
 
         switch (command.type) {
 
-          case "objectPreview":
+          case "objectPreview": {
 
-            const userPresence = remotePresence.current.get(userId) ?? {};
-            if (
-              command.previewType === "create"
-            ) {
+            const userPresence =
+              remotePresence.current.get(userId)
+              ?? createRemotePresence();
 
+            if (command.previewType === "create") {
               userPresence.preview = {
                 type: "create",
                 object: command.boardObject,
@@ -372,13 +408,11 @@ function Whiteboard() {
             }
 
             if (command.previewType === "update") {
-
               userPresence.preview = {
                 type: "update",
                 objectId: command.boardObjectId,
                 updates: command.updates,
               };
-
             }
 
             if (command.previewType === "clear") {
@@ -393,6 +427,7 @@ function Whiteboard() {
             requestRender();
 
             break;
+          }
 
           case "selection": {
             const interaction = interactionRef.current;
@@ -432,10 +467,64 @@ function Whiteboard() {
             }
 
             const userPresence =
-              remotePresence.current.get(userId) ?? {};
+              remotePresence.current.get(userId)
+              ?? createRemotePresence();
 
             userPresence.selectedObjectId =
               command.objectId;
+
+            remotePresence.current.set(
+              userId,
+              userPresence,
+            );
+
+            requestRender();
+
+            break;
+          }
+
+          case "laser": {
+
+            const userPresence =
+              remotePresence.current.get(userId)
+              ?? createRemotePresence();
+
+            if (command.laserType === "create") {
+
+              userPresence.lasers.push(
+                command.laser
+              );
+            }
+
+            if (command.laserType === "point") {
+
+              console.log("RECEIVED LASER POINT", {
+                userId,
+                laserId: command.laserId,
+                point: command.point,
+              });
+
+              const laser = userPresence.lasers.find(
+                laser => laser.id === command.laserId
+              );
+
+              if (!laser) {
+                console.log("LASER NOT FOUND FOR POINT", {
+                  laserId: command.laserId,
+                  lasers: userPresence.lasers,
+                });
+                break;
+              }
+
+              if (!laser) {
+                break;
+              }
+
+              laser.points.push({
+                point: command.point,
+                createdAt: performance.now(),
+              });
+            }
 
             remotePresence.current.set(
               userId,
