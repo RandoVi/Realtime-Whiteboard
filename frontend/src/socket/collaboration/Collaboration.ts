@@ -1,4 +1,4 @@
-import type { EditorCommand } from "../../editor/EditorCommand";
+import type { EditorCommand } from "../../../../common/src/commands/EditorCommand";
 import type { BoardStateDTO } from "./BoardStateDTO";
 
 

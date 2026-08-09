@@ -1,4 +1,4 @@
-export enum BoardCommand {
+export enum BoardCommandType {
     CREATE = "CREATE",
     JOIN = "JOIN",
     LEAVE = "LEAVE",

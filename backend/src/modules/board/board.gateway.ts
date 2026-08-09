@@ -5,10 +5,12 @@ import { Server, Socket } from "socket.io";
 import { Logger } from "@nestjs/common";
 import { randomUUID } from "crypto";
 import { BoardCommandDTO } from "./dto/BoardCommandDTO";
-import { BoardCommand } from "../../common/enum/BoardCommand";
-import { BoardObjectCommandDTO } from "../../models/boardObjectCommandDTO";
-import { BoardUser } from "../../models/boardUser";
+import { BoardCommandType } from "../../common/enum/BoardCommandType";
+import { BoardObjectPresenceDTO } from "../../models/boardObjectPresenceDTO";
+import { BoardObjectEditorDTO } from "../../models/boardObjectEditorDTO";
 import { BoardStateDTO } from "./dto/BoardStateDTO";
+import { BoardUser } from "../../models/boardUser";
+
 
 @WebSocketGateway({
   transports: ["websocket"],
@@ -49,7 +51,7 @@ export class BoardGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
         @MessageBody() data: BoardCommandDTO
     ) {
         switch (data.type) {
-            case BoardCommand.CREATE: {
+            case BoardCommandType.CREATE: {
 
                 const boardId = randomUUID();
                 const hostId = randomUUID();
@@ -76,7 +78,7 @@ export class BoardGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
                 console.log("Board created with id: " + board.id)
                 break;
             }
-            case BoardCommand.JOIN:{
+            case BoardCommandType.JOIN:{
                 if (!data.id) {
                     console.error('ERROR: No "id" in socket(JOIN - BOARD)')
                     socket.emit("join-board-response", "No boardId sent with socket(missing)")
@@ -112,7 +114,7 @@ export class BoardGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
                 }
                 break;
             }
-            case BoardCommand.LEAVE:{
+            case BoardCommandType.LEAVE:{
                 if (!data.id) {
                     console.error('ERROR: No "id" in socket(LEAVE - BOARD)')
                     break
@@ -140,7 +142,7 @@ export class BoardGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
                 }
                 break;
             }
-            case BoardCommand.GET: {
+            case BoardCommandType.GET: {
                 if (!data.id) {
                     console.error('ERROR: No "id" in socket(GET - BOARD)')
                     break
@@ -161,7 +163,7 @@ export class BoardGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
                     }
                 break;
                 }
-            case BoardCommand.DELETE:
+            case BoardCommandType.DELETE:
                 if (!data.id) {
                     console.error('ERROR: No "id" in socket(DELETE - BOARD)')
                     break
@@ -194,7 +196,7 @@ export class BoardGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
     @SubscribeMessage("boardObjectCommand")
     async handleObjectCommand(
         @ConnectedSocket() socket: Socket,
-        @MessageBody() data: BoardObjectCommandDTO,
+        @MessageBody() data: BoardObjectEditorDTO,
     ) {
         switch (data.command.type){
             case "createBoardObject": {
@@ -246,7 +248,7 @@ export class BoardGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
     @SubscribeMessage("boardPresenceCommand")
     async handleSocketCommand(
         @ConnectedSocket() socket: Socket,
-        @MessageBody() data: BoardObjectCommandDTO,
+        @MessageBody() data: BoardObjectPresenceDTO,
     ) {
         switch (data.command.type){
             case ("objectPreview"): {
