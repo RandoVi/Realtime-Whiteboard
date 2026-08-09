@@ -1,4 +1,4 @@
-import type { Object } from "./Object";
+import type { Object } from "../types/Object";
 export type ObjectPreviewCommand = {
     type: "objectPreview";
     previewType: "create";

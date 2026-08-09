@@ -1,4 +1,4 @@
-import type { Object, Point } from "./Object";
+import type { Object, Point } from "../types/Object";
 
 export type ObjectPreviewCommand =
   | {

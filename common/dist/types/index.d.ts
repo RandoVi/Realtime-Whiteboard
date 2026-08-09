@@ -1,5 +1,5 @@
-export * from "./CursorMovementCommand";
+export * from "../commands/CursorMovementCommand";
 export * from "./Object";
-export * from "./ObjectPreviewCommand";
-export * from "./ObjectSelectionCommand";
+export * from "../commands/ObjectPreviewCommand";
+export * from "../commands/ObjectSelectionCommand";
 //# sourceMappingURL=index.d.ts.map
