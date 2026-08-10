@@ -5,47 +5,44 @@ import { ActionsSection } from "./ActionsSection";
 import { PropertySection } from "./PropertySection";
 
 type Props = {
-    object?: Object;
-    editor: Editor;
+  object?: Object;
+  editor: Editor;
 };
 
 export function ObjectInspector({
-    object,
-    editor,
+  object,
+  editor,
 }: Props) {
-    if (!object) {
-        return null;
-    }
+  if (!object) {
+    return null;
+  }
 
-    return (
-        <aside className="object-inspector">
+  return (
+    <aside className="object-inspector">
 
-            <header className="inspector-header">
+      <header className="inspector-header">
+        <div>
+          <h3>Object</h3>
+          <span>{object.type}</span>
+        </div>
+      </header>
 
-                <h3>Selected</h3>
+      <PropertySection
+        title="Transform"
+        section="transform"
+        object={object}
+        editor={editor}
+      />
 
-                <span>{object.type}</span>
+      <PropertySection
+        title="Appearance"
+        section="appearance"
+        object={object}
+        editor={editor}
+      />
 
-            </header>
+      <ActionsSection editor={editor} />
 
-            <PropertySection
-                title="Transform"
-                section="transform"
-                object={object}
-                editor={editor}
-            />
-
-            <PropertySection
-                title="Appearance"
-                section="appearance"
-                object={object}
-                editor={editor}
-            />
-
-            <ActionsSection
-                editor={editor}
-            />
-
-        </aside>
-    );
+    </aside>
+  );
 }
