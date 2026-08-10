@@ -250,26 +250,12 @@ export class BoardGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
         @ConnectedSocket() socket: Socket,
         @MessageBody() data: BoardObjectPresenceDTO,
     ) {
-        switch (data.command.type){
-            case ("objectPreview"): {
-                socket.broadcast.to(data.boardId).emit("boardPresenceCommand", data);
-                break;
-            }
-            case ("laser"): {
-                socket.broadcast.to(data.boardId).emit("boardPresenceCommand", data);
-                break
-            }
-            case ("selection"): {
-                socket.broadcast.to(data.boardId).emit("selection", data)
-                break;
-            }
-            default: {
-                console.log("Default response - cursor move")
-                break;
-            }
+        if (data) {
+            socket.broadcast.to(data.boardId).emit("boardPresenceCommand", data);
+        } else {
+            console.warn("No data found to transmit @handleSocketCommand line 242")
         }
     }
-
     
 }
 

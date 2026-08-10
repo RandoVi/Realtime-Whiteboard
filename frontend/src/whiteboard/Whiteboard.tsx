@@ -24,6 +24,8 @@ import { getRenderedObject } from '../objects/getRenderedObjects'
 import type { Object } from '../types/Object'
 import { createRemotePresence } from "../socket/preview/createRemotePresence";
 import type { Laser } from "../objects/laser/Laser";
+import { DEFAULT_FILL, DEFAULT_STROKE_COLOR } from '../objects/defaults'
+import { DrawingMenu } from '../ui/DrawingMenu'
 
 
 function Whiteboard() {
@@ -51,17 +53,38 @@ function Whiteboard() {
   const [lobbyState, setLobbyState] = useState<LobbyState>("lobby");
   const [boardId, setBoardId] = useState("");
 
+  const [showDrawingMenu, setShowDrawingMenu] = useState(false);
   const [showShapeMenu, setShowShapeMenu] = useState(false);
   const [showShapeSettings, setShowShapeSettings] = useState(false);
   const [shapeSettings, setShapeSettings] = useState({
-    fill: "#ffffff",
-    stroke: "#000000",
+    fill: DEFAULT_FILL,
+    stroke: DEFAULT_STROKE_COLOR,
   });
-  const closeShapeSettings = () => {
+
+
+  const openShapeMenu = () => {
+    setShowShapeMenu(prev => !prev);
+    setShowDrawingMenu(false);
+    setShowShapeSettings(false);
+  };
+
+  const openDrawingMenu = () => {
+    setShowDrawingMenu(prev => !prev);
+    setShowShapeMenu(false);
     setShowShapeSettings(false);
   };
 
 
+  const closeShapeSettings = () => {
+    setShowShapeSettings(false);
+  };
+
+  const selectTool = (tool: Tool) => {
+    setTool(tool);
+    setShowShapeSettings(false);
+    setShowShapeMenu(false);
+    setShowDrawingMenu(false);
+  };
 
   const [tool, setTool] = useState<Tool>('pan')
   const [selectedObjectId, setSelectedObjectId] =
@@ -597,6 +620,17 @@ function Whiteboard() {
         onStart={handleStart}
       />
       {/* <ObjectPanel /> */}
+
+      {showDrawingMenu && (
+        <DrawingMenu
+          onSelectTool={(tool) => {
+            setTool(tool);
+            setShowDrawingMenu(false);
+            setShowShapeSettings(false);
+          }}
+        />
+      )}
+
       {showShapeMenu && (
         <ShapeMenu
           onSelectShape={(tool) => {
@@ -628,8 +662,9 @@ function Whiteboard() {
 
       <BottomToolbar
         tool={tool}
-        setTool={setTool}
-        onShapeClick={() => setShowShapeMenu(prev => !prev)}
+        setTool={selectTool}
+        onShapeClick={openShapeMenu}
+        onDrawingClick={openDrawingMenu}
       />
       {selectedObjectId && (
         // <ObjectInspector editor={editor} />

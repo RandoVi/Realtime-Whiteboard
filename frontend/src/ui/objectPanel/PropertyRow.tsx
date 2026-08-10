@@ -11,13 +11,11 @@ export function PropertyRow({
 }: Props) {
   return (
     <div className="property-row">
-
       <label>{label}</label>
 
       <div className="property-control">
         {children}
       </div>
-
     </div>
   );
 }

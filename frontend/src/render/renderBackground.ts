@@ -1,3 +1,4 @@
+import { DEFAULT_BACKGROUND_COLOR } from "../objects/defaults"
 
 
 type Viewport = {
@@ -11,6 +12,6 @@ export function renderBackground(
 ) {
   const { width, height } = viewport
 
-  ctx.fillStyle = '#e3e3e3'
+  ctx.fillStyle = DEFAULT_BACKGROUND_COLOR
   ctx.fillRect(0, 0, width, height)
 }

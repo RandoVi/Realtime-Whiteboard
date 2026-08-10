@@ -9,38 +9,45 @@ type Props = {
   tool: Tool
   setTool: (tool: Tool) => void
   onShapeClick?: () => void
+  onDrawingClick?: () => void;
 }
 export function BottomToolbar({
+  tool,
   setTool,
-  onShapeClick
+  onShapeClick,
+  onDrawingClick,
 }: Props) {
-
-
-
   return (
     <div className="bottom-toolbar">
-      <button className="tool-button" onClick={onShapeClick}>
-        <ShapesIcon color={'none'} />
+
+      <button
+        className="tool-button"
+        onClick={() => setTool("pan")}
+      >
+        <MoveIcon color="none" />
       </button>
 
-      {/* <button className="tool-button" onClick={() => setTool('shapes')}>
-        <ShapesIcon color={'none'} />
-      </button> */}
-
-      <button className="tool-button" onClick={() => setTool('pan')}>
-        {/* <Pencil /> */}
-        <MoveIcon color={'none'} />
+      <button
+        className="tool-button"
+        onClick={() => setTool("select")}
+      >
+        <SelectorIcon color="purple" />
       </button>
 
-      <button className="tool-button" onClick={() => setTool('select')}>
-        {/* <Rectangle /> */}
-        <SelectorIcon color={'purple'} />
+      <button
+        className="tool-button"
+        onClick={onDrawingClick}
+      >
+        <PencilIcon color="purple" />
       </button>
 
-      <button className="tool-button" onClick={() => setTool('stroke')}>
-        {/* <Circle /> */}
-        <PencilIcon color={'purple'} />
+      <button
+        className="tool-button"
+        onClick={onShapeClick}
+      >
+        <ShapesIcon color="none" />
       </button>
+
     </div>
-  )
+  );
 }

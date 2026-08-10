@@ -11,29 +11,45 @@ export function ShapeSettings({
     setFill,
     setStroke,
 }: Props) {
-
     return (
         <div className="shape-settings">
+    <label className="shape-color">
+        <span className="shape-color-label">Fill</span>
 
-            <label>
-                Fill
-                <input
-                    type="color"
-                    value={fill}
-                    onChange={(e) => setFill(e.target.value)}
-                />
-            </label>
+        <span
+            className="shape-color-preview"
+            style={{ backgroundColor: fill }}
+        />
 
+        <span className="shape-color-value">
+            {fill.toUpperCase()}
+        </span>
 
-            <label>
-                Stroke
-                <input
-                    type="color"
-                    value={stroke}
-                    onChange={(e) => setStroke(e.target.value)}
-                />
-            </label>
+        <input
+            type="color"
+            value={fill}
+            onChange={(e) => setFill(e.target.value)}
+        />
+    </label>
 
-        </div>
+    <label className="shape-color">
+        <span className="shape-color-label">Stroke</span>
+
+        <span
+            className="shape-color-preview"
+            style={{ backgroundColor: stroke }}
+        />
+
+        <span className="shape-color-value">
+            {stroke.toUpperCase()}
+        </span>
+
+        <input
+            type="color"
+            value={stroke}
+            onChange={(e) => setStroke(e.target.value)}
+        />
+    </label>
+</div>
     );
 }
