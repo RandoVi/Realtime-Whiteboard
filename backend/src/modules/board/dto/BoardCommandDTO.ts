@@ -1,7 +1,7 @@
 import { IsString, IsOptional, IsEnum, ValidateNested } from 'class-validator';
 import { Type } from 'class-transformer';
 import { BoardUser } from '../../../models/boardUser';
-import { BoardCommand } from '../../../common/enum/BoardCommand';
+import { BoardCommandType } from '../../../common/enum/BoardCommandType';
 
 export class BoardCommandDTO {
   @IsString()
@@ -13,6 +13,6 @@ export class BoardCommandDTO {
   user?: BoardUser;
 
   @IsOptional()
-  @IsEnum(BoardCommand)
-  type?: BoardCommand;
+  @IsEnum(BoardCommandType)
+  type?: BoardCommandType;
 }

@@ -31,13 +31,6 @@ export class SocketPresence implements Presence {
 
         const currentUser = getCurrentUser();
 
-
-        if (!currentUser) {
-            throw new Error(
-                "Current user is not initialized."
-            );
-        }
-
         const message = {
             id: crypto.randomUUID(),
             userId: currentUser.userId,

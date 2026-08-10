@@ -94,12 +94,6 @@ export class SocketCollaboration implements Collaboration {
         const currentUser =
             getCurrentUser();
 
-        if (!currentUser) {
-            throw new Error(
-                "Current user is not initialized."
-            );
-        }
-
         const message: NetworkCommand = {
             id: crypto.randomUUID(),
             userId: currentUser.userId,

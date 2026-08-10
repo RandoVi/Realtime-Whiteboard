@@ -1,6 +1,7 @@
 import type { Point } from "../../types/Types";
 import { createLaser } from "../../objects/laser/createLaser";
 import type { CanvasInteractionContext } from "../CanvasInteractionContext";
+import { getCurrentUser } from "../../network/currentUser";
 
 type Args = {
     world: Point;
@@ -12,9 +13,11 @@ export function beginLaser({
     context,
 }: Args): boolean {
 
+    const currentUser = getCurrentUser();
+
     const laser = createLaser(
         world,
-        context.objectStyle,
+        currentUser.color || "#000000",
     );
 
     context.localLasers.push(laser);
