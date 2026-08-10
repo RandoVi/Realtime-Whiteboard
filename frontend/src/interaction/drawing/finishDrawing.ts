@@ -8,7 +8,7 @@ type Args = {
 export function finishDrawing({
   context
 }: Args): boolean {
-  const { interactionRef, editor } = context
+  const { interactionRef, editor, selectObject } = context
   if (interactionRef.current.type !== "drawing") {
     return false
   }
@@ -21,6 +21,8 @@ export function finishDrawing({
     type: "createBoardObject",
     boardObject,
   })
+
+  selectObject(boardObject.id)
 
   interactionRef.current = {
     type: "idle",

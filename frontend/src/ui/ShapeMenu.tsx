@@ -1,53 +1,36 @@
 import type { Tool } from "../types/Tool";
+import { CircleIcon } from "./icons/CircleIcon";
+import PencilIcon from "./icons/PencilIcon";
+import RectangleIcon from "./icons/RectangleIcon";
+import { TriangleIcon } from "./icons/TriangleIcon";
 
 type Props = {
-    onSelectShape: (tool: Tool) => void;
+  onSelectShape: (tool: Tool) => void;
 };
 
 export function ShapeMenu({ onSelectShape }: Props) {
-    return (
-        <div className="shape-menu">
-            <button
-                className="tool-button"
-                onClick={() => {
-                    onSelectShape("rectangle");
-                    // setShowShapeMenu(false);
-                    // setShowShapeSettings(true);
-                }}
-            >
-                Rectangle
-            </button>
+  return (
+    <div className="shape-menu">
+      <button
+        className="tool-button"
+        onClick={() => onSelectShape("rectangle")}
+      >
+        <RectangleIcon color="purple" />
+      </button>
 
-            <button
-                className="tool-button"
-                onClick={() => {
-                    onSelectShape("triangle");
-                    // setShowShapeMenu(false);
-                    // setShowShapeSettings(true);
-                }}
-            >
-                Triangle
-            </button>
+      <button
+        className="tool-button"
+        onClick={() => onSelectShape("triangle")}
+      >
+        <TriangleIcon color="purple" />
+      </button>
 
-            <button
-                className="tool-button"
-                onClick={() => {
-                    onSelectShape("circle");
-                    // setShowShapeMenu(false);
-                    // setShowShapeSettings(true);
-                }}
-            >
-                Circle
-            </button>
-
-            <button
-                className="tool-button"
-                onClick={() => {
-                    onSelectShape("laser");
-                }}
-            >
-                Laser
-            </button>
-        </div>
-    );
+      <button
+        className="tool-button"
+        onClick={() => onSelectShape("circle")}
+      >
+        <CircleIcon />
+      </button>
+    </div>
+  );
 }

@@ -1,26 +1,107 @@
-.shape-settings {
+.drawing-menu {
   position: fixed;
 
   left: 50%;
-  bottom: 100px;
+  bottom: 90px;
 
   transform: translateX(-50%);
 
+  width: 150px;
+  height: 56px;
+
   display: flex;
   align-items: center;
-  gap: 20px;
+  gap: 8px;
 
-  padding: 16px 20px;
+  padding: 8px 12px;
 
-  background: rgba(255,255,255,.75);
+  background: rgba(255, 255, 255, 0.75);
   backdrop-filter: blur(18px);
 
   border: 1px solid #ddd;
   border-radius: 14px;
 
-  box-shadow: 0 8px 24px rgba(0,0,0,.12);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
 
   z-index: 10;
+}
+
+.shape-settings {
+  position: fixed;
+
+  left: 50%;
+  bottom: 90px;
+
+  transform: translateX(-50%);
+
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  padding: 8px 12px;
+
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(18px);
+
+  border: 1px solid #ddd;
+  border-radius: 14px;
+
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+
+  z-index: 10;
+}
+
+.shape-color {
+  position: relative;
+
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  height: 40px;
+  padding: 0 8px;
+
+  border-radius: 8px;
+
+  cursor: pointer;
+}
+
+.shape-color:hover {
+  background: rgba(0, 0, 0, 0.06);
+}
+
+.shape-color-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: #444;
+}
+
+.shape-color-preview {
+  width: 22px;
+  height: 22px;
+
+  border: 1px solid #bbb;
+  border-radius: 5px;
+
+  box-sizing: border-box;
+}
+
+.shape-color-value {
+  font-size: 11px;
+  font-family: monospace;
+  color: #777;
+}
+
+.shape-color input[type="color"] {
+  position: absolute;
+
+  inset: 0;
+
+  width: 100%;
+  height: 100%;
+
+  opacity: 0;
+  cursor: pointer;
 }
 
 /* Shape Menu */
@@ -28,7 +109,7 @@
   position: fixed;
 
   left: 50%;
-  bottom: 100px;
+  bottom: 90px;
 
   transform: translateX(-50%);
 
