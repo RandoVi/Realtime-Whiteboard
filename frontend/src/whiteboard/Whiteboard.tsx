@@ -26,6 +26,7 @@ import { createRemotePresence } from "../socket/preview/createRemotePresence";
 import type { Laser } from "../objects/laser/Laser";
 import { DEFAULT_FILL, DEFAULT_STROKE_COLOR } from '../objects/defaults'
 import { DrawingMenu } from '../ui/DrawingMenu'
+import { RemoteCursors } from '../ui/cursors/RemoteCursors'
 
 
 function Whiteboard() {
@@ -61,6 +62,8 @@ function Whiteboard() {
     stroke: DEFAULT_STROKE_COLOR,
   });
 
+  const [, setDocumentRevision] = useState(0)
+  const [, setCursorRevision] = useState(0);
 
   const openShapeMenu = () => {
     setShowShapeMenu(prev => !prev);
@@ -282,7 +285,10 @@ function Whiteboard() {
         selectedObjectIdRef,
         setSelectedObjectId,
         requestRender,
-        collaboration
+        collaboration,
+        onDocumentChange: () => {
+          setDocumentRevision(prev => prev + 1)
+        },
       }),
     [document, collaboration]
   );
@@ -417,6 +423,27 @@ function Whiteboard() {
 
         switch (command.type) {
 
+          case "cursorMovement": {
+            console.log("Received cursor movement", {
+              userId,
+              point: command.point,
+            });
+            const userPresence =
+              remotePresence.current.get(userId)
+              ?? createRemotePresence();
+
+            userPresence.cursor = command.point;
+
+            remotePresence.current.set(
+              userId,
+              userPresence,
+            );
+
+            setCursorRevision(prev => prev + 1);
+
+            break;
+          }
+
           case "objectPreview": {
 
             const userPresence =
@@ -459,7 +486,6 @@ function Whiteboard() {
               command.objectId !== null &&
               command.objectId === selectedObjectIdRef.current
             ) {
-              console.log("CANCELLING MY SELECTION");
 
               selectedObjectIdRef.current = null;
               setSelectedObjectId(null);
@@ -611,6 +637,13 @@ function Whiteboard() {
         }}
         className="whiteboard-canvas"
       />
+
+      <RemoteCursors
+        remotePresence={remotePresence.current}
+        users={document.usersRef.current}
+        camera={transformRef.current}
+      />
+
       <BoardLobbyModal
         state={lobbyState}
         boardId={boardId}

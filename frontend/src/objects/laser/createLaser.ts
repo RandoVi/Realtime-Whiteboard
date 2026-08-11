@@ -1,11 +1,12 @@
 
 import type { Point } from "../../types/Types";
 import { DEFAULT_LASER_WIDTH } from "../defaults";
+import type { ObjectStyle } from "../ObjectStyle";
 import type { Laser } from "./Laser";
 
 export function createLaser(
     _point: Point,
-    color: string
+    style: ObjectStyle
 ): Laser {
 
     return {
@@ -15,7 +16,7 @@ export function createLaser(
 
         points: [],
 
-        stroke: color,
+        stroke: style.stroke,
 
         strokeWidth: DEFAULT_LASER_WIDTH,
     };

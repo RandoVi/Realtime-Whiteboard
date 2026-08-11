@@ -4,9 +4,13 @@ import type { Presence } from "./Presence";
 import type { PresenceCommand } from "./PresenceCommand";
 import { socket } from "../SocketClient";
 import { getCurrentUser } from "../../network/currentUser";
+import type { Point } from "../../types/Types";
+
 
 export class SocketPresence implements Presence {
 
+    private cursorFramePending = false;
+    private latestCursorPoint?: Point;
 
     private commandHandler?:
         (userId: string, command: PresenceCommand) => void
@@ -22,6 +26,7 @@ export class SocketPresence implements Presence {
                     message.command,
 
                 );
+                console.log("Received presence command:", message);
             }
         );
     }
@@ -30,6 +35,10 @@ export class SocketPresence implements Presence {
     send(command: PresenceCommand): void {
 
         const currentUser = getCurrentUser();
+
+        if (!currentUser) {
+            return
+        }
 
         const message = {
             id: crypto.randomUUID(),
@@ -44,7 +53,32 @@ export class SocketPresence implements Presence {
             message
         );
     }
+    // cursor is sent in a throttled manner to avoid sending too many messages per second. 
+    // The latest cursor position is sent on the next animation frame.
+    sendCursor(point: Point): void {
 
+        this.latestCursorPoint = point;
+
+        if (this.cursorFramePending) {
+            return;
+        }
+
+        this.cursorFramePending = true;
+
+        requestAnimationFrame(() => {
+
+            this.cursorFramePending = false;
+
+            if (!this.latestCursorPoint) {
+                return;
+            }
+
+            this.send({
+                type: "cursorMovement",
+                point: this.latestCursorPoint,
+            });
+        });
+    }
 
     onCommand(
         handler: (

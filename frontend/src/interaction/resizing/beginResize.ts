@@ -4,6 +4,8 @@ import type { Camera, Point } from "../../types/Types"
 import { getSelectionHandle } from "../../selection/getSelectionHandle"
 import type { Interaction } from "../Interaction"
 import { getSelectionBounds } from "../../selection/getSelectionBounds"
+import type { CanvasInteractionContext } from "../CanvasInteractionContext"
+import { updateCursor } from "../updateCursor"
 
 type Args = {
   selectedObject: Object | undefined
@@ -11,6 +13,7 @@ type Args = {
   world: Point
   camera: Camera
   interactionRef: MutableRefObject<Interaction>
+  context: CanvasInteractionContext;
 }
 // Handles the mouse down event for resizing a selected object
 export function beginResize({
@@ -19,6 +22,7 @@ export function beginResize({
   world,
   camera,
   interactionRef,
+  context,
 }: Args): boolean {
   if (!selectedObject) {
     return false
@@ -70,6 +74,8 @@ interactionRef.current = {
         y: world.y - handlePosition.y,
     },
 }
+
+  updateCursor(context);
 
   return true
 }

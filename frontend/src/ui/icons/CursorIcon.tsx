@@ -1,17 +1,16 @@
-type CursorIconProps = {
-    color: string
+export function CursorIcon(color: { color: string }) {
+  return (
+    <svg
+      width="48"
+      height="48"
+      viewBox="0 0 16 16"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="M1 2.00001L2 1L14 5V7L10.0102 8.59595L14.7071 13.2929L13.2929 14.7071L8.59594 10.0102L7 14H5L1 2.00001Z"
+        fill={color.color}
+      />
+    </svg>
+  )
 }
-
-const CursorIcon = ({ color }: CursorIconProps) => {
-    return (
-        <svg fill={color} className="cursor-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" id="Cursor--Streamline-Ultimate" height="48" width="48">
-            <desc>
-                Cursor Streamline Icon: https://streamlinehq.com
-            </desc>
-            <path d="m13.68 11.67 2.94 -2.94a0.5 0.5 0 0 0 -0.19 -0.82L4.17 3.53a0.5 0.5 0 0 0 -0.64 0.64l4.38 12.26a0.5 0.5 0 0 0 0.82 0.18l2.95 -2.94 6.14 6.15a0.51 0.51 0 0 0 0.71 0l1.29 -1.3a0.48 0.48 0 0 0 0 -0.7Z" fill="none" stroke="#000000" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1"></path>
-        </svg>
-    )
-}
-
-export default CursorIcon
-

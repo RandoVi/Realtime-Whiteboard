@@ -91,8 +91,11 @@ export class SocketCollaboration implements Collaboration {
 
     //Board Specific Commands
     send(command: EditorCommand): void {
-        const currentUser =
-            getCurrentUser();
+        const currentUser = getCurrentUser();
+
+        if (!currentUser) {
+            return;
+        }
 
         const message: NetworkCommand = {
             id: crypto.randomUUID(),

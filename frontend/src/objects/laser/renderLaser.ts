@@ -11,8 +11,6 @@ export function renderLaser(
 
     const now = performance.now();
 
-    // Laser was created, but no points have arrived yet.
-    // It must remain alive so incoming points can be appended.
     if (laser.points.length === 0) {
         return true;
     }
@@ -22,42 +20,72 @@ export function renderLaser(
             now - createdAt < POINT_LIFETIME
     );
 
-    // Points existed, but they have all expired.
     if (visiblePoints.length === 0) {
         return false;
     }
 
-    // One point isn't enough to draw a line,
-    // but the laser is still alive.
     if (visiblePoints.length < 2) {
         return true;
     }
 
-    context.beginPath();
+    const first = visiblePoints[0].point;
 
-    context.strokeStyle = laser.stroke;
-    context.lineWidth = laser.strokeWidth;
+    const drawPath = () => {
+        context.beginPath();
+
+        context.moveTo(
+            first.x * camera.scale + camera.offsetX,
+            first.y * camera.scale + camera.offsetY
+        );
+
+        for (let i = 1; i < visiblePoints.length; i++) {
+            const point = visiblePoints[i].point;
+
+            context.lineTo(
+                point.x * camera.scale + camera.offsetX,
+                point.y * camera.scale + camera.offsetY
+            );
+        }
+    };
+
+    context.save();
+
     context.lineCap = "round";
     context.lineJoin = "round";
 
-    const first = visiblePoints[0].point;
+    // Outer glow
+    drawPath();
 
-    context.moveTo(
-        first.x * camera.scale + camera.offsetX,
-        first.y * camera.scale + camera.offsetY
-    );
-
-    for (let i = 1; i < visiblePoints.length; i++) {
-
-        const point = visiblePoints[i].point;
-
-        context.lineTo(
-            point.x * camera.scale + camera.offsetX,
-            point.y * camera.scale + camera.offsetY
-        );
-    }
+    context.strokeStyle = laser.stroke;
+    context.lineWidth = laser.strokeWidth * 3;
+    context.globalAlpha = 0.25;
+    context.shadowColor = laser.stroke;
+    context.shadowBlur = 15;
 
     context.stroke();
+
+    // Inner glow
+    drawPath();
+
+    context.strokeStyle = laser.stroke;
+    context.lineWidth = laser.strokeWidth * 1.8;
+    context.globalAlpha = 0.7;
+    context.shadowColor = laser.stroke;
+    context.shadowBlur = 8;
+
+    context.stroke();
+
+    // Sharp laser core
+    drawPath();
+
+    context.strokeStyle = "#ffffff";
+    context.lineWidth = laser.strokeWidth * 0.65;
+    context.globalAlpha = 0.9;
+    context.shadowBlur = 0;
+
+    context.stroke();
+
+    context.restore();
 
     return true;
 }

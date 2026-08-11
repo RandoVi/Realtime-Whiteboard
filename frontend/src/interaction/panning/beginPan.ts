@@ -2,6 +2,7 @@
 import type { Point } from "../../types/Types"
 
 import type { CanvasInteractionContext } from "../CanvasInteractionContext";
+import { updateCursor } from "../updateCursor";
 
 type Args = {
   pointer: Point;
@@ -12,7 +13,6 @@ type Args = {
 // Handle the mouse down event when starting to pan the canvas
 export function beginPan({
   pointer,
-  canvas,
   context,
 }: Args) {
     context.interactionRef.current = {
@@ -20,5 +20,5 @@ export function beginPan({
     start: pointer,
   }
 
-  canvas.style.cursor = "grabbing"
+  updateCursor(context);
 }

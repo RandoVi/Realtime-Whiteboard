@@ -1,6 +1,5 @@
 import type { Tool } from "../types/Tool";
 import { CircleIcon } from "./icons/CircleIcon";
-import PencilIcon from "./icons/PencilIcon";
 import RectangleIcon from "./icons/RectangleIcon";
 import { TriangleIcon } from "./icons/TriangleIcon";
 

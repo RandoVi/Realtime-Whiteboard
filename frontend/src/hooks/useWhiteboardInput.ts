@@ -52,6 +52,7 @@ export function useWhiteboardInput({
   const contextRef = useRef<CanvasInteractionContext | null>(null);
 
   contextRef.current = {
+    canvas: canvasRef.current!,
     cameraRef,
     interactionRef,
     document,
@@ -130,7 +131,7 @@ export function useWhiteboardInput({
         context: contextRef.current!,
       });
 
-      canvas.style.cursor = "grab";
+      canvas.style.cursor = "default";
     };
 
     // Add event listeners for mouse and keyboard events

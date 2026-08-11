@@ -12,7 +12,6 @@ type Props = {
   onDrawingClick?: () => void;
 }
 export function BottomToolbar({
-  tool,
   setTool,
   onShapeClick,
   onDrawingClick,
