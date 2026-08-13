@@ -6,4 +6,4 @@ export type Tool =
   | 'circle'
   | 'triangle'
   | 'laser'
-  // | 'arrow'
+  | 'arrow'

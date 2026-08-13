@@ -1,12 +1,13 @@
-// export type Arrow = {
-//     id: string
-//     type: "arrow"
+export type Arrow = {
+    id: string
+    type: "arrow"
 
-//     x1: number
-//     y1: number
+    x: number
+    y: number
 
-//     x2: number
-//     y2: number
+    width: number
+    height: number
 
-//     stroke: string
-// }
+    fill: string
+    stroke: string
+}
