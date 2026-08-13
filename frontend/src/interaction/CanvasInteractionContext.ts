@@ -11,6 +11,8 @@ import type { Laser } from "../objects/laser/Laser";
 
 export interface CanvasInteractionContext {
 
+    canvas: HTMLCanvasElement;
+
     cameraRef: MutableRefObject<Camera>;
 
     interactionRef: MutableRefObject<Interaction>;
@@ -19,7 +21,7 @@ export interface CanvasInteractionContext {
 
     editor: Editor;
 
-    presence: Presence; // replace with your real type
+    presence: Presence;
 
     requestRender: () => void;
 

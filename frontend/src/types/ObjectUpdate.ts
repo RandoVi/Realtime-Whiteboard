@@ -1,4 +1,4 @@
-// import type { Arrow } from "../objects/arrow/Arrow";
+import type { Arrow } from "../objects/arrow/Arrow";
 import type { Circle } from "../objects/circle/Circle";
 import type { Laser } from "../objects/laser/Laser";
 import type { Rectangle } from "../objects/rectangle/Rectangle";
@@ -11,5 +11,5 @@ export type ObjectUpdate =
     | Partial<Stroke>
     | Partial<Triangle>
     | Partial<Laser>
-    // | Partial<Arrow>;
+    | Partial<Arrow>;
     

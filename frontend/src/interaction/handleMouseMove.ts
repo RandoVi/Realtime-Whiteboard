@@ -18,6 +18,8 @@ export function handleMouseMove({
     context,
 }: Args) {
 
+    context.presence.sendCursor(world);
+
     const interaction = context.interactionRef.current;
 
     switch (interaction.type) {

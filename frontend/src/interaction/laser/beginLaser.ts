@@ -2,6 +2,7 @@ import type { Point } from "../../types/Types";
 import { createLaser } from "../../objects/laser/createLaser";
 import type { CanvasInteractionContext } from "../CanvasInteractionContext";
 import { getCurrentUser } from "../../network/currentUser";
+import { updateCursor } from "../updateCursor";
 
 type Args = {
     world: Point;
@@ -14,11 +15,17 @@ export function beginLaser({
 }: Args): boolean {
 
     const currentUser = getCurrentUser();
+    
+    if (!currentUser) {
+        throw new Error(
+            "Current user is not initialized."
+        );
+    }
 
-    const laser = createLaser(
-        world,
-        currentUser.color || "#000000",
-    );
+    const laser = createLaser(world, {
+        fill: "transparent",
+        stroke: currentUser.color || "#000000",
+    });
 
     context.localLasers.push(laser);
 
@@ -26,7 +33,7 @@ export function beginLaser({
         type: "laser",
         laserId: laser.id,
     };
-
+    updateCursor(context);
     context.presence.send({
         type: "laser",
         laserType: "create",

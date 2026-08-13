@@ -8,10 +8,6 @@ export function setCurrentUser(user: BoardUser) {
 }
 
 export function getCurrentUser() {
-    if (!currentUser) {
-        throw new Error(
-            "Current user is not initialized."
-        );
-    }
+
     return currentUser;
 }

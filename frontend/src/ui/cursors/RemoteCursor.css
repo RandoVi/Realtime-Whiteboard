@@ -1,0 +1,53 @@
+.remote-cursors {
+    position: absolute;
+    inset: 0;
+
+    pointer-events: none;
+
+    overflow: hidden;
+
+    z-index: 10;
+}
+
+.remote-cursor {
+    --cursor-color: #000;
+
+    position: absolute;
+    top: 0;
+    left: 0;
+
+    display: flex;
+    align-items: flex-start;
+
+    pointer-events: none;
+
+    will-change: transform;
+}
+
+.remote-cursor svg {
+    width: 20px;
+    height: 20px;
+
+    color: var(--cursor-color);
+    fill: var(--cursor-color);
+
+    flex-shrink: 0;
+}
+
+.remote-cursor__label {
+    margin-left: 5px;
+    margin-top: 13px;
+
+    padding: 3px 7px;
+
+    background: var(--cursor-color);
+    color: white;
+
+    border-radius: 4px;
+
+    font-size: 11px;
+    font-weight: 500;
+    line-height: 1;
+
+    white-space: nowrap;
+}

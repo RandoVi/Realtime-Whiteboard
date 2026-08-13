@@ -15,7 +15,7 @@ export function updateDrawing({
   if (interactionRef.current.type !== "drawing") {
     return false
   }
-
+  
   const interaction = interactionRef.current
   // Update the preview object based on the current mouse position
   updatePreviewObject(

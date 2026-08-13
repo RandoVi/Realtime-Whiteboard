@@ -39,6 +39,7 @@ export function handleSelectMouseDown({
       world,
       camera: cameraRef.current,
       interactionRef,
+      context,
     })
   ) {
     return true
@@ -58,6 +59,7 @@ export function handleSelectMouseDown({
       interactionRef,
       selectObject,
       requestRender,
+      context,
     })
   ) {
     return true

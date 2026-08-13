@@ -1,3 +1,4 @@
+import type { Point } from "../../types/Types";
 import type { PresenceCommand } from "./PresenceCommand";
 
 export interface Presence {
@@ -9,4 +10,6 @@ export interface Presence {
             command: PresenceCommand,
         ) => void
     ): void;
+
+    sendCursor(point: Point): void;
 }

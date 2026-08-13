@@ -1,4 +1,4 @@
-// import type { Arrow } from '../objects/arrow/Arrow'
+import type  { Arrow } from '../shapes/Arrow'
 import type { Circle } from '../shapes/Circle'
 import type { Laser } from '../shapes/Laser'
 import type { Rectangle } from '../shapes/Rectangle'
@@ -11,7 +11,7 @@ export type Object =
     | Circle
     | Triangle
     | Laser
-    // | Arrow
+    | Arrow
 
 export type Point = {
   x: number

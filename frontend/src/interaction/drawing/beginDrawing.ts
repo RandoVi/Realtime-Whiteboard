@@ -2,6 +2,7 @@ import type { Point } from "../../types/Types"
 import type { Tool } from "../../types/Tool"
 import { createObject } from "../../objects/createObject"
 import type { CanvasInteractionContext } from "../CanvasInteractionContext"
+import { updateCursor } from "../updateCursor"
 
 type Args = {
   tool: Tool
@@ -25,6 +26,7 @@ export function beginDrawing({
     start: world,
     preview: object,
   }
+  updateCursor(context);
 
   return true
 }

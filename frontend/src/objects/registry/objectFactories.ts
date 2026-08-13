@@ -3,7 +3,7 @@ import { createCircle } from "../circle/createCircle"
 import { createStroke } from "../stroke/createStroke"
 import { createTriangle } from "../triangle/createTriangle"
 import { createLaser } from "../laser/createLaser"
-// import { createArrow } from "../arrow/createArrow"
+ import { createArrow } from "../arrow/createArrow"
 
 
 export const objectFactories = {
@@ -12,5 +12,5 @@ export const objectFactories = {
   stroke: createStroke,
   triangle: createTriangle,
   laser: createLaser,
-//   arrow: createArrow,
+  arrow: createArrow,
 }

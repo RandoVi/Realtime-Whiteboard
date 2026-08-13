@@ -20,6 +20,8 @@ type Args = {
   requestRender: () => void;
 
   collaboration: Collaboration;
+
+  onDocumentChange: () => void;
 };
 
 
@@ -30,6 +32,7 @@ export function createEditor({
   setSelectedObjectId,
   requestRender,
   collaboration,
+  onDocumentChange,
 }: Args): Editor {
   function getSelectedObject() {
     if (!selectedObjectIdRef.current) {
@@ -152,6 +155,7 @@ export function createEditor({
     }
 
     requestRender();
+    onDocumentChange();
   }
 
   return {
