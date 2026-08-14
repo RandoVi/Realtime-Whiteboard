@@ -45,6 +45,7 @@ function Whiteboard() {
   const viewportRef = useRef({ width: 0, height: 0, dpr: 1 }) // dpr = device pixel ratio
   const resizeInitializedRef = useRef(false)
   const renderFrameRef = useRef<number | null>(null)
+  const renderDirtyRef = useRef(false)
   const document = useMemo(
     () =>
       createDocument([]),
@@ -53,6 +54,8 @@ function Whiteboard() {
   //lobby state and id
   const [lobbyState, setLobbyState] = useState<LobbyState>("lobby");
   const [boardId, setBoardId] = useState("");
+
+  
 
   const [showDrawingMenu, setShowDrawingMenu] = useState(false);
   const [showShapeMenu, setShowShapeMenu] = useState(false);
@@ -247,26 +250,25 @@ function Whiteboard() {
     }
   }
 
-  const requestRender = () => {
-    // console.log(renderFrameRef.current)
-    if (renderFrameRef.current !== null) {
-      return
+ const requestRender = () => {
+  renderDirtyRef.current = true;
+
+  if (renderFrameRef.current !== null) {
+    return;
+  }
+
+  renderFrameRef.current = requestAnimationFrame(() => {
+    renderFrameRef.current = null;
+
+    if (!renderDirtyRef.current) {
+      return;
     }
 
-    renderFrameRef.current = requestAnimationFrame(() => {
-      const id = renderFrameRef.current
-      renderFrameRef.current = null
+    renderDirtyRef.current = false;
 
-      try {
-        render()
-      } finally {
-        // ensures the flag is cleared even if render() throws
-        if (renderFrameRef.current === id) {
-          renderFrameRef.current = null
-        }
-      }
-    })
-  }
+    render();
+  });
+};
 
   const collaboration = useMemo(
     () => new SocketCollaboration(),
@@ -305,6 +307,21 @@ function Whiteboard() {
           {
             broadcast: false,
           }
+        );
+
+        console.log(
+          "OBJECT AFTER REMOTE COMMAND:",
+          document.objectsRef.current.find(
+            object =>
+              object.id ===
+              (
+                command.type === "createBoardObject"
+                  ? command.boardObject.id
+                  : command.type === "updateBoardObject"
+                    ? command.boardObjectId
+                    : ""
+              )
+          )
         );
 
       }

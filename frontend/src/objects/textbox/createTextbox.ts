@@ -5,9 +5,9 @@ import type { Textbox } from "./Textbox"
 const DEFAULT_WIDTH = 200
 const DEFAULT_HEIGHT = 60
 
-const DEFAULT_FONT_SIZE = 16
-const DEFAULT_FONT_FAMILY = "Arial"
-const DEFAULT_FONT_WEIGHT = 400
+const DEFAULT_FONT_SIZE = 24
+const DEFAULT_FONT_FAMILY = "Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif"
+const DEFAULT_FONT_WEIGHT = 500
 
 export function createTextbox(
     point: Point,
@@ -24,7 +24,7 @@ export function createTextbox(
         width: DEFAULT_WIDTH,
         height: DEFAULT_HEIGHT,
 
-        text: "Text",
+        text: "Note...",
 
         fontSize: DEFAULT_FONT_SIZE,
         fontFamily: DEFAULT_FONT_FAMILY,

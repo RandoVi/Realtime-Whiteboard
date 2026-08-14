@@ -15,13 +15,6 @@ export class Board {
   @Prop({ required: true, index: true })
   ownerId!: string;
 
-  @Prop({
-    type: String,
-    enum: ['active', 'inactive', 'expired'],
-    default: 'active',
-    index: true,
-  })
-  status!: string;
   // To retain all the subproperties
   @Prop({ type: [MongooseSchema.Types.Mixed], default: [] })
   objects!: BoardObject[];
@@ -32,6 +25,9 @@ export class Board {
 
   @Prop({ default: 0 })
   version!: number;
+
+  @Prop({ type: Date, required: true, default: Date.now, index: true })
+  lastActivity!: Date;
 
   applyUpdate(changes: Partial<BoardDocument>): void {
     if (changes.objects) {

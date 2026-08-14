@@ -8,6 +8,7 @@ export class BoardManager {
 
     public users = new UserManager();
     public objects = new ObjectManager();
+    public lastActivity: Date = new Date();
 
     constructor(
         public readonly id: string,
@@ -39,12 +40,14 @@ export class BoardManager {
         id: string,
         ownerId: string,
         users: BoardUser[],
-        objects: BoardObject[]
+        objects: BoardObject[],
+        lastActivity: Date,
     }) : BoardManager {
 
         const newBoard = new BoardManager(data.id, data.ownerId)
         newBoard.users = UserManager.fromPersistence(data.users);
         newBoard.objects = ObjectManager.fromPersistence(data.objects);
+        newBoard.lastActivity = data.lastActivity;
 
         return newBoard;
     }
