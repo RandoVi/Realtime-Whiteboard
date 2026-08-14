@@ -1,6 +1,7 @@
 import type { Tool } from "../types/Tool";
 import { CircleIcon } from "./icons/CircleIcon";
 import RectangleIcon from "./icons/RectangleIcon";
+import { StickyNoteIcon } from "./icons/StickyNoteIcon";
 import { TriangleIcon } from "./icons/TriangleIcon";
 
 type Props = {
@@ -42,7 +43,7 @@ export function ShapeMenu({ onSelectShape }: Props) {
         className="tool-button"
         onClick={() => onSelectShape("textbox")}
       >
-        <CircleIcon />
+        <StickyNoteIcon />
       </button>
     </div>
   );
