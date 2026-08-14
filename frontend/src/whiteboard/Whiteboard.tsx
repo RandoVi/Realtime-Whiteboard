@@ -298,6 +298,8 @@ function Whiteboard() {
     collaboration.onCommand(
       command => {
 
+        console.log("REMOTE COMMAND:", command);
+
         editor.execute(
           command,
           {
@@ -424,10 +426,10 @@ function Whiteboard() {
         switch (command.type) {
 
           case "cursorMovement": {
-            console.log("Received cursor movement", {
-              userId,
-              point: command.point,
-            });
+            // console.log("Received cursor movement", {
+            //   userId,
+            //   point: command.point,
+            // });
             const userPresence =
               remotePresence.current.get(userId)
               ?? createRemotePresence();
@@ -547,11 +549,11 @@ function Whiteboard() {
 
             if (command.laserType === "point") {
 
-              console.log("RECEIVED LASER POINT", {
-                userId,
-                laserId: command.laserId,
-                point: command.point,
-              });
+              // console.log("RECEIVED LASER POINT", {
+              //   userId,
+              //   laserId: command.laserId,
+              //   point: command.point,
+              // });
 
               const laser = userPresence.lasers.find(
                 laser => laser.id === command.laserId

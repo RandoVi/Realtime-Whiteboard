@@ -31,5 +31,6 @@ export function createTextbox(
         fontWeight: DEFAULT_FONT_WEIGHT,
 
         fill: style.stroke,
+        background: "#FEF3C7",
     }
 }

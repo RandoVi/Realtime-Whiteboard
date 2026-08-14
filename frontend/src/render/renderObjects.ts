@@ -36,10 +36,6 @@ export function renderObjects(
   }[];
 } {
 
-  // console.log(
-  //   "RENDER INTERACTION",
-  //   interaction
-  // );
   let hasAnimatedObjects = false;
 
   const finishedObjects: Object[] = [];
@@ -53,6 +49,17 @@ export function renderObjects(
 
   for (const object of objects) {
 
+    // Don't render the committed textbox while
+    // its HTML textarea editor is visible.
+    const isLocalEditing =
+      interaction.type === "textEditing" &&
+      interaction.objectId === object.id;
+
+    if (isLocalEditing) {
+      continue;
+    }
+
+
     // LOCAL moving preview
     if (
       (
@@ -61,6 +68,14 @@ export function renderObjects(
       ) &&
       interaction.preview.id === object.id
     ) {
+
+      if (object.type === "textbox") {
+        console.log(
+          "RENDER TEXTBOX:",
+          object.id,
+          JSON.stringify(object.text)
+        );
+      }
       renderObject(
         context,
         interaction.preview,

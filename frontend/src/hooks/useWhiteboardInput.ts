@@ -10,6 +10,7 @@ import { getPointer } from '../interaction/helpers/getPointer'
 import { handleMouseMove as handleInteractionMouseMove } from '../interaction/handleMouseMove'
 import { handleMouseDown as handleInteractionMouseDown } from '../interaction/handleMouseDown'
 import type { CanvasInteractionContext } from '../interaction/CanvasInteractionContext'
+import { handleDoubleClick } from '../interaction/handleDoubleClick'
 
 export function useWhiteboardInput({
   cameraRef,
@@ -134,6 +135,25 @@ export function useWhiteboardInput({
       canvas.style.cursor = "default";
     };
 
+    const handleDoubleClickEvent = (event: MouseEvent) => {
+
+      if (event.button !== 0) {
+        return;
+      }
+
+      const pointer = getPointer(event, canvas);
+
+      const world = screenToWorld(
+        pointer,
+        cameraRef.current
+      );
+
+      handleDoubleClick({
+        world,
+        context: contextRef.current!,
+      });
+    };
+
     // Add event listeners for mouse and keyboard events
     window.addEventListener('mousemove', handleMouseMove)
     window.addEventListener('mouseup', handleMouseUpEvent)
@@ -141,6 +161,7 @@ export function useWhiteboardInput({
 
     canvas.addEventListener('wheel', handleWheel, { passive: false })
     canvas.addEventListener('mousedown', handleMouseDown)
+    canvas.addEventListener('dblclick', handleDoubleClickEvent)
 
     return () => {
       window.removeEventListener('mousemove', handleMouseMove)
@@ -149,6 +170,7 @@ export function useWhiteboardInput({
 
       canvas.removeEventListener('wheel', handleWheel)
       canvas.removeEventListener('mousedown', handleMouseDown)
+      canvas.removeEventListener('dblclick', handleDoubleClickEvent)
     }
   }, [
     showCoordinates,

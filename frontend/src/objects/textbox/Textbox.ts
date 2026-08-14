@@ -15,4 +15,6 @@ export type Textbox = {
     fontWeight: number
 
     fill: string
+    background: string
+    
 }

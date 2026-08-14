@@ -26,7 +26,21 @@ export function ShapeMenu({ onSelectShape }: Props) {
 
       <button
         className="tool-button"
+        onClick={() => onSelectShape("circle")}
+      >
+        <CircleIcon />
+      </button>
+
+            <button
+        className="tool-button"
         onClick={() => onSelectShape("arrow")}
+      >
+        <CircleIcon />
+      </button>
+
+                  <button
+        className="tool-button"
+        onClick={() => onSelectShape("textbox")}
       >
         <CircleIcon />
       </button>

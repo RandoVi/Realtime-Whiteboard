@@ -7,3 +7,4 @@ export type Tool =
   | 'triangle'
   | 'laser'
   | 'arrow'
+  | 'textbox'
