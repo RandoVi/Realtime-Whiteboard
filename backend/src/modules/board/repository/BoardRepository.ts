@@ -35,7 +35,7 @@ export class BoardRepository {
         updateOne: {
           filter: { id: data.id },
           
-          update: { 
+          update: {
             $set: {
               id: data.id,
               ownerId: data.ownerId,

@@ -33,6 +33,7 @@ export class BoardManager {
             ownerId: this.ownerId,
             users: this.users.toJSON(),
             objects: this.objects.toJSON(),
+            lastActivity: this.lastActivity,
         };
     }
 
