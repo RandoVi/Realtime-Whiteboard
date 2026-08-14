@@ -1,4 +1,4 @@
-import { BadRequestException, ConflictException, Injectable, OnApplicationShutdown } from "@nestjs/common";
+import { BadRequestException, ConflictException, Injectable, InternalServerErrorException, NotFoundException, OnApplicationShutdown } from "@nestjs/common";
 import { BoardManager } from "../../../managers/BoardManager";
 import { BoardRepository } from "../repository/BoardRepository";
 import { BoardUpdateDTO } from "../dto/BoardUpdateDTO";
@@ -38,40 +38,71 @@ export class BoardService implements OnApplicationShutdown {
         }
     }
 
-    async updateBoardState(boardId: string, newData: BoardUpdateDTO) {
-
-        if (!this.boards.has(boardId)) {
+    async updateBoardState(newData: BoardUpdateDTO) {
+        if (!newData) {
+            throw new BadRequestException("No data in DTO @ updateBoardState")
+        }
+        console.log("Updating board state")
+        if (!this.boards.has(newData.boardId)) {
             throw new BadRequestException("Cannot update board with this id, it does not exist (server)")
         }
-        const board = this.boards.get(boardId);
+        const id = newData.boardId;
+        const board = this.boards.get(id);
         board!.applyUpdate(newData);
 
-        this.dirtyQueue.add(boardId);
-
+        this.dirtyQueue.add(id);
+        console.log("Added to queue")
         return board;
     }
-
-    getBoard(id: string) {
-
+    getBoardFromServer(id: string) {
         return this.boards.get(id);
     }
 
-    hasBoard(id: string) {
+    async getBoardFromDatabase(id: string): Promise<BoardManager> {
+        try {
+            const retrievedBoard = await this.boardRepository.findById(id);
+            if(retrievedBoard !== null) {
+                return BoardManager.fromPersistence(retrievedBoard);
+            } else {
+                throw new NotFoundException("Board not found within database with id: " + id + "(GET)")
+            }
+        } catch {
+            throw new InternalServerErrorException("Something went wrong while getting board with id: " + id + "(GET)")
+        }
+    }
 
+    hasBoardInServer(id: string) {
         return this.boards.has(id);
     }
 
-    deleteBoard(id: string) {
-
-        return this.boards.delete(id);
+    async hasBoardInDatabase(id: string) {
+        try {
+            return await this.boardRepository.existsById(id);
+        } catch {
+            throw new NotFoundException("Board not found within database with id: " + id + "(HAS)")
+        }
     }
 
-    getBoards() {
+    async deleteBoard(id: string) {
+        try {
+            await this.boardRepository.deleteBoard(id);
+            return this.boards.delete(id);
+        } catch {
+            throw new NotFoundException("Board not found within database with id: " + id + "(DELETE)")
+        }
+    }
+
+    getAllBoardsInServer() {
 
         return [...this.boards.values()];
     }
 
+    setBoardInServer(boardId: string, board: BoardManager) {
+        this.boards.set(boardId, board);
+    }
+
     private async flushToDatabase() {
+        console.log("Flushing")
         if (this.dirtyQueue.size === 0) return;
 
         // Take a snapshot and clear the main queue atomically
@@ -79,25 +110,26 @@ export class BoardService implements OnApplicationShutdown {
         this.dirtyQueue.clear();
 
         // Extract current board states from memory for these keys
+        console.log("To database - extracting")
         const payload = keysToPersist.flatMap(id => {
             const board = this.boards.get(id);
             return board ? [board] : []; // If found, includes board; if not, flattens to nothing
         });
 
         if (payload.length === 0) return
-
+        console.log("To database - saving")
         try {
             await this.boardRepository.saveManyBoardUpdates(payload);
-            console.log(`Successfully flushed ${payload.length} boards to DB.`);
+            console.log(`Successfully saved ${payload.length} boards to DB.`);
         } catch (error) {
-            console.error('Failed to flush to DB. Re-queueing pending updates...', error);
+            console.error('Failed to save to DB. Re-queueing pending updates...', error);
 
             // Put the failed keys back into the queue
             keysToPersist.forEach(id => this.dirtyQueue.add(id));
         }
     }
     async onApplicationShutdown() {
-        console.log('Server shutting down, forcing DB flush...');
+        console.log('Server shutting down, forcing DB save...');
         clearInterval(this.flushInterval);
         await this.flushToDatabase(); // Push remaining queue before process exits
     }

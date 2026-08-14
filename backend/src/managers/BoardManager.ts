@@ -1,11 +1,13 @@
+import { BoardUser } from "../models/boardUser";
 import { BoardUpdateDTO } from "../modules/board/dto/BoardUpdateDTO";
+import { BoardObject } from "../modules/boardObjects/schemas/BoardObjectSchema";
 import { ObjectManager } from "./ObjectManager";
 import { UserManager } from "./UserManager";
 
 export class BoardManager {
 
-    users = new UserManager();
-    objects = new ObjectManager();
+    public users = new UserManager();
+    public objects = new ObjectManager();
 
     constructor(
         public readonly id: string,
@@ -26,9 +28,24 @@ export class BoardManager {
 
     toPersistence() {
         return {
-        id: this.id,
-        ownerId: this.ownerId,
-        objects: this.objects.toJSON(),
+            id: this.id,
+            ownerId: this.ownerId,
+            users: this.users.toJSON(),
+            objects: this.objects.toJSON(),
         };
+    }
+
+    static fromPersistence(data: {
+        id: string,
+        ownerId: string,
+        users: BoardUser[],
+        objects: BoardObject[]
+    }) : BoardManager {
+
+        const newBoard = new BoardManager(data.id, data.ownerId)
+        newBoard.users = UserManager.fromPersistence(data.users);
+        newBoard.objects = ObjectManager.fromPersistence(data.objects);
+
+        return newBoard;
     }
 }

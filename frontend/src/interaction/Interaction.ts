@@ -33,8 +33,12 @@ export type Interaction =
     | {
         type: 'panning'
         start: Point
-    } 
+    }
     | {
         type: 'laser'
         laserId: string
+    }
+    | {
+        type: 'textEditing'
+        objectId: string
     }

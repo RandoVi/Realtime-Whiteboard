@@ -65,4 +65,10 @@ export class ColorManager {
     getAvailable(): UserColor[] {
         return [...this.availableColors];
     }
+
+    static fromPersistence(data: UserColor[]): ColorManager {
+        const manager = new ColorManager(data);
+
+        return manager;
+    }
 }

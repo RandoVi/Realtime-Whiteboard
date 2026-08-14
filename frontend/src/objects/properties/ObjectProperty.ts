@@ -1,6 +1,8 @@
 export type PropertySection =
     | "transform"
-    | "appearance";
+    | "appearance"
+    | "content"
+    | "text";
 
 export type PropertyType =
     | "number"

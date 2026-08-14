@@ -7,4 +7,9 @@ export class BoardUpdateDTO {
   boardId!: string;
   
   boardObjects!:BoardObject[];
+
+  constructor(boardId: string, boardObjects: BoardObject[]) {
+    this.boardId = boardId;
+    this.boardObjects = boardObjects;
+  }
 }

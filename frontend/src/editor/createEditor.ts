@@ -122,6 +122,7 @@ export function createEditor({
         break;
 
       case "updateBoardObject":
+        console.log("APPLYING REMOTE UPDATE:", command);
         updateObject({
           objects: document.objectsRef.current,
           objectId: command.boardObjectId,

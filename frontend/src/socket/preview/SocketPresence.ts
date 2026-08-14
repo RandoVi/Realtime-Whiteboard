@@ -26,7 +26,7 @@ export class SocketPresence implements Presence {
                     message.command,
 
                 );
-                console.log("Received presence command:", message);
+                // console.log("Received presence command:", message);
             }
         );
     }

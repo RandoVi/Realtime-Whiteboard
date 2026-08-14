@@ -1,6 +1,6 @@
+import type { Arrow } from "../../../../common/src/shapes";
 import type { ObjectProperty } from "../properties/ObjectProperty";
 import type { ObjectHandler } from "../registry/ObjectHandler";
-import type { Arrow } from "./Arrow";
 import { createArrow } from "./createArrow";
 import { duplicateArrow } from "./duplicateArrow";
 import { getArrowBounds } from "./getArrowBounds";

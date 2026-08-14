@@ -22,6 +22,7 @@ export class BoardRepository {
   async saveManyBoardUpdates(boards: BoardManager[]): Promise<void> {
     // Guard against empty calls to avoid sending unnecessary commands to MongoDB
     if (!boards || boards.length === 0) {
+      console.log("Repository save failed - empty call")
       return;
     }
 
@@ -36,8 +37,10 @@ export class BoardRepository {
           
           update: { 
             $set: {
+              id: data.id,
               ownerId: data.ownerId,
               objects: data.objects,
+              users: data.users
             } 
           },
           
@@ -55,6 +58,11 @@ export class BoardRepository {
     return this.boardModel.findById(boardId).exec();
   }
 
+  async existsById(boardId: string): Promise<boolean> {
+    const exists = await this.boardModel.countDocuments({boardId}).exec();
+    return exists > 0;
+  }
+
   // (Leverages { ownerId: 1, status: 1 } index)
   async findActiveUserBoards(ownerId: string): Promise<BoardDocument[]> {
     return this.boardModel.find({ ownerId, status: 'active' }).exec();
@@ -66,7 +74,7 @@ export class BoardRepository {
       .findByIdAndUpdate(
         boardId,
         {
-          $push: { BoardObjects: BoardObject },
+          $push: { boardObjects: BoardObject },
           $inc: { version: 1 },
         },
         { new: true, runValidators: true },
@@ -85,7 +93,7 @@ export class BoardRepository {
     // Try updating BoardObject in-place first matching array element by id
     const updatedBoard = await this.boardModel
       .findOneAndUpdate(
-        { id: boardId, 'BoardObjects.id': boardObject.id },
+        { id: boardId, 'boardObjects.id': boardObject.id },
         {
           $set: { 'boardObjects.$': boardObject },
           $inc: { version: 1 },
