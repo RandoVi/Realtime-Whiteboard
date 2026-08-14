@@ -1,5 +1,6 @@
-import type { Point } from "../../types/Types";
-import type { PresenceCommand } from "./PresenceCommand";
+import type { PresenceCommand } from "@common/commands";
+import type { Point } from "@common/types";
+
 
 export interface Presence {
     send(command: PresenceCommand): void;

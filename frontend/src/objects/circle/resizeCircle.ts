@@ -1,4 +1,4 @@
-import type { Circle } from "./Circle";
+import type { Circle } from "@common/shapes";
 import type { ResizeHandle } from "../../types/selection";
 
 export function resizeCircle(

@@ -1,4 +1,4 @@
-import type { Point } from "../types/Types";
+import type { Point } from "@common/types";
 import type { CanvasInteractionContext } from "./CanvasInteractionContext";
 import { getTopObjectAtPoint } from "../objects/getTopObjectAtPoint";
 import { startTextboxEditing } from "./textEditing/startTextboxEditing";
@@ -15,7 +15,6 @@ export function handleDoubleClick({
 
     const {
         document,
-        interactionRef,
     } = context;
 
     const object = getTopObjectAtPoint(

@@ -5,12 +5,8 @@ import type { RefObject } from "react"
 import type { Document } from "../document/Document"
 import type { ObjectStyle } from "../objects/ObjectStyle"
 import type { RemotePresence } from "../socket/preview/RemotePresence"
-import type { Laser } from "../objects/laser/Laser"
-
-export type Point = {
-  x: number
-  y: number
-}
+import type { Laser } from "@common/shapes"
+import type { Point } from "@common/types"
 
 export type Camera = {
   scale: number

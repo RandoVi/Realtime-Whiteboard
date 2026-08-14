@@ -1,6 +1,7 @@
-import type { Point } from "../../types/Types"
+import type { Textbox } from "@common/shapes/Textbox";
+import type { Point } from "@common/types";
 import type { ObjectStyle } from "../ObjectStyle"
-import type { Textbox } from "./Textbox"
+
 
 const DEFAULT_WIDTH = 200
 const DEFAULT_HEIGHT = 60

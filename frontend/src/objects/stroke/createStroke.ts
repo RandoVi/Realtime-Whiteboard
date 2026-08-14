@@ -1,6 +1,7 @@
-import type { Point } from "../../types/Types";
+import type { Stroke } from "@common/shapes";
+import type { Point } from "@common/types";
 import { DEFAULT_STROKE_WIDTH } from "../defaults";
-import type { Stroke } from "./Stroke";
+
 import type { ObjectStyle } from "../ObjectStyle";
 
 

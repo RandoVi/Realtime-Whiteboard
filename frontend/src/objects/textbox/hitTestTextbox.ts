@@ -1,5 +1,6 @@
-import type { Point } from "../../types/Types"
-import type { Textbox } from "./Textbox"
+import type { Textbox } from "@common/shapes/Textbox"
+import type { Point } from "@common/types";
+
 
 export function hitTestTextbox(
     point: Point,

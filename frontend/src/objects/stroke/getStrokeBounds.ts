@@ -1,7 +1,6 @@
 import type { SelectionBounds } from "../../selection/getSelectionBounds";
-import type { Point } from "../../types/Types";
-import type { Stroke } from "./Stroke";
-
+import type { Point } from "@common/types";
+import type { Stroke } from "@common/shapes";
 export function getStrokeBounds(
   stroke: Stroke
 ): SelectionBounds {

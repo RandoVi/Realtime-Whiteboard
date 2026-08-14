@@ -1,5 +1,4 @@
-import type { Point } from '../types/Types'
-import type { Object } from '../types/Object'
+import type { Point, Object } from "@common/types"
 import type { ResizeHandle } from '../types/selection'
 
 export type Interaction =

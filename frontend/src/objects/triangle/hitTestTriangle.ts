@@ -1,5 +1,5 @@
-import type { Triangle } from './Triangle'
-import type { Point } from '../../types/Types'
+import type { Point } from "@common/types";
+import type { Triangle } from "@common/shapes";
 
 
 export function hitTestTriangle(

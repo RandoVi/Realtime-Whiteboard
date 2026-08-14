@@ -1,4 +1,4 @@
-import type { Point } from "../../types/Types";
+import type { Point } from "@common/types";
 import { createLaser } from "../../objects/laser/createLaser";
 import type { CanvasInteractionContext } from "../CanvasInteractionContext";
 import { getCurrentUser } from "../../network/currentUser";

@@ -1,5 +1,5 @@
 import type { BoardUser } from "../board/BoardUser";
-import type { Object } from "../types/Object";
+import type { Object } from "@common/types";
 import type { Document } from "./Document";
 
 

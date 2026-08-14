@@ -1,4 +1,4 @@
-import type { Point } from "../types/Types"
+import type { Point } from "@common/types";
 import { updateDrawing } from "./drawing/updateDrawing"
 import { updateMoving } from "./moving/updateMove"
 import { updatePan } from "./panning/updatePan"

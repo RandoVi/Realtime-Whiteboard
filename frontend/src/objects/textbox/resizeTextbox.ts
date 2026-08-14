@@ -1,6 +1,7 @@
-import type { Point } from "../../types/Types"
+import type { Textbox } from "@common/shapes/Textbox"
+import type { Point } from "@common/types";
 import type { ResizeHandle } from "../../types/selection"
-import type { Textbox } from "./Textbox"
+
 
 export function resizeTextbox(
     textbox: Textbox,

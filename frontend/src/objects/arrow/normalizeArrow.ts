@@ -1,4 +1,4 @@
-import type { Arrow } from "./Arrow"
+import type { Arrow } from "@common/shapes"
 
 export function normalizeArrow(rect: Arrow): Arrow {
     let { x, y, width, height } = rect

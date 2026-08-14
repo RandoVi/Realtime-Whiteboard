@@ -1,5 +1,5 @@
-import type { Point } from "../../types/Types";
-import type { Rectangle } from "./Rectangle";
+import type { Point } from "@common/types"
+import type { Rectangle } from "@common/shapes"
 import type { ObjectStyle } from "../ObjectStyle";
 
 

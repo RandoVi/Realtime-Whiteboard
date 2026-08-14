@@ -1,6 +1,6 @@
 import type { MutableRefObject } from "react"
-import type { Object } from "../../types/Object"
-import type { Point } from "../../types/Types"
+import type { Object } from "@common/types"
+import type { Point} from "@common/types"
 import type { Interaction } from "../Interaction"
 import { updateCursor } from "../updateCursor"
 import type { CanvasInteractionContext } from "../CanvasInteractionContext"

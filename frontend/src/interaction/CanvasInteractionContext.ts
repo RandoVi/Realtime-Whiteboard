@@ -2,12 +2,13 @@ import type { MutableRefObject } from "react";
 import type { Camera } from "../types/Types";
 import type { Interaction } from "./Interaction";
 import type { Editor } from "../editor/Editor";
-import type { Object } from "../types/Object";
+import type { Laser } from "@common/shapes/Laser";
+import type { Object } from "@common/types";
 import type { Presence } from "../socket/preview/Presence";
 import type { Document } from "../document/Document";
 import type { ObjectStyle } from "../objects/ObjectStyle";
 import type { RemotePresence } from "../socket/preview/RemotePresence";
-import type { Laser } from "../objects/laser/Laser";
+
 
 export interface CanvasInteractionContext {
 

@@ -1,5 +1,5 @@
 import type { Camera } from '../types/Types'
-import type { Object } from '../types/Object'
+import type { Object } from '@common/types'
 import { HANDLE_SIZE } from '../types/selection'
 import { getResizeHandles } from '../selection/getResizeHandles'
 import { getSelectionBounds } from "../selection/getSelectionBounds"

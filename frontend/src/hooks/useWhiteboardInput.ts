@@ -4,7 +4,7 @@ import type { Interaction } from '../interaction/Interaction'
 import { handleKeyDown } from '../interaction/handleKeyDown'
 import { handleMouseUp } from '../interaction/handleMouseUp'
 import { handleZoom } from '../interaction/handleZoom'
-import type { Point } from '../types/Types'
+import type { Point } from "@common/types";
 import { screenToWorld } from '../camera/Camera'
 import { getPointer } from '../interaction/helpers/getPointer'
 import { handleMouseMove as handleInteractionMouseMove } from '../interaction/handleMouseMove'

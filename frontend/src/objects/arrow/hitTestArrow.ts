@@ -1,5 +1,5 @@
-import type { Point } from "../../types/Types";
-import type { Arrow } from "./Arrow";
+import type { Point } from "@common/types"
+import type { Arrow } from "@common/shapes"
 
 export function hitTestArrow(
     point: Point,

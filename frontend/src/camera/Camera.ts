@@ -1,4 +1,5 @@
-import type { Camera, Point } from '../types/Types'
+import type { Camera } from '../types/Types'
+import type { Point } from "@common/types";
 
 
 export const MIN_ZOOM = 0.1

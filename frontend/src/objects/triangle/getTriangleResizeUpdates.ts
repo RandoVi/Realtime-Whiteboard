@@ -1,4 +1,4 @@
-import type { Triangle } from "./Triangle"
+import type { Triangle } from "@common/shapes";
 
 export function getTriangleResizeUpdates(
   object: Triangle

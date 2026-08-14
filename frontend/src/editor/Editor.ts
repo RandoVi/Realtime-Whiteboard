@@ -1,5 +1,5 @@
-import type { Object } from "../types/Object";
-import type { EditorCommand } from "../../../common/src/commands/EditorCommand";
+import type { Object } from "@common/types";
+import type { EditorCommand } from "@common/commands";
 
 export type ExecuteOptions = {
   broadcast?: boolean;

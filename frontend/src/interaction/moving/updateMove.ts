@@ -1,5 +1,5 @@
 
-import type { Point } from "../../types/Types"
+import type { Point } from "@common/types";
 import { moveObject } from "../../objects/moveObject";
 import { getObjectMoveUpdates } from "../helpers/getObjectMoveUpdates";
 import { getObjectById } from "../../objects/getObjectById";

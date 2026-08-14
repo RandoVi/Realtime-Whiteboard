@@ -1,5 +1,5 @@
-import type { Stroke } from "./Stroke";
-import type { Point } from "../../types/Types";
+import type { Stroke } from "@common/shapes";
+import type { Point } from "@common/types";
 
 export function updateStrokePreview(
     stroke: Stroke,

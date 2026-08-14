@@ -1,6 +1,4 @@
-
-import type { Point } from "../types/Types"
-
+import type { Point } from "@common/types";
 import { beginResize } from "./resizing/beginResize"
 import { beginMoving } from "./moving/beginMoving"
 import { handleSelectionClearMouseDown } from "./selection/clearSelection"

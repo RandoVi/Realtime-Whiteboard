@@ -1,4 +1,4 @@
-import type { Point } from "../../types/Types"
+import type { Point } from "@common/types";
 import { updatePreviewObject } from "../../objects/updatePreviewObject"
 import type { CanvasInteractionContext } from "../CanvasInteractionContext"
 

@@ -1,6 +1,5 @@
 import type { RemotePresence } from "../socket/preview/RemotePresence";
-import type { Object } from "../types/Object";
-
+import type { Object } from "@common/types";
 export function getRenderedObject(
     object: Object,
     presence: RemotePresence

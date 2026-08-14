@@ -1,7 +1,5 @@
 import type { ObjectHandler } from "../registry/ObjectHandler"
 import type { ObjectProperty } from "../properties/ObjectProperty"
-import type { Textbox } from "./Textbox"
-
 import { createTextbox } from "./createTextbox"
 import { duplicateTextbox } from "./duplicateTextbox"
 import { getResizeHandleTextbox } from "./getResizeHandleTextbox"
@@ -14,7 +12,7 @@ import { normalizeTextbox } from "./normalizeTextbox"
 import { renderTextbox } from "./renderTextbox"
 import { resizeTextbox } from "./resizeTextbox"
 import { updateTextboxPreview } from "./updateTextboxPreview"
-
+import type { Textbox } from "@common/shapes/Textbox";
 
 const textboxProperties: ObjectProperty<Textbox>[] = [
 

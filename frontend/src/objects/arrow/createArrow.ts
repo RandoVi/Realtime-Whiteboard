@@ -1,6 +1,6 @@
-import type { Point } from "../../types/Types"
+import type { Point } from "@common/types"
+import type { Arrow } from "@common/shapes"
 import type { ObjectStyle } from "../ObjectStyle"
-import type { Arrow } from "./Arrow"
 
 export function createArrow(point: Point, style: ObjectStyle): Arrow {
   return {

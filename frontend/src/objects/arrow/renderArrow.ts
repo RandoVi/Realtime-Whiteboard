@@ -1,5 +1,5 @@
 import type { Camera } from "../../types/Types"
-import type { Arrow } from "./Arrow"
+import type { Arrow } from "@common/shapes"
 
 export function renderArrow(
   context: CanvasRenderingContext2D,

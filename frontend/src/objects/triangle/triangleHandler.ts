@@ -5,7 +5,7 @@ import { createTriangle } from "./createTriangle";
 import { resizeTriangle } from "./resizeTriangle";
 import { renderTriangle } from "./renderTriangle";
 import type { ObjectHandler } from "../registry/ObjectHandler";
-import type { Triangle } from "./Triangle";
+import type { Triangle } from "@common/shapes";
 import { hitTestTriangle } from "./hitTestTriangle";
 import { normalizeTriangle } from "./normalizeTriangle";
 import { getTriangleBounds } from "./getTriangleBounds";

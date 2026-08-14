@@ -1,4 +1,4 @@
-import type { Rectangle } from "./Rectangle"
+import type { Rectangle } from "@common/shapes"
 
 export function getRectangleMoveUpdates(
   object: Rectangle

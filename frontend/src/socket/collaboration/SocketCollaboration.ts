@@ -1,5 +1,5 @@
 import type { Collaboration } from "./Collaboration";
-import type { EditorCommand } from "../../../../common/src/commands/EditorCommand";
+import type { EditorCommand } from "@common/commands";
 import { SOCKET_EVENTS } from "../../network/events";
 import type { NetworkCommand } from "../../network/NetworkCommand";
 import { getBoardId } from "../../network/board";

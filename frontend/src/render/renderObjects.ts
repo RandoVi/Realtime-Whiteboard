@@ -1,10 +1,11 @@
 import type { Camera } from '../types/Types'
 import type { Interaction } from '../interaction/Interaction'
-import type { Object } from '../types/Object'
+import type { Object} from '@common/types'
+import type {Laser} from '@common/shapes/Laser'
 import { getObjectHandler } from '../objects/registry/getObjectHandler'
 import type { RemotePresence } from '../socket/preview/RemotePresence';
 import { getRenderedObject } from '../objects/getRenderedObjects';
-import type { Laser } from "../objects/laser/Laser";
+
 import { renderLaser } from "../objects/laser/renderLaser";
 
 

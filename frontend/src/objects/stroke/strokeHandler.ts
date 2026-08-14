@@ -7,7 +7,7 @@ import { getStrokeMoveUpdates } from "./getStrokeMoveUpdates"
 import { hitTestStroke } from "./hitTestStroke"
 import { moveStroke } from './moveStroke'
 import { renderStroke } from './renderStroke'
-import type { Stroke } from "./Stroke"
+import type { Stroke } from "@common/shapes";
 import { updateStrokePreview } from './updateStrokePreview'
 
 const strokeProperties: ObjectProperty<Stroke>[] = [

@@ -1,8 +1,7 @@
-
-import type { Point } from "../../types/Types";
+import type { Point } from "@common/types"
 import { DEFAULT_LASER_WIDTH } from "../defaults";
 import type { ObjectStyle } from "../ObjectStyle";
-import type { Laser } from "./Laser";
+import type { Laser } from "@common/shapes"
 
 export function createLaser(
     _point: Point,

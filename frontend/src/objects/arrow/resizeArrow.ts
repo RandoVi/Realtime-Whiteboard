@@ -1,6 +1,6 @@
 import type { ResizeHandle } from "../../types/selection";
-import type { Point } from "../../types/Types";
-import type { Arrow } from "./Arrow";
+import type { Arrow } from "@common/shapes";
+import type { Point } from "@common/types";
 
 export function resizeArrow(
     arrow: Arrow,

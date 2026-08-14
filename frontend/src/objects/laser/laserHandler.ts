@@ -1,5 +1,5 @@
 import type { ObjectHandler } from "../registry/ObjectHandler";
-import type { Laser } from "./Laser";
+import type { Laser } from "@common/shapes"
 
 import { createLaser } from "./createLaser";
 

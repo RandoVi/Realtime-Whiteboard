@@ -1,4 +1,4 @@
-import type { Arrow } from "./Arrow";
+import type { Arrow } from "@common/shapes";
 
 export function getArrowMoveUpdates(
   object: Arrow

@@ -21,12 +21,12 @@ import { ShapeSettings } from '../ui/ShapeSettings'
 import type { RemotePresence } from '../socket/preview/RemotePresence'
 import { getCurrentUser, setCurrentUser } from '../network/currentUser'
 import { getRenderedObject } from '../objects/getRenderedObjects'
-import type { Object } from '../types/Object'
 import { createRemotePresence } from "../socket/preview/createRemotePresence";
-import type { Laser } from "../objects/laser/Laser";
 import { DEFAULT_FILL, DEFAULT_STROKE_COLOR } from '../objects/defaults'
 import { DrawingMenu } from '../ui/DrawingMenu'
 import { RemoteCursors } from '../ui/cursors/RemoteCursors'
+import type { Laser } from '@common/shapes'
+import type { Object } from '@common/types'
 
 
 function Whiteboard() {

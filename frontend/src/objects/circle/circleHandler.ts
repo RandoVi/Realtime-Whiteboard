@@ -1,12 +1,11 @@
 import type { ObjectHandler } from "../registry/ObjectHandler"
-
 import { createCircle } from "./createCircle"
 import { moveCircle } from "./moveCircle"
 import { resizeCircle } from "./resizeCircle"
 import { renderCircle } from "./renderCircle"
 import { hitTestCircle } from "./hitTestCircle"
 import { updateCirclePreview } from "./updateCirclePreview"
-import type { Circle } from "./Circle"
+import type { Circle } from "@common/shapes"
 import { getCircleBounds } from "./getCircleBounds"
 import { getResizeHandleCircle } from "./getResizeHandleCircle"
 import { getCircleResizeUpdates } from "./getCircleResizeUpdates"

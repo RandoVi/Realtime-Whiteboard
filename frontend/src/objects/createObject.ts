@@ -1,6 +1,5 @@
-import type { Point } from "../types/Types"
+import type { Point, Object } from "@common/types"
 import type { Tool } from "../types/Tool"
-import type { Object } from "../types/Object"
 
 import { objectFactories } from "./registry/objectFactories"
 import type {ObjectStyle} from "./ObjectStyle"

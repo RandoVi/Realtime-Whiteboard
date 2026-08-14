@@ -1,6 +1,7 @@
 import type { MutableRefObject } from "react"
-import type { Object } from "../../types/Object"
-import type { Camera, Point } from "../../types/Types"
+import type { Object } from "@common/types"
+import type { Camera } from "../../types/Types"
+import type { Point } from "@common/types";
 import { getSelectionHandle } from "../../selection/getSelectionHandle"
 import type { Interaction } from "../Interaction"
 import { getSelectionBounds } from "../../selection/getSelectionBounds"
