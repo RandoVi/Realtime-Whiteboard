@@ -1,5 +1,5 @@
-import { Laser } from "../shapes";
-import { Point } from "../types";
+import type { Laser } from "../shapes";
+import type { Point } from "../types";
 
 export type ObjectSelectionCommand = {
     type: "selection";
@@ -37,6 +37,7 @@ export type LaserCommand =
 
 export type CursorMovementCommand = {
     type: "cursorMovement";
+    point: Point;
 };
 
 export type SelectionCommand = {

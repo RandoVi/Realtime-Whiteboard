@@ -1,10 +1,13 @@
 import type { Point } from "../types/Object";
+export type LaserPoint = {
+    point: Point;
+    createdAt: number;
+};
 export interface Laser {
     id: string;
     type: "laser";
-    points: Point[];
+    points: LaserPoint[];
     stroke: string;
     strokeWidth: number;
-    createdAt: number;
 }
 //# sourceMappingURL=Laser.d.ts.map

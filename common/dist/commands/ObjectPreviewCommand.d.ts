@@ -1,4 +1,4 @@
-import type { Object } from "./Object";
+import type { Object } from "../types/Object";
 export type ObjectPreviewCommand = {
     type: "objectPreview";
     previewType: "create";
@@ -8,5 +8,8 @@ export type ObjectPreviewCommand = {
     previewType: "update";
     boardObjectId: string;
     updates: Partial<Object>;
+} | {
+    type: "objectPreview";
+    previewType: "clear";
 };
 //# sourceMappingURL=ObjectPreviewCommand.d.ts.map

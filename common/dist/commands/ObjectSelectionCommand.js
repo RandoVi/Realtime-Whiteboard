@@ -1,3 +1,3 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-//# sourceMappingURL=Arrow.js.map
+//# sourceMappingURL=ObjectSelectionCommand.js.map
