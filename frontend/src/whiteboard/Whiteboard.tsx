@@ -186,7 +186,11 @@ function Whiteboard() {
 
     let selectedObject: Object | undefined;
 
-    if (interactionRef.current.type === "moving") {
+    if (
+      interactionRef.current.type === "moving" ||
+      interactionRef.current.type === "resizing" ||
+      interactionRef.current.type === "rotating"
+    ) {
       selectedObject = interactionRef.current.preview;
     } else if (selectedObjectIdRef.current) {
       selectedObject = getObjectById(
@@ -482,8 +486,15 @@ function Whiteboard() {
                 object: command.boardObject,
               };
             }
-
+            
             if (command.previewType === "update") {
+              if (
+                command.boardObjectId === selectedObjectIdRef.current
+              ) {
+                selectedObjectIdRef.current = null;
+                setSelectedObjectId(null);
+              }
+
               userPresence.preview = {
                 type: "update",
                 objectId: command.boardObjectId,

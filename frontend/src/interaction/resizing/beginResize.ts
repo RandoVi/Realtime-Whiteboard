@@ -31,6 +31,11 @@ export function beginResize({
     return false
   }
 
+  context.editor.execute({
+    type: "bringBoardObjectToFront",
+    boardObjectId: selectedObject.id,
+  })
+
   const handle = getSelectionHandle(
     selectedObject,
     pointer,
