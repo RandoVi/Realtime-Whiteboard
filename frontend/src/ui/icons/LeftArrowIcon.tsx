@@ -9,7 +9,7 @@ export function LeftArrowIcon() {
     >
       <path
         d="M8 10L8 14L6 14L-2.62268e-07 8L6 2L8 2L8 6L16 6L16 10L8 10Z"
-        fill="currentColor"
+        fill="#000000"
       />
     </svg>
   )

@@ -8,7 +8,7 @@ const ShapesIcon = ({ color: _color }: ShapesIconProps) => {
       width="54"
       height="54"
       viewBox="0 0 24 24"
-      fill="currentColor"
+      fill="#000000"
       xmlns="http://www.w3.org/2000/svg"
     >
       <path d="M16,24C16,24,16,24,16,24H4c-0.4,0-0.7-0.2-0.9-0.5c-0.2-0.3-0.2-0.7,0-1l6-9c0.4-0.6,1.3-0.6,1.7,0l5.9,8.9 c0.2,0.2,0.3,0.4,0.3,0.7C17,23.6,16.6,24,16,24z M5.9,22h8.3L10,15.8L5.9,22z" />

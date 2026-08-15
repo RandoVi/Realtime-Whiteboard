@@ -13,7 +13,7 @@ export function RectangleIcon() {
         width="18"
         height="14"
         rx="2"
-        stroke="currentColor"
+        stroke="#000000"
         strokeWidth={2}
         strokeLinecap="round"
         strokeLinejoin="round"
