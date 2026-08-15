@@ -12,6 +12,9 @@ export function createArrow(point: Point, style: ObjectStyle): Arrow {
 
     width: 0,
     height: 0,
+    
+    rotation: 0,
+
     fill: style.fill,
     stroke: style.stroke,
   }

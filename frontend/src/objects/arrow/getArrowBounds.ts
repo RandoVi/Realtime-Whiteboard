@@ -18,5 +18,6 @@ export function getArrowBounds(
       x: object.x + object.width / 2,
       y: object.y + object.height / 2,
     },
+    rotation: object.rotation,
   }
 }

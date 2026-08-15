@@ -5,10 +5,12 @@ export type Textbox = {
     y: number;
     width: number;
     height: number;
+    rotation: number;
     text: string;
     fontSize: number;
     fontFamily: string;
     fontWeight: number;
     fill: string;
+    background: string;
 };
 //# sourceMappingURL=Textbox.d.ts.map

@@ -18,16 +18,40 @@ export function renderArrow(
     height = Math.abs(height)
   }
 
-  const left = x * camera.scale + camera.offsetX
-  const top = y * camera.scale + camera.offsetY
+  const left =
+    x * camera.scale + camera.offsetX
 
-  const screenWidth = width * camera.scale
-  const screenHeight = height * camera.scale
+  const top =
+    y * camera.scale + camera.offsetY
 
-  const centerY = top + screenHeight / 2
+  const screenWidth =
+    width * camera.scale
 
-  const headWidth = screenWidth * 0.35
-  const shaftHeight = screenHeight * 0.35
+  const screenHeight =
+    height * camera.scale
+
+  const centerX =
+    left + screenWidth / 2
+
+  const centerY =
+    top + screenHeight / 2
+
+  const headWidth =
+    screenWidth * 0.35
+
+  const shaftHeight =
+    screenHeight * 0.35
+
+  context.save()
+
+  context.translate(centerX, centerY)
+  context.rotate(arrow.rotation)
+
+  const localLeft =
+    -screenWidth / 2
+
+  const localTop =
+    -screenHeight / 2
 
   context.fillStyle = arrow.fill
   context.strokeStyle = arrow.stroke
@@ -35,43 +59,54 @@ export function renderArrow(
 
   context.beginPath()
 
-  context.moveTo(left, centerY)
+  context.moveTo(
+    localLeft,
+    0
+  )
 
+  // Top of arrow head
   context.lineTo(
-    left + headWidth,
-    top
+    localLeft + headWidth,
+    localTop
   )
 
   context.lineTo(
-    left + headWidth,
-    centerY - shaftHeight / 2
+    localLeft + headWidth,
+    -shaftHeight / 2
   )
 
+  // Top of shaft
   context.lineTo(
-    left + screenWidth,
-    centerY - shaftHeight / 2
+    localLeft + screenWidth,
+    -shaftHeight / 2
   )
 
   // Bottom of shaft
   context.lineTo(
-    left + screenWidth,
-    centerY + shaftHeight / 2
+    localLeft + screenWidth,
+    shaftHeight / 2
   )
 
   context.lineTo(
-    left + headWidth,
-    centerY + shaftHeight / 2
+    localLeft + headWidth,
+    shaftHeight / 2
+  )
+
+  // Bottom of arrow head
+  context.lineTo(
+    localLeft + headWidth,
+    localTop + screenHeight
   )
 
   context.lineTo(
-    left + headWidth,
-    top + screenHeight
+    localLeft,
+    0
   )
-
-  context.lineTo(left, centerY)
 
   context.closePath()
 
   context.fill()
   context.stroke()
+
+  context.restore()
 }

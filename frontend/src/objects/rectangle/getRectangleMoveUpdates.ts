@@ -6,5 +6,6 @@ export function getRectangleMoveUpdates(
   return {
     x: object.x,
     y: object.y,
+    rotation: object.rotation,
   }
 }

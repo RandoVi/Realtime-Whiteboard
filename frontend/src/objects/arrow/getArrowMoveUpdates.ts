@@ -6,5 +6,6 @@ export function getArrowMoveUpdates(
   return {
     x: object.x,
     y: object.y,
+    rotation: object.rotation,
   }
 }

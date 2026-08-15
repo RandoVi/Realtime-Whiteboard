@@ -5,6 +5,7 @@ export type Rectangle = {
     y: number;
     width: number;
     height: number;
+    rotation: number;
     fill: string;
     stroke: string;
 };

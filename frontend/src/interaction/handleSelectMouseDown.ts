@@ -4,6 +4,8 @@ import { beginMoving } from "./moving/beginMoving"
 import { handleSelectionClearMouseDown } from "./selection/clearSelection"
 import type { CanvasInteractionContext } from "./CanvasInteractionContext"
 import { getTopObjectAtPoint } from "../objects/getTopObjectAtPoint"
+import { hitTestRotationHandle } from "../selection/hitTestRotationHandle";
+import { isRotatableObject } from "../objects/isRotatableObject";
 
 type Args = {
   pointer: Point
@@ -29,6 +31,27 @@ export function handleSelectMouseDown({
   } = context;
 
   const selectedObject = getSelectedObject();
+
+  // Check if the user is trying to rotate the selected object
+  if (
+    selectedObject &&
+    isRotatableObject(selectedObject) &&
+    hitTestRotationHandle(
+      selectedObject,
+      pointer,
+      cameraRef.current,
+    )
+  ) {
+    interactionRef.current = {
+      type: "rotating",
+      objectId: selectedObject.id,
+      original: structuredClone(selectedObject),
+      preview: structuredClone(selectedObject),
+    }
+
+    return true
+  }
+
   // Check if the user is trying to resize the selected object
   if (
     beginResize({

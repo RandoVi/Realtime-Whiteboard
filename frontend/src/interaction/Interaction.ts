@@ -1,4 +1,4 @@
-import type { Point, Object } from "@common/types"
+import type { Point, Object, RotatableObject } from "@common/types"
 import type { ResizeHandle } from '../types/selection'
 
 export type Interaction =
@@ -27,6 +27,12 @@ export type Interaction =
         preview: Object
         handle: ResizeHandle
         offset: Point
+    }
+    | {
+        type: 'rotating'
+        objectId: string
+        original: RotatableObject
+        preview: RotatableObject
     }
 
     | {

@@ -11,6 +11,7 @@ import { handleMouseMove as handleInteractionMouseMove } from '../interaction/ha
 import { handleMouseDown as handleInteractionMouseDown } from '../interaction/handleMouseDown'
 import type { CanvasInteractionContext } from '../interaction/CanvasInteractionContext'
 import { handleDoubleClick } from '../interaction/handleDoubleClick'
+import { rotateDrawing } from '../interaction/drawing/rotateDrawing'
 
 export function useWhiteboardInput({
   cameraRef,
@@ -80,6 +81,24 @@ export function useWhiteboardInput({
     })
 
     const handleWheel = (event: WheelEvent) => {
+
+      const interaction =
+        interactionRef.current
+
+      if (
+        interaction.type === "drawing" &&
+        "rotation" in interaction.preview
+      ) {
+        event.preventDefault()
+
+        rotateDrawing(
+          event.deltaY,
+          contextRef.current!,
+        )
+
+        return
+      }
+
       handleZoom({
         event,
         canvas,
@@ -104,6 +123,7 @@ export function useWhiteboardInput({
         pointer,
         world,
         context: contextRef.current!,
+        constrain: event.ctrlKey,
       });
     };
     // Handle mouse down events for drawing, moving, and selecting objects

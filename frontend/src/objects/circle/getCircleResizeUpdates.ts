@@ -7,5 +7,6 @@ export function getCircleResizeUpdates(
     x: object.x,
     y: object.y,
     radius: object.radius,
+    rotation: object.rotation,
   }
 }

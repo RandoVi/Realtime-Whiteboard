@@ -9,5 +9,6 @@ export function getTextboxResizeUpdates(
         y: object.y,
         width: object.width,
         height: object.height,
+        rotation: object.rotation,
     }
 }

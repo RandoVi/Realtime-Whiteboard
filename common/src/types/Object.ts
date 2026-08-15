@@ -1,4 +1,4 @@
-import type  { Arrow } from '../shapes/Arrow'
+import type { Arrow } from '../shapes/Arrow'
 import type { Circle } from '../shapes/Circle'
 import type { Laser } from '../shapes/Laser'
 import type { Rectangle } from '../shapes/Rectangle'
@@ -7,13 +7,20 @@ import type { Textbox } from '../shapes/Textbox'
 import type { Triangle } from '../shapes/Triangle'
 
 export type Object =
-    | Rectangle
-    | Stroke
-    | Circle
-    | Triangle
-    | Laser
-    | Arrow
-    | Textbox
+  | Rectangle
+  | Stroke
+  | Circle
+  | Triangle
+  | Laser
+  | Arrow
+  | Textbox
+
+export type RotatableObject =
+  | Rectangle
+  | Circle
+  | Triangle
+  | Textbox
+  | Arrow
 
 export type Point = {
   x: number

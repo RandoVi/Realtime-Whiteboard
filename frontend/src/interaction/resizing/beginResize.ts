@@ -7,6 +7,8 @@ import type { Interaction } from "../Interaction"
 import { getSelectionBounds } from "../../selection/getSelectionBounds"
 import type { CanvasInteractionContext } from "../CanvasInteractionContext"
 import { updateCursor } from "../updateCursor"
+import { screenToWorld } from "../../camera/Camera";
+import { getResizeHandles } from "../../selection/getResizeHandles";
 
 type Args = {
   selectedObject: Object | undefined
@@ -41,40 +43,42 @@ export function beginResize({
 
   const bounds = getSelectionBounds(selectedObject)
 
-  const handlePosition = {
-    nw: {
-      x: bounds.left,
-      y: bounds.top,
+  const handles = getResizeHandles(
+    bounds,
+    camera,
+  )
+
+  const handleScreenPosition = handles.find(
+    item => item.type === handle
+  )
+
+  if (!handleScreenPosition) {
+    return false
+  }
+
+  const handlePosition = screenToWorld(
+    {
+      x: handleScreenPosition.x,
+      y: handleScreenPosition.y,
     },
-    ne: {
-      x: bounds.right,
-      y: bounds.top,
-    },
-    sw: {
-      x: bounds.left,
-      y: bounds.bottom,
-    },
-    se: {
-      x: bounds.right,
-      y: bounds.bottom,
-    },
-  }[handle]
+    camera,
+  )
 
   if (!handlePosition) {
     return false
   }
 
-interactionRef.current = {
+  interactionRef.current = {
     type: "resizing",
     objectId: selectedObject.id,
     original: structuredClone(selectedObject),
     preview: structuredClone(selectedObject),
     handle,
     offset: {
-        x: world.x - handlePosition.x,
-        y: world.y - handlePosition.y,
+      x: world.x - handlePosition.x,
+      y: world.y - handlePosition.y,
     },
-}
+  }
 
   updateCursor(context);
 

@@ -10,6 +10,7 @@ export function createCircle(point: Point, style: ObjectStyle): Circle {
         x: point.x,
         y: point.y,
         radius: 0,
+        rotation: 0,
         fill: style.fill,
         stroke: style.stroke,
     };

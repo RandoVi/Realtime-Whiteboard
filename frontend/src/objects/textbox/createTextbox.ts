@@ -3,8 +3,8 @@ import type { Point } from "@common/types";
 import type { ObjectStyle } from "../ObjectStyle"
 
 
-const DEFAULT_WIDTH = 200
-const DEFAULT_HEIGHT = 60
+const DEFAULT_WIDTH = 250
+const DEFAULT_HEIGHT = 250
 
 const DEFAULT_FONT_SIZE = 24
 const DEFAULT_FONT_FAMILY = "Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif"
@@ -24,6 +24,8 @@ export function createTextbox(
 
         width: DEFAULT_WIDTH,
         height: DEFAULT_HEIGHT,
+
+        rotation: 0,
 
         text: "Note...",
 

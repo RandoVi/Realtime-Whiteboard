@@ -63,7 +63,7 @@ function Whiteboard() {
   const [lobbyState, setLobbyState] = useState<LobbyState>("lobby");
   const [boardId, setBoardId] = useState("");
 
-  
+
 
   const [showDrawingMenu, setShowDrawingMenu] = useState(false);
   const [showShapeMenu, setShowShapeMenu] = useState(false);
@@ -258,25 +258,25 @@ function Whiteboard() {
     }
   }
 
- const requestRender = () => {
-  renderDirtyRef.current = true;
+  const requestRender = () => {
+    renderDirtyRef.current = true;
 
-  if (renderFrameRef.current !== null) {
-    return;
-  }
-
-  renderFrameRef.current = requestAnimationFrame(() => {
-    renderFrameRef.current = null;
-
-    if (!renderDirtyRef.current) {
+    if (renderFrameRef.current !== null) {
       return;
     }
 
-    renderDirtyRef.current = false;
+    renderFrameRef.current = requestAnimationFrame(() => {
+      renderFrameRef.current = null;
 
-    render();
-  });
-};
+      if (!renderDirtyRef.current) {
+        return;
+      }
+
+      renderDirtyRef.current = false;
+
+      render();
+    });
+  };
 
   const collaboration = useMemo(
     () => new SocketCollaboration(),
@@ -308,8 +308,7 @@ function Whiteboard() {
     collaboration.onCommand(
       command => {
 
-        console.log("REMOTE COMMAND:", command);
-
+        console.log("COLLABORATION COMMAND RECEIVED:", command);
         editor.execute(
           command,
           {

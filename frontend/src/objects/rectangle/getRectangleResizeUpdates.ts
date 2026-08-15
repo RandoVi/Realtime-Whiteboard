@@ -8,5 +8,6 @@ export function getRectangleResizeUpdates(
     y: object.y,
     width: object.width,
     height: object.height,
+    rotation: object.rotation,
   }
 }

@@ -18,5 +18,7 @@ export function getCircleBounds(
       x: object.x,
       y: object.y,
     },
+
+    rotation: object.rotation,
   }
 }

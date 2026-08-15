@@ -6,7 +6,6 @@ export function renderCircle(
   circle: Circle,
   camera: Camera
 ) {
-
   const screenX =
     circle.x * camera.scale + camera.offsetX
 
@@ -16,12 +15,16 @@ export function renderCircle(
   const radius =
     circle.radius * camera.scale
 
+  context.save()
+
+  context.translate(screenX, screenY)
+  context.rotate(circle.rotation)
 
   context.beginPath()
 
   context.arc(
-    screenX,
-    screenY,
+    0,
+    0,
     radius,
     0,
     Math.PI * 2
@@ -33,4 +36,6 @@ export function renderCircle(
 
   context.fill()
   context.stroke()
+
+  context.restore()
 }

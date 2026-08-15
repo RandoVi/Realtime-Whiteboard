@@ -8,6 +8,8 @@ export type Textbox = {
     width: number
     height: number
 
+    rotation: number
+
     text: string
 
     fontSize: number

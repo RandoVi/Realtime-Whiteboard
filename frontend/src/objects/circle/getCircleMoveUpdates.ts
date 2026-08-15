@@ -6,5 +6,6 @@ export function getCircleMoveUpdates(
   return {
     x: object.x,
     y: object.y,
+    rotation: object.rotation,
   }
 }

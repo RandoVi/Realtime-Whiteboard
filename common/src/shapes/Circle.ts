@@ -8,6 +8,8 @@ export type Circle = {
 
   radius: number
 
+  rotation: number
+
   fill: string
   stroke: string
 }

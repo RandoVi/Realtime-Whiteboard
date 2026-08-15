@@ -5,6 +5,7 @@ import { getResizeHandles } from '../selection/getResizeHandles'
 import { getSelectionBounds } from "../selection/getSelectionBounds"
 import type { SelectionBounds } from '../selection/getSelectionBounds'
 import { getObjectHandler } from '../objects/registry/getObjectHandler'
+import { getRotationHandle, type RotationHandle } from '../selection/getRotationHandle'
 
 export function renderSelection(
     context: CanvasRenderingContext2D,
@@ -22,13 +23,19 @@ export function renderSelection(
         handler.getResizeHandle !== undefined &&
         handler.getResizeUpdates !== undefined
 
+    const rotationHandle = getRotationHandle(
+        object,
+        camera,
+    )
+
     renderObjectSelection(
         context,
         bounds,
         camera,
         color,
         showHandles,
-        canResize
+        canResize,
+        rotationHandle,
     )
 }
 
@@ -38,15 +45,25 @@ function renderObjectSelection(
     camera: Camera,
     color: string,
     showHandles: boolean,
-    canResize: boolean
+    canResize: boolean,
+    rotationHandle: RotationHandle,
 ) {
-    const screenX = bounds.left * camera.scale + camera.offsetX
-    const screenY = bounds.top * camera.scale + camera.offsetY
+    const centerX =
+        bounds.center.x * camera.scale + camera.offsetX
 
-    const screenWidth = bounds.width * camera.scale
-    const screenHeight = bounds.height * camera.scale
+    const centerY =
+        bounds.center.y * camera.scale + camera.offsetY
+
+    const screenWidth =
+        bounds.width * camera.scale
+
+    const screenHeight =
+        bounds.height * camera.scale
 
     context.save()
+
+    context.translate(centerX, centerY)
+    context.rotate(bounds.rotation ?? 0)
 
     context.strokeStyle = color
     context.lineWidth = 2
@@ -54,38 +71,83 @@ function renderObjectSelection(
     const padding = 2
 
     context.strokeRect(
-        screenX - padding,
-        screenY - padding,
+        -screenWidth / 2 - padding,
+        -screenHeight / 2 - padding,
         screenWidth + padding * 2,
         screenHeight + padding * 2,
     )
 
     context.restore()
 
-    if (!showHandles) {
+    if (!showHandles || !canResize) {
         return
     }
 
-    if (!canResize) {
-        return
-    }
-
-    context.fillStyle = 'white'
+    context.fillStyle = "white"
     context.strokeStyle = color
 
     const handles = getResizeHandles(bounds, camera)
 
     for (const handle of handles) {
+        context.save()
+
+        context.translate(handle.x, handle.y)
+        context.rotate(bounds.rotation ?? 0)
+
         context.beginPath()
 
         context.rect(
-            handle.x - HANDLE_SIZE / 2,
-            handle.y - HANDLE_SIZE / 2,
+            -HANDLE_SIZE / 2,
+            -HANDLE_SIZE / 2,
             HANDLE_SIZE,
             HANDLE_SIZE,
         )
 
         context.fill()
         context.stroke()
+
+        context.restore()
     }
+
+    context.save()
+
+    context.fillStyle = "white"
+    context.strokeStyle = color
+    context.lineWidth = 2
+
+    context.beginPath()
+
+    context.arc(
+        rotationHandle.x,
+        rotationHandle.y,
+        6,
+        0,
+        Math.PI * 2,
+    )
+
+    context.fill()
+    context.stroke()
+
+    context.beginPath()
+
+    const topHandle = getResizeHandles(
+        bounds,
+        camera,
+    ).find(handle => handle.type === "nw")
+
+    if (topHandle) {
+        context.moveTo(
+            rotationHandle.x,
+            rotationHandle.y + 6,
+        )
+
+        context.lineTo(
+            topHandle.x,
+            topHandle.y,
+        )
+
+        context.stroke()
+    }
+
+    context.restore()
 }

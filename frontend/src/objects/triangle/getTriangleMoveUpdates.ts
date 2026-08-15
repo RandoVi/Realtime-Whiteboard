@@ -6,5 +6,6 @@ export function getTriangleMoveUpdates(
   return {
     x: object.x,
     y: object.y,
+    rotation: object.rotation,
   }
 }

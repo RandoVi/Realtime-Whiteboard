@@ -5,6 +5,7 @@ import { finishMoving } from "./moving/finishMoving"
 import { finishPan } from "./panning/finishPan"
 import type { CanvasInteractionContext } from "./CanvasInteractionContext"
 import { finishLaser } from "./laser/finishLaser"
+import { finishRotation } from "./rotation/finishRotation"
 
 type Args = {
   context: CanvasInteractionContext
@@ -40,6 +41,12 @@ export function handleMouseUp({
     case "resizing":
       handleResizeMouseUp({
         context
+      })
+      break
+
+    case "rotating":
+      finishRotation({
+        context,
       })
       break
 

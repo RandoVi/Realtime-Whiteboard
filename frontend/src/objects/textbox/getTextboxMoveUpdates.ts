@@ -7,5 +7,6 @@ export function getTextboxMoveUpdates(
     return {
         x: object.x,
         y: object.y,
+        rotation: object.rotation,
     }
 }

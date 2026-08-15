@@ -25,6 +25,7 @@ export class SocketCollaboration implements Collaboration {
         socket.on(
             SOCKET_EVENTS.COMMAND,
             (message: NetworkCommand) => {
+                console.log("SOCKET COMMAND RECEIVED:", message);
                 this.commandHandler?.(
                     message.command
                 );
