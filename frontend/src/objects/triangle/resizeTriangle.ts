@@ -2,12 +2,14 @@ import type { Triangle } from "@common/shapes";
 import type { Point } from "@common/types";
 import type { ResizeHandle } from "../../types/selection";
 import { inverseRotatePoint } from "../../interaction/helpers/rotatePoint";
+import { constrainResize } from "../constrainResize";
 
 export function resizeTriangle(
     triangle: Triangle,
     original: Triangle,
     handle: ResizeHandle,
-    point: Point
+    point: Point,
+    constrain: boolean
 ) {
     const center = {
         x: original.x + original.width / 2,
@@ -19,6 +21,8 @@ export function resizeTriangle(
         center,
         original.rotation,
     )
+
+
 
     switch (handle) {
 
@@ -70,4 +74,13 @@ export function resizeTriangle(
 
             break
     }
+
+    if (constrain) {
+        constrainResize(
+            triangle,
+            original,
+            handle,
+        )
+    }
 }
+

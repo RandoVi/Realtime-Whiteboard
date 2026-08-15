@@ -2,12 +2,14 @@ import type { ResizeHandle } from "../../types/selection"
 import type { Arrow } from "@common/shapes"
 import type { Point } from "@common/types"
 import { inverseRotatePoint } from "../../interaction/helpers/rotatePoint"
+import { constrainResize } from "../constrainResize"
 
 export function resizeArrow(
     arrow: Arrow,
     original: Arrow,
     handle: ResizeHandle,
-    point: Point
+    point: Point,
+    constrain: boolean
 ) {
     const center = {
         x: original.x + original.width / 2,
@@ -19,6 +21,8 @@ export function resizeArrow(
         center,
         original.rotation,
     )
+
+
 
     switch (handle) {
 
@@ -79,5 +83,13 @@ export function resizeArrow(
                 localPoint.y
 
             break
+    }
+
+    if (constrain) {
+        constrainResize(
+            arrow,
+            original,
+            handle,
+        )
     }
 }

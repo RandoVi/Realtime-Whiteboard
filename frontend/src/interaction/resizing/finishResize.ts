@@ -1,3 +1,4 @@
+import { normalizeObject } from "../../objects/normalizeObject";
 import type { CanvasInteractionContext } from "../CanvasInteractionContext"
 import { getObjectResizeUpdates } from "../helpers/getObjectResizeUpdates";
 
@@ -21,12 +22,12 @@ export function handleResizeMouseUp({
     return false;
   }
 
+  const normalized = normalizeObject(interaction.preview);
+
   editor.execute({
     type: "updateBoardObject",
     boardObjectId: interaction.objectId,
-    updates: getObjectResizeUpdates(
-      interaction.preview
-    ),
+    updates: getObjectResizeUpdates(normalized),
   });
 
   interactionRef.current = {
