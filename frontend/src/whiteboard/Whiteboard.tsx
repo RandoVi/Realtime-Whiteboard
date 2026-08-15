@@ -1,32 +1,40 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
-import type { Camera } from '../types/Types'
-import { renderGrid } from '../render/renderGrid'
-import { renderBackground } from '../render/renderBackground'
-import { useWhiteboardInput } from '../hooks/useWhiteboardInput'
-import { renderObjects } from '../render/renderObjects'
-import './Whiteboard.css'
-import { BottomToolbar } from '../ui/toolbars/BottomToolbar'
-import type { Tool } from '../types/Tool'
-import { renderSelection } from '../render/renderSelection'
-import { getObjectById } from '../objects/getObjectById'
-import { createEditor } from '../editor/createEditor'
-import { ObjectInspector } from '../ui/objectPanel/ObjectInspector'
-import { createDocument } from '../document/createDocument'
-import { setBoardId as setNetworkBoardId } from "../network/board";
+import { useEffect, useMemo, useRef, useState } from "react";
+
+import { renderGrid } from "../render/renderGrid";
+import { renderBackground } from "../render/renderBackground";
+import { renderObjects } from "../render/renderObjects";
+import { renderSelection } from "../render/renderSelection";
+
+import { useWhiteboardInput } from "../hooks/useWhiteboardInput";
+
+import { createEditor } from "../editor/createEditor";
+import { createDocument } from "../document/createDocument";
+import { getObjectById } from "../objects/getObjectById";
+import { getRenderedObject } from "../objects/getRenderedObjects";
+import { DEFAULT_FILL, DEFAULT_STROKE_COLOR } from "../objects/defaults";
+
 import { SocketCollaboration } from "../socket/collaboration/SocketCollaboration";
-import { BoardLobbyModal, type LobbyState } from '../lobby/BoardLobbyModal'
-import { SocketPresence } from '../socket/preview/SocketPresence'
-import { ShapeMenu } from '../ui/ShapeMenu'
-import { ShapeSettings } from '../ui/ShapeSettings'
-import type { RemotePresence } from '../socket/preview/RemotePresence'
-import { getCurrentUser, setCurrentUser } from '../network/currentUser'
-import { getRenderedObject } from '../objects/getRenderedObjects'
+import { SocketPresence } from "../socket/preview/SocketPresence";
 import { createRemotePresence } from "../socket/preview/createRemotePresence";
-import { DEFAULT_FILL, DEFAULT_STROKE_COLOR } from '../objects/defaults'
-import { DrawingMenu } from '../ui/DrawingMenu'
-import { RemoteCursors } from '../ui/cursors/RemoteCursors'
-import type { Laser } from '@common/shapes'
-import type { Object } from '@common/types'
+import { getCurrentUser, setCurrentUser } from "../network/currentUser";
+import { setBoardId as setNetworkBoardId } from "../network/board";
+
+import { BottomToolbar } from "../ui/toolbars/BottomToolbar";
+import { ObjectInspector } from "../ui/objectPanel/ObjectInspector";
+import { BoardLobbyModal, type LobbyState } from "../lobby/BoardLobbyModal";
+import { ShapeMenu } from "../ui/ShapeMenu";
+import { ShapeSettings } from "../ui/ShapeSettings";
+import { DrawingMenu } from "../ui/DrawingMenu";
+import { RemoteCursors } from "../ui/cursors/RemoteCursors";
+
+import type { Camera } from "../types/Types";
+import type { Tool } from "../types/Tool";
+import type { RemotePresence } from "../socket/preview/RemotePresence";
+
+import type { Laser } from "@common/shapes";
+import type { Object } from "@common/types";
+
+import "./Whiteboard.css";
 
 
 function Whiteboard() {

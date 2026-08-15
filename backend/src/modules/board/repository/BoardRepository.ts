@@ -22,6 +22,7 @@ export class BoardRepository {
   async saveManyBoardUpdates(boards: BoardManager[]): Promise<void> {
     // Guard against empty calls to avoid sending unnecessary commands to MongoDB
     if (!boards || boards.length === 0) {
+      console.log("Repository save failed - empty call")
       return;
     }
 
@@ -34,10 +35,12 @@ export class BoardRepository {
         updateOne: {
           filter: { id: data.id },
           
-          update: { 
+          update: {
             $set: {
+              id: data.id,
               ownerId: data.ownerId,
               objects: data.objects,
+              users: data.users
             } 
           },
           
@@ -51,8 +54,13 @@ export class BoardRepository {
     await this.boardModel.bulkWrite(bulkOps);
   }
 
-  async findById(boardId: string): Promise<BoardDocument | null> {
-    return this.boardModel.findById(boardId).exec();
+  async findByCustomId(boardId: string): Promise<BoardDocument | null> {
+    return this.boardModel.findOne({id: boardId}).exec();
+  }
+
+  async existsByCustomId(boardId: string): Promise<boolean> {
+    const exists = await this.boardModel.countDocuments({id: boardId}).exec();
+    return exists > 0;
   }
 
   // (Leverages { ownerId: 1, status: 1 } index)
@@ -63,10 +71,10 @@ export class BoardRepository {
   //  Push(add) a new BoardObject into the embedded BoardObjects array (Atomic)
   async pushBoardObject(boardId: string, BoardObject: BoardObject): Promise<BoardDocument> {
     const updatedBoard = await this.boardModel
-      .findByIdAndUpdate(
-        boardId,
+      .findOneAndUpdate(
+        {id: boardId},
         {
-          $push: { BoardObjects: BoardObject },
+          $push: { boardObjects: BoardObject },
           $inc: { version: 1 },
         },
         { new: true, runValidators: true },
@@ -85,7 +93,7 @@ export class BoardRepository {
     // Try updating BoardObject in-place first matching array element by id
     const updatedBoard = await this.boardModel
       .findOneAndUpdate(
-        { id: boardId, 'BoardObjects.id': boardObject.id },
+        { id: boardId, 'boardObjects.id': boardObject.id },
         {
           $set: { 'boardObjects.$': boardObject },
           $inc: { version: 1 },
@@ -105,8 +113,8 @@ export class BoardRepository {
 // Remove a BoardObject by its ID from the board array (Atomic)
   async pullBoardObject(boardId: string, boardObjectId: string): Promise<BoardDocument> {
     const updatedBoard = await this.boardModel
-      .findByIdAndUpdate(
-        boardId,
+      .findOneAndUpdate(
+        {id: boardId},
         {
           $pull: { boardObjects: { id: boardObjectId } },
           $inc: { version: 1 },
@@ -125,8 +133,8 @@ export class BoardRepository {
   // Full canvas state overwrite (Used when saving bulk canvas imports or snapshots)
   async replaceBoardObjects(boardId: string, boardObjects: BoardObject[]): Promise<BoardDocument> {
     const updatedBoard = await this.boardModel
-      .findByIdAndUpdate(
-        boardId,
+      .findOneAndUpdate(
+        {id: boardId},
         {
           $set: { boardObjects },
           $inc: { version: 1 },
@@ -142,9 +150,9 @@ export class BoardRepository {
     return updatedBoard;
   }
 
-  // Delete entire board document
-  async deleteBoard(boardId: string): Promise<boolean> {
-    const result = await this.boardModel.findByIdAndDelete(boardId).exec();
-    return result !== null;
-  }
+  async deleteExpiredBoards(cutoff: Date) {
+    return this.boardModel.deleteMany({
+        lastActivity: { $lt: cutoff },
+    }).exec();
+}
 }

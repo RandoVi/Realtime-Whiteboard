@@ -4,3 +4,4 @@ export * from "./Arrow";
 export * from "./Laser";
 export * from "./Stroke";
 export * from "./Triangle";
+export * from "./Textbox";

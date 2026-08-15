@@ -5,6 +5,17 @@ export class ObjectManager {
 
     private readonly objects = new Map<string, BoardObject>();
 
+    // factory for manager
+    static fromPersistence(objects: BoardObject[]): ObjectManager {
+        const manager = new ObjectManager();
+
+        for (const object of objects) {
+        manager.objects.set(object.id, object);
+        }
+
+        return manager;
+    }
+    
     create(boardObject: BoardObject): BoardObject {
         if (!boardObject.id) {
             throw new Error("BoardObject id is missing")

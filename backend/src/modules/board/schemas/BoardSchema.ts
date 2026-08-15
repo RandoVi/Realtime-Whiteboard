@@ -2,6 +2,7 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Schema as MongooseSchema } from 'mongoose';
 import { HydratedDocument } from 'mongoose';
 import { BoardObject } from '../../boardObjects/schemas/BoardObjectSchema';
+import { BoardUser } from '../../../models/boardUser';
 
 export type BoardDocument = HydratedDocument<Board>;
 
@@ -14,23 +15,26 @@ export class Board {
   @Prop({ required: true, index: true })
   ownerId!: string;
 
-  @Prop({
-    type: String,
-    enum: ['active', 'archived', 'read-only'],
-    default: 'active',
-    index: true,
-  })
-  status!: string;
   // To retain all the subproperties
   @Prop({ type: [MongooseSchema.Types.Mixed], default: [] })
-  boardObjects!: BoardObject[];
+  objects!: BoardObject[];
+
+  @Prop({ type: [MongooseSchema.Types.Mixed], default: [] })
+  users!: BoardUser[];
+
 
   @Prop({ default: 0 })
   version!: number;
 
+  @Prop({ type: Date, required: true, default: Date.now, index: true })
+  lastActivity!: Date;
+
   applyUpdate(changes: Partial<BoardDocument>): void {
-    if (changes.boardObjects) {
-      this.boardObjects = changes.boardObjects;
+    if (changes.objects) {
+      this.objects = changes.objects;
+    }
+    if (changes.users) {
+      this.users = changes.users;
     }
   }
 }
