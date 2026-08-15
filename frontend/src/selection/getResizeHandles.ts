@@ -13,15 +13,58 @@ export function getResizeHandles(
     camera: Camera,
 ): ResizeHandlePosition[] {
 
-    const left = bounds.left * camera.scale + camera.offsetX
-    const top = bounds.top * camera.scale + camera.offsetY
-    const right = bounds.right * camera.scale + camera.offsetX
-    const bottom = bounds.bottom * camera.scale + camera.offsetY
+    const centerX =
+        bounds.center.x * camera.scale +
+        camera.offsetX
+
+    const centerY =
+        bounds.center.y * camera.scale +
+        camera.offsetY
+
+    const halfWidth =
+        bounds.width * camera.scale / 2
+
+    const halfHeight =
+        bounds.height * camera.scale / 2
+
+    const rotation = bounds.rotation ?? 0
+
+    const cos = Math.cos(rotation)
+    const sin = Math.sin(rotation)
+
+    function rotate(
+        localX: number,
+        localY: number,
+    ) {
+        return {
+            x:
+                centerX +
+                localX * cos -
+                localY * sin,
+
+            y:
+                centerY +
+                localX * sin +
+                localY * cos,
+        }
+    }
 
     return [
-        { type: 'nw', x: left, y: top },
-        { type: 'ne', x: right, y: top },
-        { type: 'sw', x: left, y: bottom },
-        { type: 'se', x: right, y: bottom },
+        {
+            type: "nw",
+            ...rotate(-halfWidth, -halfHeight),
+        },
+        {
+            type: "ne",
+            ...rotate(halfWidth, -halfHeight),
+        },
+        {
+            type: "sw",
+            ...rotate(-halfWidth, halfHeight),
+        },
+        {
+            type: "se",
+            ...rotate(halfWidth, halfHeight),
+        },
     ]
 }

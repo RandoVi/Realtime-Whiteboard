@@ -1,4 +1,4 @@
-import type { Point } from "../../types/Types";
+import type { Point } from "@common/types";
 
 export function getPointer(
     event: MouseEvent,

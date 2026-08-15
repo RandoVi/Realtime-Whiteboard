@@ -1,4 +1,4 @@
-import type { Circle } from "./Circle";
+import type { Circle } from "@common/shapes"
 
 export function duplicateCircle(
   circle: Circle

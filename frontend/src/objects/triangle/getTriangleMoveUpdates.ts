@@ -1,4 +1,4 @@
-import type { Triangle } from "./Triangle"
+import type { Triangle } from "@common/shapes";
 
 export function getTriangleMoveUpdates(
   object: Triangle
@@ -6,5 +6,6 @@ export function getTriangleMoveUpdates(
   return {
     x: object.x,
     y: object.y,
+    rotation: object.rotation,
   }
 }

@@ -1,5 +1,6 @@
 import type { Laser } from "../shapes";
 import type { Point } from "../types";
+import type { Object } from "../types/Object";
 
 export type ObjectSelectionCommand = {
     type: "selection";

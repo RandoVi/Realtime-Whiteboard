@@ -1,5 +1,6 @@
-import type { Camera, Point } from '../types/Types'
-import type { Object } from '../types/Object'
+import type { Camera } from '../types/Types'
+import type { Object } from '@common/types'
+import type { Point } from '@common/types'
 import { getResizeHandleForObject } from './getResizeHandleForObject'
 
 export function getSelectionHandle(

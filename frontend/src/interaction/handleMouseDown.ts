@@ -1,4 +1,4 @@
-import type { Point } from "../types/Types";
+import type { Point } from "@common/types";
 import type { Tool } from "../types/Tool";
 import type { CanvasInteractionContext } from "./CanvasInteractionContext";
 

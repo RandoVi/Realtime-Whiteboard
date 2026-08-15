@@ -1,5 +1,6 @@
-import type { Circle } from "./Circle"
-import type { Camera, Point } from "../../types/Types"
+import type { Circle } from "@common/shapes"
+import type { Point } from "@common/types"
+import type { Camera } from "../../types/Types"
 import type { ResizeHandle } from "../../types/selection"
 import { hitTestResizeHandles } from "../../selection/hitTestResizeHandles"
 import { getCircleBounds } from "./getCircleBounds"

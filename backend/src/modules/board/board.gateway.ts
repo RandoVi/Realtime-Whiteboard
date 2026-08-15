@@ -2,15 +2,14 @@ import { WebSocketGateway, OnGatewayConnection, OnGatewayDisconnect, WebSocketSe
 
 import { BoardService } from "./service/BoardService";
 import { Server, Socket } from "socket.io";
-import { Logger } from "@nestjs/common";
-import { randomUUID } from "crypto";
+import { InternalServerErrorException, Logger, NotFoundException } from "@nestjs/common";
 import { BoardCommandDTO } from "./dto/BoardCommandDTO";
-import { BoardCommandType } from "../../common/enum/BoardCommandType";
 import { BoardObjectPresenceDTO } from "../../models/boardObjectPresenceDTO";
 import { BoardObjectEditorDTO } from "../../models/boardObjectEditorDTO";
 import { BoardStateDTO } from "./dto/BoardStateDTO";
-import { BoardUser } from "../../models/boardUser";
-import { BoardUpdateDTO } from "./dto/BoardUpdateDTO";
+import { BoardCommandType } from "../../common/types/BoardCommandType";
+import { BoardObjectDTO } from "./dto/BoardObjectDTO";
+import { plainToInstance } from "class-transformer";
 
 
 @WebSocketGateway({
@@ -55,26 +54,16 @@ export class BoardGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
         switch (data.type) {
             case BoardCommandType.CREATE: {
 
-                const boardId = randomUUID();
-                const hostId = randomUUID();
-                const board = await this.boards.createBoardAndPersist(boardId, hostId);
+                const board = await this.boards.createBoardAndPersist();
 
                 if (!board) {
-                    console.error('ERROR:No "board" in socket(CREATE - BOARD)')
+                    console.error('Failed to create board at CREATE')
                     break;
                 }
 
-                const hostUser = new BoardUser(hostId, data.user!.username);
-
-                if (!hostUser) {
-                    console.error("ERROR:No user to add, breaking the flow")
-                    break;
-                }
-                board.users.add(hostUser);
-                console.log("Host color = " + hostUser.color + "  Host name: " + hostUser.username)
                 socket.join(board.id);
 
-                const dto = new BoardStateDTO(hostId, boardId, hostId, board.objects.getAll(), board.users.getAll());
+                const dto = new BoardStateDTO(board.ownerId, board.id, board.ownerId, board.objects.getAll(), board.users.getAll());
 
                 socket.emit("board-state", dto);
                 console.log("Board created with id: " + board.id)
@@ -109,17 +98,14 @@ export class BoardGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
                     socket.emit("join-board-response", "No user data available (missing)")
                     break
                 }
+                const newUser = await this.boards.upsertUserInBoard(data.id, data.user.username);
 
-                const newUserId = randomUUID();
-                const newUser = new BoardUser(newUserId, data.user.username);
-                
-                board.users.add(newUser);
+                if(!newUser) {
+                    throw new InternalServerErrorException("Failed to updateBoardUserState")
+                }
+                const dto = new BoardStateDTO(newUser.userId, board!.id, board!.ownerId, board!.objects.getAll(), board!.users.getAll());
+                //console.log(dto);
                 socket.join(board.id);
-                console.log("Before await")
-                await this.boards.updateBoardState(new BoardUpdateDTO (board.id, board.objects.getAll(), board.users.getAll()));
-                console.log("After await")
-                const dto = new BoardStateDTO(newUserId, board!.id, board!.ownerId, board!.objects.getAll(), board!.users.getAll());
-                console.log(dto);
                 socket.emit("board-state", dto);
                 socket.broadcast.to(board!.id).emit("user-joined-board", newUser)
                 console.log("User " + newUser.username + " joined  the board(with id): " + data.id)
@@ -143,12 +129,9 @@ export class BoardGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
                         console.error('ERROR: No "user" in socket(JOIN)')
                         break
                     }
-                    board.users.remove(data.user.userId);
-                    socket.leave(board.id);
 
-                    board!.lastActivity = new Date();
-                    await this.boards.updateBoardState(new BoardUpdateDTO (board.id, board.objects.getAll(), board.users.getAll()));
-                    
+                    await this.boards.removeUserFromBoard(data.id, data.user.userId);
+                    socket.leave(board.id);
                     socket.broadcast.to(board.id).emit("user-left-board", {
                         userId: data.user.userId,
                         username: data.user.username
@@ -228,9 +211,11 @@ export class BoardGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
                     console.log("No board after fetching, breaking")
                     break
                 }
-                board.objects.create(data.command.boardObject);
-
-                await this.boards.updateBoardState(new BoardUpdateDTO (board!.id, board.objects.getAll(), board.users.getAll()));
+                const dto = plainToInstance(
+                    BoardObjectDTO,
+                    data.command.boardObject
+                );
+                await this.boards.createObjectInBoard(board.id, dto);
 
                 socket.broadcast.to(board!.id).emit("boardObjectCommand", data);
                 console.log("Object created successfully - " + data.command.boardObject.id + " for boardId: " + data.boardId);
@@ -239,14 +224,22 @@ export class BoardGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
             case "updateBoardObject": {
                 if(!this.boards.hasBoardInServer(data.boardId)) {
                     console.error('ERROR: No "board" in socket(UPDATE - OBJECT)')
+                    break
                 }
                 if(!data.command.updates) {
                     console.error('ERROR: No "updates" in socket(UPDATE - OBJECT)')
+                    break
                 }
                 const board = this.boards.getBoardFromServer(data.boardId);
-                board!.objects.update(data.command.boardObjectId, data.command.updates);
-
-                this.boards.updateBoardState(new BoardUpdateDTO (board!.id, board!.objects.getAll(), board!.users.getAll()));
+                if (!board) {
+                    console.log("No board after fetching, breaking")
+                    break
+                }
+                const dto = plainToInstance(
+                    BoardObjectDTO,
+                    data.command.updates
+                );
+                await this.boards.updateObjectInBoard(board!.id, dto);
                 
                 socket.broadcast.to(board!.id).emit("boardObjectCommand", data);
                 console.log("Object updated successfully - " + data.command.boardObjectId + " for boardId: " + data.boardId)
@@ -255,15 +248,19 @@ export class BoardGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
             case "deleteBoardObject": {
                 if(!this.boards.hasBoardInServer(data.boardId)) {
                     console.error('ERROR: No "board" in socket(DELETE - OBJECT)')
+                    break
                 }
                 if(!data.command.boardObjectId) {
                     console.error('ERROR: No "boardObjectId" in socket(DELETE - OBJECT)')
+                    break
                 }
-                const board = this.boards.getBoardFromServer(data.boardId);
-                board!.objects.delete(data.command.boardObjectId);
-                this.boards.updateBoardState(new BoardUpdateDTO (board!.id, board!.objects.getAll(), board!.users.getAll()));
+                const board = this.boards.getBoardFromServer(data.boardId)
+                if (!board) {
+                    throw new NotFoundException("Board not found in server @ deleteBoardObject")
+                }
+                this.boards.deleteObjectInBoard(board.id, data.command.boardObjectId);
 
-                socket.broadcast.to(board!.id).emit("boardObjectCommand", data);
+                socket.broadcast.to(board.id).emit("boardObjectCommand", data);
                 console.log("Object deleted - " + data.command.boardObjectId)
                 break
             }

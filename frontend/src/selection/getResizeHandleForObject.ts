@@ -1,5 +1,5 @@
-import type { Object } from "../types/Object"
-import type { Camera, Point } from "../types/Types"
+import type { Point, Object } from "@common/types"
+import type { Camera } from "../types/Types"
 import type { ResizeHandle } from "../types/selection"
 import { getObjectHandler } from "../objects/registry/getObjectHandler"
 

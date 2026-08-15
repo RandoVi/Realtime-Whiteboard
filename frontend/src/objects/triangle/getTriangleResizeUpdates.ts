@@ -1,4 +1,4 @@
-import type { Triangle } from "./Triangle"
+import type { Triangle } from "@common/shapes";
 
 export function getTriangleResizeUpdates(
   object: Triangle
@@ -8,5 +8,6 @@ export function getTriangleResizeUpdates(
     y: object.y,
     width: object.width,
     height: object.height,
+    rotation: object.rotation,
   }
 }

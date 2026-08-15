@@ -1,5 +1,4 @@
-import type { Camera } from "../../types/Types";
-import type { Textbox } from "./Textbox";
+import type { Textbox } from "@common/shapes/Textbox";import type { Camera } from "../../types/Types";
 
 export function renderTextbox(
     context: CanvasRenderingContext2D,
@@ -18,6 +17,12 @@ export function renderTextbox(
     const screenHeight =
         textbox.height * camera.scale;
 
+    const centerX =
+        screenX + screenWidth / 2;
+
+    const centerY =
+        screenY + screenHeight / 2;
+
     const radius =
         8 * camera.scale;
 
@@ -28,6 +33,14 @@ export function renderTextbox(
         36 * camera.scale;
 
     context.save();
+
+    context.translate(centerX, centerY);
+    context.rotate(textbox.rotation);
+
+    // From this point on, coordinates are relative
+    // to the textbox center.
+    const localX = -screenWidth / 2;
+    const localY = -screenHeight / 2;
 
     /*
      * ------------------------------------------------
@@ -45,8 +58,8 @@ export function renderTextbox(
 
     drawStickyNotePath(
         context,
-        screenX,
-        screenY,
+        localX,
+        localY,
         screenWidth,
         screenHeight,
         radius,
@@ -69,8 +82,8 @@ export function renderTextbox(
 
     drawStickyNotePath(
         context,
-        screenX,
-        screenY,
+        localX,
+        localY,
         screenWidth,
         screenHeight,
         radius,
@@ -89,8 +102,8 @@ export function renderTextbox(
     context.beginPath();
 
     context.roundRect(
-        screenX,
-        screenY,
+        localX,
+        localY,
         screenWidth,
         topStripHeight + radius,
         radius,
@@ -104,8 +117,8 @@ export function renderTextbox(
     );
 
     context.fillRect(
-        screenX,
-        screenY,
+        localX,
+        localY,
         screenWidth,
         topStripHeight,
     );
@@ -145,7 +158,7 @@ export function renderTextbox(
      */
 
     const textAreaTop =
-        screenY + topStripHeight;
+        localY + topStripHeight;
 
     const textAreaHeight =
         screenHeight - topStripHeight;
@@ -167,8 +180,8 @@ export function renderTextbox(
 
     drawStickyNotePath(
         context,
-        screenX,
-        screenY,
+        localX,
+        localY,
         screenWidth,
         screenHeight,
         radius,
@@ -183,7 +196,7 @@ export function renderTextbox(
 
         context.fillText(
             lines[i],
-            screenX + screenWidth / 2,
+            localX + screenWidth / 2,
             y,
         );
     }

@@ -1,5 +1,5 @@
 import type { Editor } from "../../editor/Editor";
-import type { Object } from "../../types/Object";
+import type { Object } from "@common/types";
 import "./ObjectInspector.css";
 import { ActionsSection } from "./ActionsSection";
 import { PropertySection } from "./PropertySection";

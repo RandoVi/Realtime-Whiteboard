@@ -1,4 +1,4 @@
-import type { EditorCommand } from "../../../common/src/commands/EditorCommand";
+import type { EditorCommand } from "@common/commands";
 
 export type DocumentCommand = {
   id: string;

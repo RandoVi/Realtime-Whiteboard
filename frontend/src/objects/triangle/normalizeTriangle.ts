@@ -1,4 +1,4 @@
-import type { Triangle } from "./Triangle"
+import type { Triangle } from "@common/shapes";
 
 export function normalizeTriangle(triangle: Triangle): Triangle {
     let { x, y, width, height } = triangle

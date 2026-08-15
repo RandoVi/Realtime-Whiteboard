@@ -1,4 +1,4 @@
-import type { Arrow } from "./Arrow";
+import type { Arrow } from "@common/shapes";
 
 export function getArrowMoveUpdates(
   object: Arrow
@@ -6,5 +6,6 @@ export function getArrowMoveUpdates(
   return {
     x: object.x,
     y: object.y,
+    rotation: object.rotation,
   }
 }

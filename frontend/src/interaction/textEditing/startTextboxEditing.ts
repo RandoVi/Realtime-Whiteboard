@@ -1,4 +1,5 @@
-import type { Textbox } from "../../objects/textbox/Textbox";
+
+import type { Textbox } from "../../../../common/src/shapes/Textbox";
 import type { CanvasInteractionContext } from "../CanvasInteractionContext";
 
 type Args = {

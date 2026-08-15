@@ -1,4 +1,4 @@
-import type { Circle } from "./Circle"
+import type { Circle } from "@common/shapes"
 
 export function getCircleMoveUpdates(
   object: Circle
@@ -6,5 +6,6 @@ export function getCircleMoveUpdates(
   return {
     x: object.x,
     y: object.y,
+    rotation: object.rotation,
   }
 }

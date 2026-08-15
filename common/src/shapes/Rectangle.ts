@@ -8,6 +8,8 @@ export type Rectangle = {
   width: number
   height: number
 
+  rotation: number
+
   fill: string
   stroke: string
 }

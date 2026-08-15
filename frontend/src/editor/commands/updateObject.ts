@@ -1,4 +1,4 @@
-import type { Object } from "../../types/Object";
+import type { Object } from "@common/types";
 import { getObjectById } from "../../objects/getObjectById";
 
 type Args = {

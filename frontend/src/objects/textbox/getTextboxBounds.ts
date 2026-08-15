@@ -1,6 +1,5 @@
 import type { SelectionBounds } from "../../selection/getSelectionBounds"
-import type { Textbox } from "./Textbox"
-
+import type { Textbox } from "@common/shapes/Textbox";
 export function getTextboxBounds(
     object: Textbox
 ): SelectionBounds {
@@ -18,5 +17,7 @@ export function getTextboxBounds(
             x: object.x + object.width / 2,
             y: object.y + object.height / 2,
         },
+
+        rotation: object.rotation,
     }
 }

@@ -1,6 +1,7 @@
-import type { Triangle } from './Triangle'
-import type { Point } from '../../types/Types'
-import type { ResizeHandle } from '../../types/selection'
+import type { Triangle } from "@common/shapes";
+import type { Point } from "@common/types";
+import type { ResizeHandle } from "../../types/selection";
+import { inverseRotatePoint } from "../../interaction/helpers/rotatePoint";
 
 export function resizeTriangle(
     triangle: Triangle,
@@ -8,51 +9,64 @@ export function resizeTriangle(
     handle: ResizeHandle,
     point: Point
 ) {
+    const center = {
+        x: original.x + original.width / 2,
+        y: original.y + original.height / 2,
+    }
+
+    const localPoint = inverseRotatePoint(
+        point,
+        center,
+        original.rotation,
+    )
+
     switch (handle) {
 
-        case 'se':
+        case "se":
             triangle.width =
-                point.x - original.x
+                localPoint.x - original.x
 
             triangle.height =
-                point.y - original.y
+                localPoint.y - original.y
 
             break
 
-
-        case 'sw':
-            triangle.x = point.x
+        case "sw":
+            triangle.x =
+                localPoint.x
 
             triangle.width =
-                original.x + original.width - point.x
+                original.x + original.width - localPoint.x
 
             triangle.height =
-                point.y - original.y
+                localPoint.y - original.y
 
             break
 
-
-        case 'ne':
-            triangle.y = point.y
+        case "ne":
+            triangle.y =
+                localPoint.y
 
             triangle.width =
-                point.x - original.x
+                localPoint.x - original.x
 
             triangle.height =
-                original.y + original.height - point.y
+                original.y + original.height - localPoint.y
 
             break
 
+        case "nw":
+            triangle.x =
+                localPoint.x
 
-        case 'nw':
-            triangle.x = point.x
-            triangle.y = point.y
+            triangle.y =
+                localPoint.y
 
             triangle.width =
-                original.x + original.width - point.x
+                original.x + original.width - localPoint.x
 
             triangle.height =
-                original.y + original.height - point.y
+                original.y + original.height - localPoint.y
 
             break
     }

@@ -1,4 +1,5 @@
-import type { Textbox } from "./Textbox"
+import type { Textbox } from "@common/shapes/Textbox";
+
 
 export function getTextboxResizeUpdates(
     object: Textbox
@@ -8,5 +9,6 @@ export function getTextboxResizeUpdates(
         y: object.y,
         width: object.width,
         height: object.height,
+        rotation: object.rotation,
     }
 }

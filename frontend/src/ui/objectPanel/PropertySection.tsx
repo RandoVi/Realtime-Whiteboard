@@ -1,4 +1,4 @@
-import type { Object } from "../../types/Object";
+import type { Object } from "@common/types";
 import type { Editor } from "../../editor/Editor";
 import type { PropertySection as PropertySectionType } from "../../objects/properties/ObjectProperty";
 

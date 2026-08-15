@@ -1,5 +1,5 @@
-import type { Point } from "../../types/Types";
-import type { Laser } from "../../objects/laser/Laser";
+import type { Point } from "@common/types";
+import type { Laser } from "@common/shapes";
 import type { PreviewData } from "../../render/renderObjects";
 
 export type RemotePresence = {

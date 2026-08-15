@@ -1,7 +1,8 @@
-import type { Camera, Point } from "../../types/Types";
+import type { Camera } from "../../types/Types";
 import { worldToScreen } from "../../camera/Camera";
 import "./RemoteCursor.css";
 import { CursorIcon } from "../icons/CursorIcon";
+import type { Point } from "@common/types";
 
 type Props = {
     point: Point;

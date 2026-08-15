@@ -1,5 +1,4 @@
-import type { Object } from '../types/Object'
-import type { Point } from '../types/Types'
+import type { Object, Point } from "@common/types"
 import { getObjectHandler } from './registry/getObjectHandler'
 
 

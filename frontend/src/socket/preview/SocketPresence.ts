@@ -1,11 +1,10 @@
 
 import { boardId } from "../../network/board";
 import type { Presence } from "./Presence";
-import type { PresenceCommand } from "./PresenceCommand";
 import { socket } from "../SocketClient";
 import { getCurrentUser } from "../../network/currentUser";
-import type { Point } from "../../types/Types";
-
+import type { Point } from "@common/types";
+import type { PresenceCommand } from "@common/commands";
 
 export class SocketPresence implements Presence {
 

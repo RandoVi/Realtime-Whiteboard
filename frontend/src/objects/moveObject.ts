@@ -1,4 +1,4 @@
-import type { Object } from "../types/Object";
+import type { Object } from "@common/types"
 import { getObjectHandler } from "./registry/getObjectHandler";
 
 

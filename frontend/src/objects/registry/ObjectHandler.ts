@@ -1,6 +1,6 @@
 import type { SelectionBounds } from "../../selection/getSelectionBounds"
-import type { Object } from "../../types/Object"
-import type { Camera, Point } from "../../types/Types"
+import type { Object, Point } from "@common/types"
+import type { Camera } from "../../types/Types"
 import type { ResizeHandle } from "../../types/selection"
 import type { ObjectStyle } from "../ObjectStyle"
 import type { ObjectProperty } from "../properties/ObjectProperty"

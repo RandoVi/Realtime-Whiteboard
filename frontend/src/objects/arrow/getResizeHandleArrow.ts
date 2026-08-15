@@ -1,7 +1,8 @@
 import { hitTestResizeHandles } from "../../selection/hitTestResizeHandles";
 import type { ResizeHandle } from "../../types/selection";
-import type { Point, Camera } from "../../types/Types";
-import type { Arrow } from "./Arrow";
+import type { Camera } from "../../types/Types";
+import type { Point } from "@common/types";
+import type { Arrow } from "@common/shapes";
 import { getArrowBounds } from "./getArrowBounds";
 
 export function getResizeHandleArrow(

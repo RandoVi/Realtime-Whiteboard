@@ -3,7 +3,8 @@ import type {
     MutableRefObject,
     SetStateAction,
 } from "react"
-import type { Camera, Point } from "../types/Types"
+import type { Point } from "@common/types";
+import type { Camera } from "../types/Types"
 import { screenToWorld, ZOOM_SENSITIVITY, zoomAtPoint } from "../camera/Camera"
 
 

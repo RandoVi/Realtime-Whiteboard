@@ -1,6 +1,6 @@
 //resize update.ts
 import { resizeObject } from "../../objects/resizeObject"
-import type { Point } from "../../types/Types"
+import type { Point } from "@common/types";
 import { getObjectResizeUpdates } from "../helpers/getObjectResizeUpdates"
 import { getObjectById } from "../../objects/getObjectById"
 import { sendObjectPreview } from "../helpers/sendObjectPreview"

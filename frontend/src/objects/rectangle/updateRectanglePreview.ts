@@ -1,5 +1,5 @@
-import type { Rectangle } from "./Rectangle";
-import type { Point } from "../../types/Types";
+import type { Point } from "@common/types"
+import type { Rectangle } from "@common/shapes"
 
 export function updateRectanglePreview(
     rectangle: Rectangle,

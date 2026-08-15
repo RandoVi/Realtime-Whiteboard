@@ -1,5 +1,5 @@
 import type { Camera } from '../../types/Types'
-import type { Triangle } from './Triangle'
+import type { Triangle } from "@common/shapes";
 
 export function renderTriangle(
     context: CanvasRenderingContext2D,
@@ -18,11 +18,19 @@ export function renderTriangle(
         height = Math.abs(height)
     }
 
-    const left = x * camera.scale + camera.offsetX
-    const top = y * camera.scale + camera.offsetY
+    const centerX =
+        (x + width / 2) * camera.scale + camera.offsetX
+
+    const centerY =
+        (y + height / 2) * camera.scale + camera.offsetY
 
     const screenWidth = width * camera.scale
     const screenHeight = height * camera.scale
+
+    context.save()
+
+    context.translate(centerX, centerY)
+    context.rotate(triangle.rotation)
 
     context.fillStyle = triangle.fill
     context.strokeStyle = triangle.stroke
@@ -31,22 +39,24 @@ export function renderTriangle(
     context.beginPath()
 
     context.moveTo(
-        left + screenWidth / 2,
-        top
+        0,
+        -screenHeight / 2
     )
 
     context.lineTo(
-        left,
-        top + screenHeight
+        -screenWidth / 2,
+        screenHeight / 2
     )
 
     context.lineTo(
-        left + screenWidth,
-        top + screenHeight
+        screenWidth / 2,
+        screenHeight / 2
     )
 
     context.closePath()
 
     context.fill()
     context.stroke()
+
+    context.restore()
 }

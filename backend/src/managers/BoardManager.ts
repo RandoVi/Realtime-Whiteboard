@@ -1,6 +1,5 @@
 import { BoardUser } from "../models/boardUser";
-import { BoardUpdateDTO } from "../modules/board/dto/BoardUpdateDTO";
-import { BoardObject } from "../modules/boardObjects/schemas/BoardObjectSchema";
+import { BoardObject } from "../modules/board/schemas/BoardObjectSchema";
 import { ObjectManager } from "./ObjectManager";
 import { UserManager } from "./UserManager";
 
@@ -14,18 +13,45 @@ export class BoardManager {
         public readonly id: string,
         public readonly ownerId: string,
     ) {}
+    /// OBJECTS
 
-    applyUpdate(changes: BoardUpdateDTO): void {
-        if (Array.isArray(changes.boardObjects)) {
-        for (const boardObjectUpdate of changes.boardObjects) {
-            // Skip invalid updates that lack an ID
-            if (!boardObjectUpdate.id) continue;
-
-            // Apply each boardObject update to the ObjectManager individually
-            this.objects.update(boardObjectUpdate.id, boardObjectUpdate);
-        }
-        }
+    addObject(object:BoardObject): void {
+        this.objects.create(object);
+        this.lastActivity = new Date();
     }
+
+    removeObject(objectId: string): void {
+        this.objects.delete(objectId);
+        this.lastActivity = new Date();
+    }
+
+    applyObjectUpdate(changes: Partial<BoardObject>): void {
+        this.objects.update(changes);
+        this.lastActivity = new Date();
+    }
+
+    /// USERS
+
+    addUser(user:BoardUser): void {
+        this.users.add(user);
+        this.lastActivity = new Date();
+    }
+
+    removeUser(userId:string): void {
+        this.users.remove(userId);
+        this.lastActivity = new Date();
+    }
+
+    upsertUser(changes: BoardUser): void {
+        if (this.users.has(changes.userId)) {
+            this.users.update(changes);
+        } else {
+            this.users.add(changes);
+        }
+        this.lastActivity = new Date();
+    }
+
+    /// BOARDS
 
     toPersistence() {
         return {

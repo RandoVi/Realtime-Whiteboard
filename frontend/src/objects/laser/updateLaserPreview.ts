@@ -1,5 +1,5 @@
-import type { Point } from "../../types/Types";
-import type { Laser } from "./Laser";
+import type { Laser } from "@common/shapes"
+import type { Point } from "@common/types"
 
 
 export function updateLaserPreview(

@@ -1,4 +1,4 @@
-import type { Point } from '../types/Types'
+import type { Point } from "@common/types";
 import type { ResizeHandlePosition } from '../selection/getResizeHandles'
 
 import { HANDLE_SIZE, type ResizeHandle } from '../types/selection'

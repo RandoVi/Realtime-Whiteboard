@@ -1,5 +1,5 @@
 import type { SelectionBounds } from "../../selection/getSelectionBounds";
-import type { Arrow } from "./Arrow";
+import type { Arrow } from "@common/shapes";
 
 export function getArrowBounds(
   object: Arrow
@@ -18,5 +18,6 @@ export function getArrowBounds(
       x: object.x + object.width / 2,
       y: object.y + object.height / 2,
     },
+    rotation: object.rotation,
   }
 }

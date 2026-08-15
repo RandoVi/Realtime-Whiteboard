@@ -1,5 +1,4 @@
-import type { Stroke } from "./Stroke";
-
+import type { Stroke } from "@common/shapes";
 export function moveStroke(
     stroke: Stroke,
     original: Stroke,

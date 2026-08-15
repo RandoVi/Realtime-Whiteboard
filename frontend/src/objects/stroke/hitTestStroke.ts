@@ -1,6 +1,5 @@
-import type { Point } from "../../types/Types";
-import type { Stroke } from "./Stroke";
-
+import type { Point } from "@common/types";
+import type { Stroke } from "@common/shapes";
 const HIT_TOLERANCE = 6;
 
 export function hitTestStroke(

@@ -1,4 +1,5 @@
-import type { Point, Camera } from "../types/Types"
+import type { Camera } from "../types/Types"
+import type { Point } from "@common/types";
 import type { ResizeHandle } from "../types/selection"
 
 import { getResizeHandles } from "./getResizeHandles"

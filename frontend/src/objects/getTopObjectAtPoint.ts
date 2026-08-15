@@ -1,6 +1,6 @@
-import type { Point } from "../types/Types";
+import type { Object, Point } from "@common/types"
 import { hitTestObject } from "./hitTestObject";
-import type { Object } from "../types/Object";
+
 
 export function getTopObjectAtPoint(
     objects: Object[],

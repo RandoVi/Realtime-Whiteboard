@@ -1,4 +1,5 @@
-import type { Textbox } from "./Textbox"
+import type { Textbox } from "@common/shapes/Textbox"
+
 
 export function moveTextbox(
     textbox: Textbox,

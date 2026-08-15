@@ -1,7 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Schema as MongooseSchema } from 'mongoose';
 import { HydratedDocument } from 'mongoose';
-import { BoardObject } from '../../boardObjects/schemas/BoardObjectSchema';
+import { BoardObject } from './BoardObjectSchema';
 import { BoardUser } from '../../../models/boardUser';
 
 export type BoardDocument = HydratedDocument<Board>;
@@ -28,15 +28,6 @@ export class Board {
 
   @Prop({ type: Date, required: true, default: Date.now, index: true })
   lastActivity!: Date;
-
-  applyUpdate(changes: Partial<BoardDocument>): void {
-    if (changes.objects) {
-      this.objects = changes.objects;
-    }
-    if (changes.users) {
-      this.users = changes.users;
-    }
-  }
 }
 
 export const BoardSchema = SchemaFactory.createForClass(Board);

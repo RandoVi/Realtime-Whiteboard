@@ -1,4 +1,4 @@
-import type { Rectangle } from "./Rectangle"
+import type { Rectangle } from "@common/shapes"
 import type { SelectionBounds } from "../../selection/getSelectionBounds"
 
 export function getRectangleBounds(
@@ -18,5 +18,7 @@ export function getRectangleBounds(
       x: object.x + object.width / 2,
       y: object.y + object.height / 2,
     },
+
+    rotation: object.rotation,
   }
 }

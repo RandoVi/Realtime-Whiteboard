@@ -1,5 +1,6 @@
-import type { Point } from "../../types/Types"
-import type { Textbox } from "./Textbox"
+import type { Point } from "@common/types";
+import type { Textbox } from "@common/shapes";
+
 
 export function updateTextboxPreview(
     textbox: Textbox,

@@ -1,8 +1,9 @@
-import type { Camera, Point } from "../../types/Types"
+import type { Camera } from "../../types/Types"
 import type { ResizeHandle } from "../../types/selection"
 import { hitTestResizeHandles } from "../../selection/hitTestResizeHandles"
 import { getTextboxBounds } from "./getTextboxBounds"
-import type { Textbox } from "./Textbox"
+import type { Textbox } from "@common/shapes/Textbox";
+import type { Point } from "@common/types";
 
 export function getResizeHandleTextbox(
     object: Textbox,
