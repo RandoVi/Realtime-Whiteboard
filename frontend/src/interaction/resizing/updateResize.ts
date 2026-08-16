@@ -1,4 +1,3 @@
-//resize update.ts
 import { resizeObject } from "../../objects/resizeObject"
 import type { Point } from "@common/types";
 import { getObjectResizeUpdates } from "../helpers/getObjectResizeUpdates"
@@ -7,13 +6,15 @@ import { sendObjectPreview } from "../helpers/sendObjectPreview"
 import type { CanvasInteractionContext } from "../CanvasInteractionContext"
 
 type Args = {
-    world: Point
-    context: CanvasInteractionContext
+  world: Point
+  context: CanvasInteractionContext
+  constrain: boolean
 }
 
-export function handleResizeMouseMove({
+export function updateResize({
   world,
   context,
+  constrain,
 }: Args): boolean {
 
   const {
@@ -39,6 +40,7 @@ export function handleResizeMouseMove({
     interaction.original,
     interaction.handle,
     resizePoint,
+    constrain,
   );
 
   const boardObject = getObjectById(

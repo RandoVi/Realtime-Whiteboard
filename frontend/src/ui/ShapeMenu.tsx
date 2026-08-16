@@ -1,6 +1,7 @@
 import type { Tool } from "../types/Tool";
 import { CircleIcon } from "./icons/CircleIcon";
-import RectangleIcon from "./icons/RectangleIcon";
+import { LeftArrowIcon } from "./icons/LeftArrowIcon";
+import {RectangleIcon} from "./icons/RectangleIcon";
 import { StickyNoteIcon } from "./icons/StickyNoteIcon";
 import { TriangleIcon } from "./icons/TriangleIcon";
 
@@ -15,7 +16,7 @@ export function ShapeMenu({ onSelectShape }: Props) {
         className="tool-button"
         onClick={() => onSelectShape("rectangle")}
       >
-        <RectangleIcon color="purple" />
+        <RectangleIcon />
       </button>
 
       <button
@@ -36,7 +37,7 @@ export function ShapeMenu({ onSelectShape }: Props) {
         className="tool-button"
         onClick={() => onSelectShape("arrow")}
       >
-        <CircleIcon />
+        <LeftArrowIcon />
       </button>
 
                   <button

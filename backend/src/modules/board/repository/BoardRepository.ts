@@ -207,7 +207,8 @@ export class BoardRepository {
               },
           }));
 
-      await this.boardModel.bulkWrite(bulkOps);
+      const result = await this.boardModel.bulkWrite(bulkOps);
+      console.log(`Created objects: matched=${result.matchedCount} and modified=${result.modifiedCount}`);
   }
   async saveManyUpdatedObjects(changes: Extract<ObjectChange, { type: 'update' }>[],): Promise<void> {
     if (changes.length === 0) {
@@ -234,9 +235,7 @@ export class BoardRepository {
 
     const result = await this.boardModel.bulkWrite(bulkOps);
 
-    console.log(
-    `Updated objects: matched=${result.matchedCount}, modified=${result.modifiedCount}`
-);
+    console.log(`Updated objects: matched=${result.matchedCount}, modified=${result.modifiedCount}`);
   }
 
     async saveManyDeletedObjects(changes: Extract<ObjectChange, { type: 'remove' }>[],): Promise<void> {
@@ -265,7 +264,7 @@ export class BoardRepository {
 
       const result = await this.boardModel.bulkWrite(bulkOps);
 
-      console.log('DELETE OBJECTS:', result);
+      console.log(`Deleted objects matched=${result} and modified=${result.modifiedCount}`);
     }
 
 
@@ -296,7 +295,8 @@ export class BoardRepository {
               },
           }));
 
-      await this.boardModel.bulkWrite(bulkOps);
+      const result = await this.boardModel.bulkWrite(bulkOps);
+      console.log(`Created users: matched=${result.matchedCount} and modified=${result.modifiedCount}`,);
   }
   async saveManyUpdatedUsers(changes: Extract<UserChange, { type: 'update' }>[],): Promise<void> {
     if (changes.length === 0) {
@@ -323,9 +323,7 @@ export class BoardRepository {
 
     const result = await this.boardModel.bulkWrite(bulkOps);
 
-    console.log(
-    `Updated users: matched=${result.matchedCount}, modified=${result.modifiedCount}`
-);
+    console.log(`Updated users: matched=${result.matchedCount}, modified=${result.modifiedCount}`);
   }
 
     async saveManyDeletedUsers(changes: Extract<UserChange, { type: 'remove' }>[],): Promise<void> {
@@ -354,19 +352,14 @@ export class BoardRepository {
 
       const result = await this.boardModel.bulkWrite(bulkOps);
 
-      console.log('DELETE USERS:', result);
+      console.log(`Deleted users matched=${result.matchedCount},  and modified=${result.modifiedCount}`);
     }
 
     // ---------------------------------------------------------
     // BOARD METADATA
     // ---------------------------------------------------------
 
-    async saveManyActivityUpdates(
-        updates: {
-            boardId: string;
-            lastActivity: Date;
-        }[],
-    ): Promise<void> {
+    async saveManyActivityUpdates(updates: {boardId: string;lastActivity: Date;}[],): Promise<void> {
 
         if (updates.length === 0) {
             return;
@@ -380,12 +373,14 @@ export class BoardRepository {
                     },
 
                     update: {
-                        $set: {
+                      // Only replace if the new value is greater
+                        $max: {
                             lastActivity: update.lastActivity,
                         },
                     },
                 },
             }));
-        await this.boardModel.bulkWrite(bulkOps);
+        /*const result = */await this.boardModel.bulkWrite(bulkOps);
+        //console.log(`Updated activity trackers: matched=${result.matchedCount}, modified=${result.modifiedCount}`);
     }
 }

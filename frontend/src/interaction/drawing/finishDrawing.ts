@@ -1,5 +1,6 @@
 import { normalizeObject } from "../../objects/normalizeObject"
 import type { CanvasInteractionContext } from "../CanvasInteractionContext"
+import { clearObjectPreview } from "../clearObjectPreview"
 
 type Args = {
   context: CanvasInteractionContext
@@ -8,7 +9,7 @@ type Args = {
 export function finishDrawing({
   context
 }: Args): boolean {
-  const { interactionRef, editor, selectObject } = context
+  const { interactionRef, editor, selectObject, presence } = context
   if (interactionRef.current.type !== "drawing") {
     return false
   }
@@ -20,6 +21,10 @@ export function finishDrawing({
   editor.execute({
     type: "createBoardObject",
     boardObject,
+  })
+
+  clearObjectPreview({
+    presence,
   })
 
   selectObject(boardObject.id)

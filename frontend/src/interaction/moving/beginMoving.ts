@@ -1,6 +1,6 @@
 import type { MutableRefObject } from "react"
 import type { Object } from "@common/types"
-import type { Point} from "@common/types"
+import type { Point } from "@common/types"
 import type { Interaction } from "../Interaction"
 import { updateCursor } from "../updateCursor"
 import type { CanvasInteractionContext } from "../CanvasInteractionContext"
@@ -26,8 +26,13 @@ export function beginMoving({
     return false
   }
 
+  context.editor.execute({
+    type: "bringBoardObjectToFront",
+    boardObjectId: clickedObject.id,
+  })
+
   selectObject(clickedObject.id)
-  
+
   interactionRef.current = {
     type: "moving",
     start: world,

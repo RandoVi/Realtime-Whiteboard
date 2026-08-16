@@ -16,7 +16,13 @@ export type DeleteObjectCommand = {
     boardObjectId: string;
 };
 
+export type BringBoardObjectToFrontCommand = {
+  type: "bringBoardObjectToFront";
+  boardObjectId: string;
+};
+
 export type EditorCommand =
     | CreateObjectCommand
     | UpdateObjectCommand
-    | DeleteObjectCommand;
+    | DeleteObjectCommand
+    | BringBoardObjectToFrontCommand;

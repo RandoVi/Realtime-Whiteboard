@@ -5,7 +5,7 @@ type SelectorIconProps = {
 const SelectorIcon = ({ color: _color }: SelectorIconProps) => {
     return (
         <svg
-            fill="currentColor"
+            fill="#000000"
             version="1.1"
             viewBox="-6 -6 36 36"
             enableBackground="new 0 0 24 24"

@@ -265,7 +265,7 @@ export class BoardGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
                 break
             }
             default:
-                console.log("Default case for boardObjectCommand")
+                console.log("Default case for boardObjectCommand" + data.command.type.toString())
         }
     }
 

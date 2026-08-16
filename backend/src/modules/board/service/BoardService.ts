@@ -47,7 +47,7 @@ export class BoardService implements OnApplicationShutdown {
 
     private readonly dirtyObjects = new Map<string, ObjectChange>();
     private readonly dirtyUsers = new Map<string, UserChange>();
-    private readonly dirtyActivity = new Map< string, Date>();
+    private readonly dirtyActivity = new Map<string, Date>();
 
     private objectChangeKey(boardId: string,objectId: string,): string {
         return `${boardId}:${objectId}`;
@@ -316,16 +316,16 @@ export class BoardService implements OnApplicationShutdown {
     }
 
     private async flushToDatabase() {
-        console.log('-');
+        //console.log('-');
 
         const objectChanges = Array.from(this.dirtyObjects.entries());
         const userChanges = Array.from(this.dirtyUsers.entries());
 
-        const activityUpdates = Array.from(this.dirtyActivity.entries())
-            .map(([boardId, lastActivity]) => ({
-            boardId,
-            lastActivity,
-        }));
+        const activityUpdates = Array.from(this.dirtyActivity.entries()).map(([boardId, lastActivity]) => ({boardId,lastActivity,}));
+
+        this.dirtyObjects.clear();
+        this.dirtyUsers.clear();
+        this.dirtyActivity.clear();
 
         const createdObjects = objectChanges
             .map(([, change]) => change)
@@ -339,30 +339,30 @@ export class BoardService implements OnApplicationShutdown {
             .map(([, change]) => change)
             .filter((change) => change.type === 'remove');
                 
-        if (objectChanges.length > 0) {
+        if (createdObjects.length > 0) {
             try {
-                //This is snapshotted in the above changes arrays, so we can restore if it fails to persist
-                //Clearing it before prevents new activities being deleted while persisting is happening
-                this.dirtyObjects.clear();
-
                 await this.boardRepository.saveManyCreatedObjects(createdObjects);
-                await this.boardRepository.saveManyUpdatedObjects(updatedObjects);
-                await this.boardRepository.saveManyDeletedObjects(deletedObjects);
-
-                console.log(`Saved ${objectChanges.length} object changes`)
             } catch (error) {
-                console.error(
-                    'Failed to save object changes. Re-queueing...',
-                    error
-                );
+                console.error("Failed to save created objects. Re-queueing...", error)
+                this.requeueObjects(objectChanges, "create");
+            }
+        }
 
-                for (const [key, change] of objectChanges) {
-                    //If an update came for the same object during persistence, do not overwrite it with stale data
-                    if (!this.dirtyObjects.has(key)) {
-                        this.dirtyObjects.set(key, change);
-                    }
-                    
-                }
+        if (updatedObjects.length > 0) {
+            try {
+                await this.boardRepository.saveManyUpdatedObjects(updatedObjects);
+            } catch (error) {
+                console.log(error)
+                this.requeueObjects(objectChanges, "update");
+            }
+        }
+
+        if (deletedObjects.length > 0) {
+            try {
+                await this.boardRepository.saveManyDeletedObjects(deletedObjects);
+            } catch (error) {
+                console.log(error)
+                this.requeueObjects(objectChanges, "remove");
             }
         }
             
@@ -378,45 +378,40 @@ export class BoardService implements OnApplicationShutdown {
             .map(([, change]) => change)
             .filter((change) => change.type === "remove");
 
-        if (userChanges.length > 0) {
+        if (createdUsers.length > 0) {
             try {
-                this.dirtyUsers.clear();
-
                 await this.boardRepository.saveManyCreatedUsers(createdUsers);
-                await this.boardRepository.saveManyUpdatedUsers(updatedUsers);
-                await this.boardRepository.saveManyDeletedUsers(deletedUsers);
-
-                console.log(`Saved ${userChanges.length} user changes`);
             } catch (error) {
-                console.error(
-                    "Failed to save user changes. Re-queueing...",
-                    error
-                );
+                console.error("Failed to save created users. Re-queueing...", error)
+                this.requeueUsers(userChanges, "create");
+            }
+        }
 
-                for (const [key, change] of userChanges) {
-                    if (!this.dirtyUsers.has(key)) {
-                        this.dirtyUsers.set(key, change);
-                    }
-                }
+        if (updatedUsers.length > 0) {
+            try {
+                await this.boardRepository.saveManyUpdatedUsers(updatedUsers);
+            } catch (error) {
+                console.error("Failed to save updated users. Re-queueing...", error)
+                this.requeueUsers(userChanges, "update");
+            }
+        }
+
+        if (deletedUsers.length > 0) {
+            try {
+                await this.boardRepository.saveManyDeletedUsers(deletedUsers);
+            } catch (error) {
+                console.error("Failed to save deleted users. Re-queueing...", error)
+                this.requeueUsers(userChanges, "delete");
             }
         }
 
         if (activityUpdates.length > 0) {
             try {
-                this.dirtyActivity.clear();
                 await this.boardRepository.saveManyActivityUpdates(activityUpdates);
 
             } catch (error) {
-                console.error(
-                    'Failed to save activity updates. Re-queueing...',
-                    error
-                );
-
-                for (const {boardId, lastActivity} of activityUpdates) {
-                    if (!this.dirtyActivity.has(boardId)) {
-                        this.dirtyActivity.set(boardId, lastActivity);
-                    }
-                }
+                console.error('Failed to save activity updates. Re-queueing...', error);
+                this.requeueActivities(activityUpdates);
             }
         }
             
@@ -452,5 +447,29 @@ export class BoardService implements OnApplicationShutdown {
         // Give last non expired date basically
         const result = await this.boardRepository.deleteExpiredBoards(cutoff);
         console.log(`Deleted ${result.deletedCount} expired boards.`);
+    }
+
+    private requeueObjects(changes: [string, ObjectChange][], type: string) {
+        for (const [key, change] of changes) {
+            if ( change.type === type && !this.dirtyObjects.has(key)) {
+                this.dirtyObjects.set(key, change);
+            }
+        }
+    }
+
+    private requeueUsers(changes: [string, UserChange][], type: string) {
+        for (const [key, change] of changes) {
+            if ( change.type === type && !this.dirtyObjects.has(key)) {
+                this.dirtyUsers.set(key, change);
+            }
+        }
+    }
+    
+    private requeueActivities(changes: {boardId: string, lastActivity: Date}[]) {
+        for (const { boardId, lastActivity } of changes) {
+                if (!this.dirtyActivity.has(boardId)) {
+                    this.dirtyActivity.set(boardId, lastActivity);
+                }
+            }
     }
 }

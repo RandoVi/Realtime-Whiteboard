@@ -2,12 +2,14 @@ import type { Rectangle } from "@common/shapes"
 import type { Point } from "@common/types"
 import type { ResizeHandle } from "../../types/selection"
 import { inverseRotatePoint } from "../../interaction/helpers/rotatePoint"
+import { constrainResize } from "../constrainResize"
 
 export function resizeRectangle(
     rectangle: Rectangle,
     original: Rectangle,
     handle: ResizeHandle,
-    point: Point
+    point: Point,
+    constrain: boolean,
 ) {
     const center = {
         x: original.x + original.width / 2,
@@ -20,54 +22,65 @@ export function resizeRectangle(
         original.rotation,
     )
 
+    let x = localPoint.x
+    let y = localPoint.y
+
     switch (handle) {
 
         case "se":
             rectangle.width =
-                localPoint.x - original.x
+                x - original.x
 
             rectangle.height =
-                localPoint.y - original.y
+                y - original.y
 
             break
 
         case "sw":
             rectangle.x =
-                localPoint.x
+                x
 
             rectangle.width =
-                original.x + original.width - localPoint.x
+                original.x + original.width - x
 
             rectangle.height =
-                localPoint.y - original.y
+                y - original.y
 
             break
 
         case "ne":
             rectangle.y =
-                localPoint.y
+                y
 
             rectangle.width =
-                localPoint.x - original.x
+                x - original.x
 
             rectangle.height =
-                original.y + original.height - localPoint.y
+                original.y + original.height - y
 
             break
 
         case "nw":
             rectangle.x =
-                localPoint.x
+                x
 
             rectangle.y =
-                localPoint.y
+                y
 
             rectangle.width =
-                original.x + original.width - localPoint.x
+                original.x + original.width - x
 
             rectangle.height =
-                original.y + original.height - localPoint.y
+                original.y + original.height - y
 
             break
+    }
+
+    if (constrain) {
+        constrainResize(
+            rectangle,
+            original,
+            handle,
+        )
     }
 }

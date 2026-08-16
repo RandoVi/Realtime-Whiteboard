@@ -2,7 +2,7 @@ import type { Point } from "@common/types";
 import { updateDrawing } from "./drawing/updateDrawing"
 import { updateMoving } from "./moving/updateMove"
 import { updatePan } from "./panning/updatePan"
-import { handleResizeMouseMove } from "./resizing/updateResize"
+import { updateResize } from "./resizing/updateResize"
 import type { CanvasInteractionContext } from "./CanvasInteractionContext"
 import { updateLaser } from "./laser/updateLaser"
 import { updateRotation } from "./rotation/updateRotation";
@@ -28,9 +28,10 @@ export function handleMouseMove({
     switch (interaction.type) {
 
         case "resizing":
-            handleResizeMouseMove({
+            updateResize({
                 world,
                 context,
+                constrain,
             });
             break;
 

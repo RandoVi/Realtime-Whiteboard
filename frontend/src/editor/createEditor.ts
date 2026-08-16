@@ -10,6 +10,7 @@ import type { Document } from "../document/Document";
 import type { Collaboration } from "../socket/collaboration/Collaboration";
 import type { ExecuteOptions } from "./Editor";
 import { duplicateObject } from "./duplicateObject";
+import { bringObjectToFront } from "../interaction/helpers/bringObjectToFront";
 
 type Args = {
   document: Document;
@@ -141,6 +142,13 @@ export function createEditor({
           setSelectedObjectId(null);
         }
 
+        break;
+
+      case "bringBoardObjectToFront":
+        bringObjectToFront({
+          objects: document.objectsRef.current,
+          objectId: command.boardObjectId,
+        });
         break;
     }
   }

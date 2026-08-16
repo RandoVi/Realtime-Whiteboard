@@ -27,8 +27,9 @@ export interface ObjectHandler<T extends Object = Object> {
         object: T,
         original: T,
         handle: ResizeHandle,
-        point: Point
-    ) => void
+        point: Point,
+        constrain: boolean,
+    ) => void;
 
     render?: (
         context: CanvasRenderingContext2D,
