@@ -26,26 +26,128 @@
   display: flex;
   flex-direction: column;
   gap: 18px;
+
+  font-family:
+    Inter,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
 }
+
+/* ---------- Typography ---------- */
 
 .board-lobby h2 {
   margin: 0;
+
+  font-size: 24px;
+  font-weight: 650;
+  letter-spacing: -0.02em;
   text-align: center;
 }
 
-.board-lobby input {
-  padding: 10px 12px;
-  font-size: 15px;
+.board-lobby h3 {
+  margin: 0;
+
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
 }
 
-.primary-button,
-.secondary-button {
+.board-created-message {
+  margin: 0;
+
+  color: #555;
+  font-size: 15px;
+  line-height: 1.5;
+  text-align: center;
+}
+
+/* ---------- Fields ---------- */
+
+.lobby-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.lobby-field label {
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.board-lobby input {
+  box-sizing: border-box;
+  width: 100%;
+
+  padding: 12px 14px;
+
+  border: 1px solid #ccc;
+  border-radius: 6px;
+
+  background: white;
+
+  font-family: inherit;
+  font-size: 16px;
+  font-weight: 400;
+}
+
+.board-lobby input:focus {
+  outline: none;
+
+  border-color: #666;
+  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.08);
+}
+
+/* ---------- Validation ---------- */
+
+.input-error {
+  margin: 0;
+  min-height: 18px;
+
+  color: #dc2626;
+  font-size: 14px;
+}
+
+/* ---------- Buttons ---------- */
+
+.board-lobby button {
+  border: none;
+  border-radius: 6px;
+
   padding: 12px;
 
-  font-size: 15px;
+  background: #333f51;
+  color: white;
+
+  font-family: inherit;
+  font-size: 16px;
+  font-weight: 500;
 
   cursor: pointer;
+
+  transition:
+    background-color 0.15s ease,
+    opacity 0.15s ease;
 }
+
+.board-lobby button:hover:not(:disabled) {
+  background: #111827;
+}
+
+.board-lobby button:active:not(:disabled) {
+  background: #0f172a;
+}
+
+.board-lobby button:disabled {
+  background: #9ca3af;
+  color: #f3f4f6;
+
+  cursor: not-allowed;
+}
+
+/* ---------- Divider ---------- */
 
 .divider {
   display: flex;
@@ -56,12 +158,125 @@
 .divider::before,
 .divider::after {
   content: "";
+
   flex: 1;
   height: 1px;
+
   background: #ccc;
 }
 
 .divider span {
   color: #666;
+
+  font-size: 14px;
+  font-weight: 500;
+}
+
+/* ---------- Join section ---------- */
+
+.join-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* ---------- Info icon ---------- */
+
+.label-with-info {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.info-icon {
+  position: relative;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 16px;
+  height: 16px;
+
+  border: 1px solid #777;
+  border-radius: 50%;
+
+  color: #555;
+
+  font-size: 11px;
+  font-weight: 600;
+
+  cursor: help;
+}
+
+.info-tooltip {
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 8px);
+
+  width: 230px;
+  padding: 9px 11px;
+
+  border-radius: 6px;
+
+  background: #1f2937;
+  color: white;
+
   font-size: 13px;
+  font-weight: 400;
+  line-height: 1.45;
+  text-align: left;
+
+  opacity: 0;
+  visibility: hidden;
+
+  transform: translateX(-50%) translateY(4px);
+
+  transition:
+    opacity 0.15s ease,
+    transform 0.15s ease,
+    visibility 0.15s ease;
+
+  pointer-events: none;
+
+  z-index: 10;
+}
+
+.info-tooltip::after {
+  content: "";
+
+  position: absolute;
+
+  top: 100%;
+  left: 50%;
+
+  border: 5px solid transparent;
+  border-top-color: #1f2937;
+
+  transform: translateX(-50%);
+}
+
+.info-icon:hover .info-tooltip,
+.info-icon:focus .info-tooltip {
+  opacity: 1;
+  visibility: visible;
+
+  transform: translateX(-50%) translateY(0);
+}
+
+/* ---------- Board ID ---------- */
+
+.board-id-copy {
+  display: flex;
+  gap: 8px;
+}
+
+.board-id-copy input {
+  flex: 1;
+}
+
+.board-id-copy button {
+  padding: 10px 12px;
+
+  font-size: 14px;
 }

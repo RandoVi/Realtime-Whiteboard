@@ -62,8 +62,7 @@ function Whiteboard() {
   //lobby state and id
   const [lobbyState, setLobbyState] = useState<LobbyState>("lobby");
   const [boardId, setBoardId] = useState("");
-
-
+  const [username, setUsername] = useState("");
 
   const [showDrawingMenu, setShowDrawingMenu] = useState(false);
   const [showShapeMenu, setShowShapeMenu] = useState(false);
@@ -412,9 +411,16 @@ function Whiteboard() {
     : undefined
 
   const handleCreate = () => {
+    const name = username.trim();
+
+    if (!name) {
+      return;
+    }
+
     setLobbyState("creating");
 
     collaboration.createBoard(
+      name,
       (boardState) => {
         setBoardId(boardState.boardId);
         setNetworkBoardId(boardState.boardId);
@@ -423,6 +429,7 @@ function Whiteboard() {
           boardState.objects,
           boardState.users,
         );
+
         const currentUser = boardState.users.find(
           user => user.userId === boardState.userId
         );
@@ -434,7 +441,6 @@ function Whiteboard() {
         setCurrentUser(currentUser);
 
         requestRender();
-
         setLobbyState("created");
       }
     );
@@ -486,7 +492,7 @@ function Whiteboard() {
                 object: command.boardObject,
               };
             }
-            
+
             if (command.previewType === "update") {
               if (
                 command.boardObjectId === selectedObjectIdRef.current
@@ -628,13 +634,18 @@ function Whiteboard() {
   }, [presence]);
 
   const handleJoin = () => {
+    const name = username.trim();
+
+    if (!name || !boardId.trim()) {
+      return;
+    }
 
     setLobbyState("joining");
 
     collaboration.joinBoard(
-      boardId,
+      boardId.trim(),
+      name,
       (boardState) => {
-
         setBoardId(boardState.boardId);
         setNetworkBoardId(boardState.boardId);
 
@@ -654,7 +665,6 @@ function Whiteboard() {
         setCurrentUser(currentUser);
 
         requestRender();
-
         setLobbyState("connected");
       }
     );
@@ -685,6 +695,8 @@ function Whiteboard() {
         state={lobbyState}
         boardId={boardId}
         onBoardIdChange={setBoardId}
+        username={username}
+        onUsernameChange={setUsername}
         onCreate={handleCreate}
         onJoin={handleJoin}
         onStart={handleStart}

@@ -14,11 +14,13 @@ export interface Collaboration {
     ): void;
 
     createBoard(
+        username: string,
         callback: (boardState: BoardStateDTO) => void
     ): void;
 
     joinBoard(
         boardId: string,
+        username: string,
         callback: (boardState: BoardStateDTO) => void
     ): void;
 }

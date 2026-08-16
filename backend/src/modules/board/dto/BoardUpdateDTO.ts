@@ -1,17 +1,22 @@
-import { IsString, MinLength } from "class-validator";
-import { BoardObject } from "../../boardObjects/schemas/BoardObjectSchema";
-import { BoardUser } from "../../../models/boardUser";
+import { IsArray, IsNotEmpty, IsString, MaxLength, ValidateNested } from "class-validator";
+import { Type } from "class-transformer";
+import { BoardObjectDTO } from "./BoardObjectDTO";
+import { BoardUserDTO } from "./BoardUserDTO";
 
 export class BoardUpdateDTO {
   @IsString()
-  @MinLength(1)
+  @IsNotEmpty()
+  @MaxLength(32)
   boardId!: string;
   
-  boardObjects?:BoardObject[];
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => BoardObjectDTO)
+  boardObjects?:BoardObjectDTO[];
 
-  boardUsers?: BoardUser[];
+  boardUsers?: BoardUserDTO[];
 
-  constructor(boardId: string, boardObjects: BoardObject[], boardUsers: BoardUser[]) {
+  constructor(boardId: string, boardObjects: BoardObjectDTO[], boardUsers: BoardUserDTO[]) {
     this.boardId = boardId;
     this.boardObjects = boardObjects;
     this.boardUsers = boardUsers;

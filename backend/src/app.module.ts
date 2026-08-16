@@ -1,10 +1,8 @@
 import { Module } from '@nestjs/common';
 import { BoardModule } from './modules/board/board.module';
-import { ChatModule } from './modules/chat/chat.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import dotenv from 'dotenv';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { BoardObjectsModule } from './modules/boardObjects/boardObject.module';
 
 dotenv.config();
 
@@ -32,7 +30,7 @@ dotenv.config();
 //     }
 //   }
     
-    BoardModule, ChatModule, BoardObjectsModule
+    BoardModule
   ],
 })
 export class AppModule {}

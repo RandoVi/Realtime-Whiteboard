@@ -2,8 +2,10 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { AnyBulkWriteOperation, Model } from 'mongoose';
 import { Board, BoardDocument } from '../schemas/BoardSchema';
-import { BoardObject } from '../../boardObjects/schemas/BoardObjectSchema';
-import { BoardManager } from '../../../managers/BoardManager';
+import { BoardObject } from '../schemas/BoardObjectSchema';
+//import { BoardManager } from '../../../managers/BoardManager';
+import { BoardUser } from '../../../models/boardUser';
+import { ObjectChange, UserChange } from '../../../common/types/BoardChanges';
 
 @Injectable()
 export class BoardRepository {
@@ -19,41 +21,6 @@ export class BoardRepository {
     return board.save();
   }
 
-  async saveManyBoardUpdates(boards: BoardManager[]): Promise<void> {
-    // Guard against empty calls to avoid sending unnecessary commands to MongoDB
-    if (!boards || boards.length === 0) {
-      console.log("Repository save failed - empty call")
-      return;
-    }
-
-    // Map each BoardManager instance into a Mongoose bulkWrite operation
-    const bulkOps: AnyBulkWriteOperation<BoardDocument>[] = boards.map((board) => {
-      // Extract pure data from the in-memory board manager instance
-      const data = board.toPersistence();
-
-      return {
-        updateOne: {
-          filter: { id: data.id },
-          
-          update: {
-            $set: {
-              id: data.id,
-              ownerId: data.ownerId,
-              objects: data.objects,
-              users: data.users
-            } 
-          },
-          
-          // Upsert option: if the document doesn't exist yet in DB, create it!
-          upsert: true,
-        },
-      };
-    });
-
-    // Execute all update operations atomically in a SINGLE network round-trip
-    await this.boardModel.bulkWrite(bulkOps);
-  }
-
   async findByCustomId(boardId: string): Promise<BoardDocument | null> {
     return this.boardModel.findOne({id: boardId}).exec();
   }
@@ -63,18 +30,13 @@ export class BoardRepository {
     return exists > 0;
   }
 
-  // (Leverages { ownerId: 1, status: 1 } index)
-  async findActiveUserBoards(ownerId: string): Promise<BoardDocument[]> {
-    return this.boardModel.find({ ownerId, status: 'active' }).exec();
-  }
-
   //  Push(add) a new BoardObject into the embedded BoardObjects array (Atomic)
-  async pushBoardObject(boardId: string, BoardObject: BoardObject): Promise<BoardDocument> {
+  async pushBoardObject(boardId: string, object: BoardObject): Promise<BoardDocument> {
     const updatedBoard = await this.boardModel
       .findOneAndUpdate(
         {id: boardId},
         {
-          $push: { boardObjects: BoardObject },
+          $push: { objects: object },
           $inc: { version: 1 },
         },
         { new: true, runValidators: true },
@@ -89,13 +51,13 @@ export class BoardRepository {
   }
 
   // Update an existing BoardObject inside the array or push it if missing (Upsert behavior)
-  async upsertBoardObject(boardId: string, boardObject: BoardObject & { id: string }): Promise<BoardDocument> {
+  async upsertBoardObject(boardId: string, object: BoardObject & { id: string }): Promise<BoardDocument> {
     // Try updating BoardObject in-place first matching array element by id
     const updatedBoard = await this.boardModel
       .findOneAndUpdate(
-        { id: boardId, 'boardObjects.id': boardObject.id },
+        { id: boardId, 'objects.id': object.id },
         {
-          $set: { 'boardObjects.$': boardObject },
+          $set: { 'objects.$': object },
           $inc: { version: 1 },
         },
         { new: true },
@@ -104,19 +66,39 @@ export class BoardRepository {
 
     // If BoardObject.id wasn't in array, push it as new
     if (!updatedBoard) {
-      return this.pushBoardObject(boardId, boardObject);
+      return this.pushBoardObject(boardId, object);
     }
 
     return updatedBoard;
   }
 
 // Remove a BoardObject by its ID from the board array (Atomic)
-  async pullBoardObject(boardId: string, boardObjectId: string): Promise<BoardDocument> {
+  async removeBoardObject(boardId: string, objectId: string): Promise<BoardDocument> {
     const updatedBoard = await this.boardModel
       .findOneAndUpdate(
         {id: boardId},
         {
-          $pull: { boardObjects: { id: boardObjectId } },
+          $pull: { objects: { id: objectId } },
+          $inc: { version: 1 },
+        },
+        { new: true },
+      )
+      .exec();
+
+    if (!updatedBoard) {
+      throw new NotFoundException(`Board with ID ${boardId} or object ID ${objectId} not found`);
+    }
+
+    return updatedBoard;
+  }
+
+  // Full canvas state overwrite
+  async replaceBoardObjects(boardId: string, objects: BoardObject[]): Promise<BoardDocument> {
+    const updatedBoard = await this.boardModel
+      .findOneAndUpdate(
+        {id: boardId},
+        {
+          $set: { objects },
           $inc: { version: 1 },
         },
         { new: true },
@@ -130,24 +112,70 @@ export class BoardRepository {
     return updatedBoard;
   }
 
-  // Full canvas state overwrite (Used when saving bulk canvas imports or snapshots)
-  async replaceBoardObjects(boardId: string, boardObjects: BoardObject[]): Promise<BoardDocument> {
+  async pushBoardUser(boardId: string, user: BoardUser): Promise<BoardDocument> {
     const updatedBoard = await this.boardModel
       .findOneAndUpdate(
         {id: boardId},
         {
-          $set: { boardObjects },
+          $push: { users: user },
+          $inc: { version: 1 },
+        },
+        { new: true, runValidators: true },
+      )
+      .exec();
+
+    if (!updatedBoard) {
+      throw new NotFoundException(`Board with ID ${boardId} or user ID ${user.userId} not found`);
+    }
+
+    return updatedBoard;
+  }
+
+  async upsertBoardUser(boardId: string, user: BoardUser,) {
+    const updatedBoard = await this.boardModel
+      .findOneAndUpdate(
+        { id: boardId, 'users.userId': user.userId },
+        {
+          $set: { 'users.$': user },
           $inc: { version: 1 },
         },
         { new: true },
       )
       .exec();
 
+    // If BoardUser.userId wasn't in array, push it as new
     if (!updatedBoard) {
-      throw new NotFoundException(`Board with ID ${boardId} not found`);
+      return this.pushBoardUser(boardId, user);
     }
 
     return updatedBoard;
+  }
+
+  async removeBoardUser(boardId: string, userId: string,) {
+    const updatedBoard = await this.boardModel
+      .findOneAndUpdate(
+        {id: boardId},
+        {
+          $pull: { users: { userId: userId } },
+        },
+        { new: true },
+      )
+      .exec();
+
+    if (!updatedBoard) {
+      throw new NotFoundException(`Board with ID ${boardId} or user ID ${userId} not found`);
+    }
+
+    return updatedBoard;
+  }
+
+  async updateLastActivity(boardId: string, lastActivity: Date): Promise<void> {
+    await this.boardModel.updateOne(
+        { id: boardId },
+        {
+            $set: { lastActivity },
+        },
+    ).exec();
   }
 
   async deleteExpiredBoards(cutoff: Date) {
@@ -155,4 +183,204 @@ export class BoardRepository {
         lastActivity: { $lt: cutoff },
     }).exec();
 }
+
+  async saveManyCreatedObjects(changes: Extract<ObjectChange, { type: 'create' }>[],): Promise<void> {
+      if (changes.length === 0) {
+          return;
+      }
+
+      const bulkOps: AnyBulkWriteOperation<BoardDocument>[] =
+          changes.map((change) => ({
+              updateOne: {
+                  filter: {
+                    id: change.boardId,
+                    'objects.id': { $ne: change.object.id },
+                    },
+                  update: {
+                      $push: {
+                          objects: change.object,
+                      },
+                      $inc: {
+                          version: 1,
+                      },
+                  },
+              },
+          }));
+
+      const result = await this.boardModel.bulkWrite(bulkOps);
+      console.log(`Created objects: matched=${result.matchedCount} and modified=${result.modifiedCount}`);
+  }
+  async saveManyUpdatedObjects(changes: Extract<ObjectChange, { type: 'update' }>[],): Promise<void> {
+    if (changes.length === 0) {
+        return;
+    }
+
+    const bulkOps: AnyBulkWriteOperation<BoardDocument>[] =
+        changes.map((change) => ({
+            updateOne: {
+                filter: {
+                    id: change.boardId,
+                    'objects.id': change.object.id,
+                },
+                update: {
+                    $set: {
+                        'objects.$': change.object,
+                    },
+                    $inc: {
+                        version: 1,
+                    },
+                },
+            },
+        }));
+
+    const result = await this.boardModel.bulkWrite(bulkOps);
+
+    console.log(`Updated objects: matched=${result.matchedCount}, modified=${result.modifiedCount}`);
+  }
+
+    async saveManyDeletedObjects(changes: Extract<ObjectChange, { type: 'remove' }>[],): Promise<void> {
+      if (changes.length === 0) {
+          return;
+      }
+
+      const bulkOps: AnyBulkWriteOperation<BoardDocument>[] =
+          changes.map((change) => ({
+              updateOne: {
+                  filter: {
+                      id: change.boardId,
+                  },
+                  update: {
+                      $pull: {
+                          objects: {
+                            id: change.objectId
+                          }
+                      },
+                      $inc: {
+                          version: 1,
+                      },
+                  },
+              },
+          }));
+
+      const result = await this.boardModel.bulkWrite(bulkOps);
+
+      console.log(`Deleted objects matched=${result} and modified=${result.modifiedCount}`);
+    }
+
+
+    // ---------------------------------------------------------
+    // USERS
+    // ---------------------------------------------------------
+
+    async saveManyCreatedUsers(changes: Extract<UserChange, { type: 'create' }>[],): Promise<void> {
+      if (changes.length === 0) {
+          return;
+      }
+
+      const bulkOps: AnyBulkWriteOperation<BoardDocument>[] =
+          changes.map((change) => ({
+              updateOne: {
+                  filter: {
+                      id: change.boardId,
+                      'users.userId': { $ne: change.user.userId },
+                  },
+                  update: {
+                      $push: {
+                          users: change.user,
+                      },
+                      $inc: {
+                          version: 1,
+                      },
+                  },
+              },
+          }));
+
+      const result = await this.boardModel.bulkWrite(bulkOps);
+      console.log(`Created users: matched=${result.matchedCount} and modified=${result.modifiedCount}`,);
+  }
+  async saveManyUpdatedUsers(changes: Extract<UserChange, { type: 'update' }>[],): Promise<void> {
+    if (changes.length === 0) {
+        return;
+    }
+
+    const bulkOps: AnyBulkWriteOperation<BoardDocument>[] =
+        changes.map((change) => ({
+            updateOne: {
+                filter: {
+                    id: change.boardId,
+                    'users.userId': change.user.userId,
+                },
+                update: {
+                    $set: {
+                        'users.$': change.user,
+                    },
+                    $inc: {
+                        version: 1,
+                    },
+                },
+            },
+        }));
+
+    const result = await this.boardModel.bulkWrite(bulkOps);
+
+    console.log(`Updated users: matched=${result.matchedCount}, modified=${result.modifiedCount}`);
+  }
+
+    async saveManyDeletedUsers(changes: Extract<UserChange, { type: 'remove' }>[],): Promise<void> {
+      if (changes.length === 0) {
+          return;
+      }
+
+      const bulkOps: AnyBulkWriteOperation<BoardDocument>[] =
+          changes.map((change) => ({
+              updateOne: {
+                  filter: {
+                      id: change.boardId,
+                  },
+                  update: {
+                      $pull: {
+                          users: {
+                            userId: change.userId
+                          }
+                      },
+                      $inc: {
+                          version: 1,
+                      },
+                  },
+              },
+          }));
+
+      const result = await this.boardModel.bulkWrite(bulkOps);
+
+      console.log(`Deleted users matched=${result.matchedCount},  and modified=${result.modifiedCount}`);
+    }
+
+    // ---------------------------------------------------------
+    // BOARD METADATA
+    // ---------------------------------------------------------
+
+    async saveManyActivityUpdates(updates: {boardId: string;lastActivity: Date;}[],): Promise<void> {
+
+        if (updates.length === 0) {
+            return;
+        }
+
+        const bulkOps: AnyBulkWriteOperation<BoardDocument>[] =
+            updates.map((update) => ({
+                updateOne: {
+                    filter: {
+                        id: update.boardId,
+                    },
+
+                    update: {
+                      // Only replace if the new value is greater
+                        $max: {
+                            lastActivity: update.lastActivity,
+                        },
+                    },
+                },
+            }));
+        /*const result = */await this.boardModel.bulkWrite(bulkOps);
+        //console.log(`Updated activity trackers: matched=${result.matchedCount}, modified=${result.modifiedCount}`);
+    }
 }
