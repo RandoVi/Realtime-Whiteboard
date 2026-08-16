@@ -5,6 +5,7 @@ export function validateStrokeUpdate(
     data: Partial<BoardObjectDTO>
 ): void {
     const allowedFields = [
+        "id",
         "points",
         "stroke",
         "strokeWidth",

@@ -49,8 +49,8 @@ export class BoardService implements OnApplicationShutdown {
     private readonly dirtyUsers = new Map<string, UserChange>();
     private readonly dirtyActivity = new Map<string, Date>();
 
-    private objectChangeKey(boardId: string,objectId: string,): string {
-        return `${boardId}:${objectId}`;
+    private objectChangeKey(boardId: string, objectId: string, type: ObjectChange['type'],): string {
+        return `${boardId}:${objectId}:${type}`;
     }
 
     private userChangeKey(boardId: string,userId: string,): string {
@@ -176,7 +176,7 @@ export class BoardService implements OnApplicationShutdown {
 
         board.addObject(verifiedObject);
 
-        const key = this.objectChangeKey(board.id, objectData.id);
+        const key = this.objectChangeKey(board.id, objectData.id, 'create');
 
         this.dirtyObjects.set(key, {
             type: 'create',
@@ -193,22 +193,24 @@ export class BoardService implements OnApplicationShutdown {
     }
 
     async updateObjectInBoard(boardId: string, changes: Partial<BoardObjectDTO> & { id: string}) {
+
         if (!changes) {
             throw new BadRequestException("No data in DTO @ updateBoardObjectState")
         }
 
         const board = this.boards.get(boardId);
-        
+
         if (!board) {
             throw new NotFoundException(`Board not found with id: ${boardId}`)
         }
+
         const existing = board.objects.get(changes.id);
 
         if (!existing) {
-        throw new NotFoundException(
-            `Object not found with id: ${changes.id}`
-        );
-    }
+            throw new NotFoundException(
+                `Object not found with id: ${changes.id}`
+            );
+        }
         if (changes.type !== undefined && existing.type !== changes.type) {
             throw new BadRequestException(
                 'Object type cannot be changed'
@@ -223,7 +225,7 @@ export class BoardService implements OnApplicationShutdown {
         const object = board.objects.get(changes.id)!;
 
 
-        const key = this.objectChangeKey(board.id, object.id);
+        const key = this.objectChangeKey(board.id, object.id, 'update');
 
         this.dirtyObjects.set(key, {
             type: 'update',
@@ -251,12 +253,12 @@ export class BoardService implements OnApplicationShutdown {
 
         board.moveObjectToFrontInObjects(objectId);
 
-        const key = this.objectChangeKey(board.id, objectId);
+        const key = this.objectChangeKey(board.id, objectId, 'reorder');
 
         this.dirtyObjects.set(key, {
             type: 'reorder',
             boardId: board.id,
-            objects: board.objects.getAll(),
+            objectId,
         });
 
         this.dirtyActivity.set(
@@ -277,7 +279,7 @@ export class BoardService implements OnApplicationShutdown {
 
         board.removeObject(objectId);
 
-        const key = this.objectChangeKey(board.id, objectId);
+        const key = this.objectChangeKey(board.id, objectId, 'remove');
 
         this.dirtyObjects.set(key, {
             type: 'remove',
@@ -341,9 +343,17 @@ export class BoardService implements OnApplicationShutdown {
         return [...this.boards.values()];
     }
 
+    private isFlushing = false;
+
     private async flushToDatabase() {
         //console.log('-');
+        if (this.isFlushing) {
+            return;
+        }
 
+        this.isFlushing = true;
+
+        try {
         const objectChanges = Array.from(this.dirtyObjects.entries());
         const userChanges = Array.from(this.dirtyUsers.entries());
 
@@ -353,9 +363,14 @@ export class BoardService implements OnApplicationShutdown {
         this.dirtyUsers.clear();
         this.dirtyActivity.clear();
 
+
         const createdObjects = objectChanges
             .map(([, change]) => change)
             .filter((change) => change.type === 'create');
+
+        const reorderedObjects = objectChanges
+            .map(([, change]) => change)
+            .filter((change) => change.type === 'reorder');
 
         const updatedObjects = objectChanges
             .map(([, change]) => change)
@@ -364,17 +379,21 @@ export class BoardService implements OnApplicationShutdown {
         const deletedObjects = objectChanges
             .map(([, change]) => change)
             .filter((change) => change.type === 'remove');
-        
-        const reorderedObjects = objectChanges
-            .map(([, change]) => change)
-            .filter((change) => change.type === 'reorder');
-                
+
         if (createdObjects.length > 0) {
             try {
                 await this.boardRepository.saveManyCreatedObjects(createdObjects);
             } catch (error) {
                 console.error("Failed to save created objects. Re-queueing...", error)
                 this.requeueObjects(objectChanges, "create");
+            }
+        }
+        if (reorderedObjects.length > 0) {
+            try {
+                await this.boardRepository.saveManyReorderedObjects(reorderedObjects);
+            } catch (error) {
+                console.log(error)
+                this.requeueObjects(objectChanges, "reorder");
             }
         }
 
@@ -387,21 +406,14 @@ export class BoardService implements OnApplicationShutdown {
             }
         }
 
+        
+
         if (deletedObjects.length > 0) {
             try {
                 await this.boardRepository.saveManyDeletedObjects(deletedObjects);
             } catch (error) {
                 console.log(error)
                 this.requeueObjects(objectChanges, "remove");
-            }
-        }
-
-        if (reorderedObjects.length > 0) {
-            try {
-                await this.boardRepository.saveManyReorderedObjects(reorderedObjects);
-            } catch (error) {
-                console.log(error)
-                this.requeueObjects(objectChanges, "reorder");
             }
         }
             
@@ -453,8 +465,10 @@ export class BoardService implements OnApplicationShutdown {
                 this.requeueActivities(activityUpdates);
             }
         }
-            
+        } finally {
+            this.isFlushing = false;
         }
+    }
 
     async onApplicationShutdown() {
         console.log('Server shutting down...');
@@ -498,7 +512,7 @@ export class BoardService implements OnApplicationShutdown {
 
     private requeueUsers(changes: [string, UserChange][], type: string) {
         for (const [key, change] of changes) {
-            if ( change.type === type && !this.dirtyObjects.has(key)) {
+            if ( change.type === type && !this.dirtyUsers.has(key)) {
                 this.dirtyUsers.set(key, change);
             }
         }
@@ -511,4 +525,20 @@ export class BoardService implements OnApplicationShutdown {
                 }
             }
     }
+
+    private getObjectChangeKey(change: ObjectChange): string {
+    switch (change.type) {
+        case 'create':
+            return `${change.boardId}:${change.object.id}:create`;
+
+        case 'update':
+            return `${change.boardId}:${change.object.id}:update`;
+
+        case 'remove':
+            return `${change.boardId}:${change.objectId}:remove`;
+
+        case 'reorder':
+            return `${change.boardId}:${change.objectId}:reorder`;
+    }
+}
 }

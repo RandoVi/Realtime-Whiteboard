@@ -5,61 +5,61 @@ import { Board, BoardDocument } from '../schemas/BoardSchema';
 import { ObjectChange, UserChange } from '../../../common/types/BoardChanges';
 
 @Injectable()
-export class BoardRepository {
-  constructor(
-    @InjectModel(Board.name) private readonly boardModel: Model<BoardDocument>,
-  ) {}
+    export class BoardRepository {
+    constructor(
+        @InjectModel(Board.name) private readonly boardModel: Model<BoardDocument>,
+    ) {}
 
-  async create(id: string, ownerId: string): Promise<BoardDocument> {
-    const board = new this.boardModel({
-      id: id, // double id for simplicity for now
-      ownerId: ownerId,
-    });
-    return board.save();
-  }
+    async create(id: string, ownerId: string): Promise<BoardDocument> {
+        const board = new this.boardModel({
+        id: id, // double id for simplicity for now
+        ownerId: ownerId,
+        });
+        return board.save();
+    }
 
-  async findByCustomId(boardId: string): Promise<BoardDocument | null> {
-    return this.boardModel.findOne({id: boardId}).exec();
-  }
+    async findByCustomId(boardId: string): Promise<BoardDocument | null> {
+        return this.boardModel.findOne({id: boardId}).exec();
+    }
 
-  async existsByCustomId(boardId: string): Promise<boolean> {
-    const exists = await this.boardModel.countDocuments({id: boardId}).exec();
-    return exists > 0;
-  }
+    async existsByCustomId(boardId: string): Promise<boolean> {
+        const exists = await this.boardModel.countDocuments({id: boardId}).exec();
+        return exists > 0;
+    }
 
-  async deleteExpiredBoards(cutoff: Date) {
-    return this.boardModel.deleteMany({
-        lastActivity: { $lt: cutoff },
-    }).exec();
-  }
+    async deleteExpiredBoards(cutoff: Date) {
+        return this.boardModel.deleteMany({
+            lastActivity: { $lt: cutoff },
+        }).exec();
+    }
 
-  async saveManyCreatedObjects(changes: Extract<ObjectChange, { type: 'create' }>[],): Promise<void> {
-      if (changes.length === 0) {
-          return;
-      }
+    async saveManyCreatedObjects(changes: Extract<ObjectChange, { type: 'create' }>[],): Promise<void> {
+        if (changes.length === 0) {
+            return;
+        }
 
-      const bulkOps: AnyBulkWriteOperation<BoardDocument>[] =
-          changes.map((change) => ({
-              updateOne: {
-                  filter: {
+        const bulkOps: AnyBulkWriteOperation<BoardDocument>[] =
+            changes.map((change) => ({
+                updateOne: {
+                    filter: {
                     id: change.boardId,
                     'objects.id': { $ne: change.object.id },
                     },
-                  update: {
-                      $push: {
-                          objects: change.object,
-                      },
-                      $inc: {
-                          version: 1,
-                      },
-                  },
-              },
-          }));
+                    update: {
+                        $push: {
+                            objects: change.object,
+                        },
+                        $inc: {
+                            version: 1,
+                        },
+                    },
+                },
+            }));
 
-      const result = await this.boardModel.bulkWrite(bulkOps);
-      console.log(`Created objects: matched=${result.matchedCount} and modified=${result.modifiedCount}`);
-  }
-  async saveManyUpdatedObjects(changes: Extract<ObjectChange, { type: 'update' }>[],): Promise<void> {
+        const result = await this.boardModel.bulkWrite(bulkOps);
+        console.log(`MONGO: Created objects: matched=${result.matchedCount} and modified=${result.modifiedCount}`);
+    }
+    async saveManyUpdatedObjects(changes: Extract<ObjectChange, { type: 'update' }>[],): Promise<void> {
     if (changes.length === 0) {
         return;
     }
@@ -82,12 +82,13 @@ export class BoardRepository {
             },
         }));
 
+
     const result = await this.boardModel.bulkWrite(bulkOps);
 
-    console.log(`Updated objects: matched=${result.matchedCount}, modified=${result.modifiedCount}`);
-  }
+    console.log(`MONGO: Updated objects: matched=${result.matchedCount}, modified=${result.modifiedCount}`);
+    }
 
-    async saveManyReorderedObjects(changes: Extract<ObjectChange, { type: "reorder" }>[],): Promise<void> {
+    async saveManyReorderedObjects(changes: Extract<ObjectChange, { type: 'reorder' }>[],): Promise<void> {
         if (changes.length === 0) {
             return;
         }
@@ -97,22 +98,59 @@ export class BoardRepository {
                 updateOne: {
                     filter: {
                         id: change.boardId,
+                        'objects.id': change.objectId,
                     },
-                    update: {
-                        $set: {
-                            objects: change.objects,
+                    update: [
+                        {
+                            $set: {
+                                objects: {
+                                    $concatArrays: [
+                                        // Everything except the object being moved
+                                        {
+                                            $filter: {
+                                                input: '$objects',
+                                                as: 'object',
+                                                cond: {
+                                                    $ne: [
+                                                        '$$object.id',
+                                                        change.objectId,
+                                                    ],
+                                                },
+                                            },
+                                        },
+
+                                        // The object being moved
+                                        {
+                                            $filter: {
+                                                input: '$objects',
+                                                as: 'object',
+                                                cond: {
+                                                    $eq: [
+                                                        '$$object.id',
+                                                        change.objectId,
+                                                    ],
+                                                },
+                                            },
+                                        },
+                                    ],
+                                },
+                            },
                         },
-                        $inc: {
-                            version: 1,
+                        {
+                            $set: {
+                                version: {
+                                    $add: ['$version', 1],
+                                },
+                            },
                         },
-                    },
+                    ],
                 },
             }));
 
         const result = await this.boardModel.bulkWrite(bulkOps);
 
         console.log(
-            `Reordered objects: matched=${result.matchedCount}, modified=${result.modifiedCount}`,
+            `MONGO: Reordered objects: matched=${result.matchedCount}, modified=${result.modifiedCount}`,
         );
     }
 
@@ -143,7 +181,7 @@ export class BoardRepository {
         const result = await this.boardModel.bulkWrite(bulkOps);
 
         console.log(
-        `Deleted objects matched=${result.matchedCount}, modified=${result.modifiedCount}`,
+        `MONGO: Deleted objects matched=${result.matchedCount}, modified=${result.modifiedCount}`,
         );
     }
 
@@ -153,86 +191,86 @@ export class BoardRepository {
     // ---------------------------------------------------------
 
     async saveManyCreatedUsers(changes: Extract<UserChange, { type: 'create' }>[],): Promise<void> {
-      if (changes.length === 0) {
-          return;
-      }
+        if (changes.length === 0) {
+            return;
+        }
 
-      const bulkOps: AnyBulkWriteOperation<BoardDocument>[] =
-          changes.map((change) => ({
-              updateOne: {
-                  filter: {
-                      id: change.boardId,
-                      'users.userId': { $ne: change.user.userId },
-                  },
-                  update: {
-                      $push: {
-                          users: change.user,
-                      },
-                      $inc: {
-                          version: 1,
-                      },
-                  },
-              },
-          }));
+        const bulkOps: AnyBulkWriteOperation<BoardDocument>[] =
+            changes.map((change) => ({
+                updateOne: {
+                    filter: {
+                        id: change.boardId,
+                        'users.userId': { $ne: change.user.userId },
+                    },
+                    update: {
+                        $push: {
+                            users: change.user,
+                        },
+                        $inc: {
+                            version: 1,
+                        },
+                    },
+                },
+            }));
 
-      const result = await this.boardModel.bulkWrite(bulkOps);
-      console.log(`Created users: matched=${result.matchedCount} and modified=${result.modifiedCount}`,);
-  }
-  async saveManyUpdatedUsers(changes: Extract<UserChange, { type: 'update' }>[],): Promise<void> {
-    if (changes.length === 0) {
-        return;
+        const result = await this.boardModel.bulkWrite(bulkOps);
+        console.log(`MONGO: Created users: matched=${result.matchedCount} and modified=${result.modifiedCount}`,);
+    }
+    async saveManyUpdatedUsers(changes: Extract<UserChange, { type: 'update' }>[],): Promise<void> {
+        if (changes.length === 0) {
+            return;
+        }
+
+        const bulkOps: AnyBulkWriteOperation<BoardDocument>[] =
+            changes.map((change) => ({
+                updateOne: {
+                    filter: {
+                        id: change.boardId,
+                        'users.userId': change.user.userId,
+                    },
+                    update: {
+                        $set: {
+                            'users.$': change.user,
+                        },
+                        $inc: {
+                            version: 1,
+                        },
+                    },
+                },
+            }));
+
+        const result = await this.boardModel.bulkWrite(bulkOps);
+
+        console.log(`MONGO: Updated users: matched=${result.matchedCount}, modified=${result.modifiedCount}`);
     }
 
-    const bulkOps: AnyBulkWriteOperation<BoardDocument>[] =
-        changes.map((change) => ({
-            updateOne: {
-                filter: {
-                    id: change.boardId,
-                    'users.userId': change.user.userId,
-                },
-                update: {
-                    $set: {
-                        'users.$': change.user,
-                    },
-                    $inc: {
-                        version: 1,
-                    },
-                },
-            },
-        }));
-
-    const result = await this.boardModel.bulkWrite(bulkOps);
-
-    console.log(`Updated users: matched=${result.matchedCount}, modified=${result.modifiedCount}`);
-  }
-
     async saveManyDeletedUsers(changes: Extract<UserChange, { type: 'remove' }>[],): Promise<void> {
-      if (changes.length === 0) {
-          return;
-      }
+        if (changes.length === 0) {
+            return;
+        }
 
-      const bulkOps: AnyBulkWriteOperation<BoardDocument>[] =
-          changes.map((change) => ({
-              updateOne: {
-                  filter: {
-                      id: change.boardId,
-                  },
-                  update: {
-                      $pull: {
-                          users: {
-                            userId: change.userId
-                          }
-                      },
-                      $inc: {
-                          version: 1,
-                      },
-                  },
-              },
-          }));
+        const bulkOps: AnyBulkWriteOperation<BoardDocument>[] =
+            changes.map((change) => ({
+                updateOne: {
+                    filter: {
+                        id: change.boardId,
+                    },
+                    update: {
+                        $pull: {
+                            users: {
+                                userId: change.userId
+                            }
+                        },
+                        $inc: {
+                            version: 1,
+                        },
+                    },
+                },
+            }));
 
-      const result = await this.boardModel.bulkWrite(bulkOps);
+        const result = await this.boardModel.bulkWrite(bulkOps);
 
-      console.log(`Deleted users matched=${result.matchedCount},  and modified=${result.modifiedCount}`);
+        console.log(`MONGO: Deleted users matched=${result.matchedCount},  and modified=${result.modifiedCount}`);
     }
 
     // ---------------------------------------------------------
@@ -261,6 +299,6 @@ export class BoardRepository {
                 },
             }));
         /*const result = */await this.boardModel.bulkWrite(bulkOps);
-        //console.log(`Updated activity trackers: matched=${result.matchedCount}, modified=${result.modifiedCount}`);
+        //console.log(`MONGO: Updated activity trackers: matched=${result.matchedCount}, modified=${result.modifiedCount}`);
     }
 }

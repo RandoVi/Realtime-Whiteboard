@@ -41,41 +41,39 @@ export class SocketCollaboration implements Collaboration {
     }
     //Board General Commands
     createBoard(
+        username: string,
         callback: (boardState: BoardStateDTO) => void
     ): void {
-
         socket.emit(
             SOCKET_EVENTS.BOARD_COMMAND,
             {
                 type: "CREATE",
                 user: {
-                    username: "Host"
+                    username,
                 }
             }
         );
-
-
 
         socket.once(
             "board-state",
             (boardState: BoardStateDTO) => {
                 callback(boardState);
             }
-        );;
+        );
     }
 
     joinBoard(
         boardId: string,
+        username: string,
         callback: (boardState: BoardStateDTO) => void
     ): void {
-
         socket.emit(
-            "boardCommand",
+            SOCKET_EVENTS.BOARD_COMMAND,
             {
                 type: "JOIN",
                 id: boardId,
                 user: {
-                    username: "Leech"
+                    username,
                 }
             }
         );
@@ -86,7 +84,6 @@ export class SocketCollaboration implements Collaboration {
                 callback(boardState);
             }
         );
-
     }
 
 

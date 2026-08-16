@@ -5,6 +5,7 @@ export function validateTextboxUpdate(
     data: Partial<BoardObjectDTO>
 ): void {
     const allowedFields = [
+        "id",
         "x",
         "y",
         "width",
