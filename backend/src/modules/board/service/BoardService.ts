@@ -239,6 +239,32 @@ export class BoardService implements OnApplicationShutdown {
         return board;
     }
 
+    async moveObjectToFront(boardId: string, objectId: string) {
+        if (!objectId) {
+            throw new BadRequestException("No id provided @ moveObjectToFront")
+        }
+        const board = this.boards.get(boardId);
+        
+        if (!board) {
+            throw new NotFoundException("SERVICE:Board not found with id: " + boardId)
+        }
+
+        board.moveObjectToFrontInObjects(objectId);
+
+        const key = this.objectChangeKey(board.id, objectId);
+
+        this.dirtyObjects.set(key, {
+            type: 'reorder',
+            boardId: board.id,
+            objects: board.objects.getAll(),
+        });
+
+        this.dirtyActivity.set(
+            board.id,
+            board.lastActivity,
+        );
+    }
+
     async deleteObjectInBoard(boardId: string, objectId: string) : Promise<boolean> {
         if (!objectId) {
             throw new BadRequestException("No id provided @ removeObjectFromBoard")
@@ -338,6 +364,10 @@ export class BoardService implements OnApplicationShutdown {
         const deletedObjects = objectChanges
             .map(([, change]) => change)
             .filter((change) => change.type === 'remove');
+        
+        const reorderedObjects = objectChanges
+            .map(([, change]) => change)
+            .filter((change) => change.type === 'reorder');
                 
         if (createdObjects.length > 0) {
             try {
@@ -363,6 +393,15 @@ export class BoardService implements OnApplicationShutdown {
             } catch (error) {
                 console.log(error)
                 this.requeueObjects(objectChanges, "remove");
+            }
+        }
+
+        if (reorderedObjects.length > 0) {
+            try {
+                await this.boardRepository.saveManyReorderedObjects(reorderedObjects);
+            } catch (error) {
+                console.log(error)
+                this.requeueObjects(objectChanges, "reorder");
             }
         }
             

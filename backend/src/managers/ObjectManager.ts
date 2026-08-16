@@ -5,17 +5,6 @@ import { BoardObject } from "../modules/board/schemas/BoardObjectSchema";
 export class ObjectManager {
 
     private readonly objects = new Map<string, BoardObject>();
-
-    // factory for manager
-    static fromPersistence(objects: BoardObject[]): ObjectManager {
-        const manager = new ObjectManager();
-
-        for (const object of objects) {
-        manager.objects.set(object.id, object);
-        }
-
-        return manager;
-    }
     
     create(boardObject: BoardObject): BoardObject {
         if (!boardObject.id) {
@@ -65,11 +54,31 @@ export class ObjectManager {
         return this.objects.has(id);
     }
 
+    moveToFront(objectId: string) {
+        const object = this.objects.get(objectId);
+
+        if (object !== undefined) {
+            this.objects.delete(objectId)
+            this.objects.set(objectId, object)
+        }
+    }
+
 
     clear(): void {
         this.objects.clear();
     }
     toJSON(): BoardObject[] {
         return Array.from(this.objects.values());
+    }
+
+    // factory for manager
+    static fromPersistence(objects: BoardObject[]): ObjectManager {
+        const manager = new ObjectManager();
+
+        for (const object of objects) {
+        manager.objects.set(object.id, object);
+        }
+
+        return manager;
     }
 }

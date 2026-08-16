@@ -17,8 +17,8 @@ export type DeleteObjectCommand = {
 };
 
 export type BringBoardObjectToFrontCommand = {
-  type: "bringBoardObjectToFront";
-  boardObjectId: string;
+    type: "bringBoardObjectToFront";
+    boardObjectId: string;
 };
 
 export type EditorCommand =
