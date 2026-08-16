@@ -30,6 +30,11 @@ export class BoardManager {
         this.lastActivity = new Date();
     }
 
+    moveObjectToFrontInObjects(objectId: string) {
+        this.objects.moveToFront(objectId)
+        this.lastActivity = new Date();
+    }
+
     /// USERS
 
     addUser(user:BoardUser): void {

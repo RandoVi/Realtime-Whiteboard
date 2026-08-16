@@ -264,8 +264,30 @@ export class BoardGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
                 console.log("Object deleted - " + data.command.boardObjectId)
                 break
             }
-            default:
-                console.log("Default case for boardObjectCommand" + data.command.type.toString())
+
+            case "bringBoardObjectToFront": {
+                if(!this.boards.hasBoardInServer(data.boardId)) {
+                    console.error('ERROR: No "board" in socket(BRING TO FRONT - OBJECT)')
+                    break
+                }
+                if(!data.command.boardObjectId) {
+                    console.error('ERROR: No "boardObjectId" in socket(BRING TO FRONT - OBJECT)')
+                    break
+                }
+                const board = this.boards.getBoardFromServer(data.boardId)
+                if (!board) {
+                    throw new NotFoundException("Board not found in server @ bringBoardObjectToFront")
+                }
+                this.boards.moveObjectToFront(board.id, data.command.boardObjectId);
+
+                socket.broadcast.to(board.id).emit("boardObjectCommand", data);
+                console.log("Object brought to the front - " + data.command.boardObjectId)
+                break
+            }
+            default: {
+                console.log("Unknown command for boardObjectCommand")
+            }
+                
         }
     }
 

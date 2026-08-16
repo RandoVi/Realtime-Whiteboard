@@ -9,17 +9,6 @@ export class UserManager {
     private readonly colors = new ColorManager([UserColor.RED, UserColor.GREEN, UserColor.BLUE, UserColor.BROWN, UserColor.CYAN,
         UserColor.ORANGE, UserColor.PINK, UserColor.PURPLE, UserColor.BLACK,  UserColor.YELLOW]);
     
-    // factory for manager
-    static fromPersistence(users: BoardUser[]): UserManager {
-        const manager = new UserManager();
-
-        for (const user of users) {
-            manager.users.set(user.userId, user);
-        }
-
-        return manager;
-    }
-    
     add(user: BoardUser) {
         const color = this.colors.takeColor();
         if (color !== null) {
@@ -78,6 +67,17 @@ export class UserManager {
 
     toJSON(): BoardUser[] {
         return Array.from(this.users.values());
+    }
+
+    // factory for manager
+    static fromPersistence(users: BoardUser[]): UserManager {
+        const manager = new UserManager();
+
+        for (const user of users) {
+            manager.users.set(user.userId, user);
+        }
+
+        return manager;
     }
 
 }

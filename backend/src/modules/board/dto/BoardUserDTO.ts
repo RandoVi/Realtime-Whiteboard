@@ -9,7 +9,7 @@ export class BoardUserDTO {
 
     @IsString()
     @IsNotEmpty()
-    @MaxLength(32)
+    @MaxLength(20)
     username!: string;
 
     @IsString()
