@@ -1,5 +1,5 @@
 import type { Rectangle } from "@common/shapes"
-import type { SelectionBounds } from "../../selection/getSelectionBounds"
+import type { SelectionBounds } from "../../interaction/selection/getSelectionBounds"
 
 export function getRectangleBounds(
   object: Rectangle

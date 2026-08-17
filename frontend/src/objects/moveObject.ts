@@ -1,10 +1,10 @@
-import type { Object } from "@common/types"
+import type { BoardObject } from "@common/types"
 import { getObjectHandler } from "./registry/getObjectHandler";
 
 
 export function moveObject(
-  object: Object,
-  original: Object,
+  object: BoardObject,
+  original: BoardObject,
   dx: number,
   dy: number,
 ) {

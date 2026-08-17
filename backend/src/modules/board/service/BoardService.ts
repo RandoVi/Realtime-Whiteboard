@@ -250,7 +250,11 @@ export class BoardService implements OnApplicationShutdown {
         if (!board) {
             throw new NotFoundException("SERVICE:Board not found with id: " + boardId)
         }
-
+        console.log("MOVE TO FRONT REQUEST", {
+            objectId,
+            exists: board.objects.getAll().some((object) => object.id === objectId),
+            objectIds: board.objects.getAll().map((object) => object.id),
+        });
         board.moveObjectToFrontInObjects(objectId);
 
         const key = this.objectChangeKey(board.id, objectId, 'reorder');

@@ -1,4 +1,4 @@
-import type { Camera } from "../../types/Types";
+import type { Camera } from "../../camera/Camera"
 import type { Laser } from "@common/shapes"
 
 const POINT_LIFETIME = 2000;

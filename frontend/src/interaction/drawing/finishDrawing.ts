@@ -1,6 +1,6 @@
 import { normalizeObject } from "../../objects/normalizeObject"
 import type { CanvasInteractionContext } from "../CanvasInteractionContext"
-import { clearObjectPreview } from "../clearObjectPreview"
+import { clearObjectPreview } from "../helpers/clearObjectPreview"
 
 type Args = {
   context: CanvasInteractionContext

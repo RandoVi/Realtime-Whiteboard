@@ -1,10 +1,10 @@
-import type { Object } from "@common/types";
+import type { BoardObject } from "@common/types";
 import { getObjectById } from "../../objects/getObjectById";
 
 type Args = {
-  objects: Object[];
+  objects: BoardObject[];
   objectId: string;
-  updates: Partial<Object>;
+  updates: Partial<BoardObject>;
 };
 
 export function updateObject({

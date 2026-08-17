@@ -1,4 +1,4 @@
-import type { Point, Object } from "@common/types"
+import type { Point, BoardObject } from "@common/types"
 import type { Tool } from "../types/Tool"
 
 import { objectFactories } from "./registry/objectFactories"
@@ -8,7 +8,7 @@ export function createObject(
   tool: Tool,
   point: Point,
   style: ObjectStyle
-): Object | null {
+): BoardObject | null {
 
   if (!(tool in objectFactories)) {
     return null
@@ -18,5 +18,5 @@ export function createObject(
     tool as keyof typeof objectFactories
   ]
 
-  return factory(point, style) as Object
+  return factory(point, style) as BoardObject
 }

@@ -1,8 +1,8 @@
-import type { Object } from "@common/types"
+import type { BoardObject } from "@common/types"
 
 export function getObjectById(
-  objects: Object[],
+  objects: BoardObject[],
   id: string,
-): Object | undefined {
+): BoardObject | undefined {
   return objects.find(object => object.id === id)
 }

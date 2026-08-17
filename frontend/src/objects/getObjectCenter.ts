@@ -1,6 +1,6 @@
-import type { Object, Point } from "@common/types"
+import type { BoardObject, Point } from "@common/types"
 
-export function getObjectCenter(object: Object): Point {
+export function getObjectCenter(object: BoardObject): Point {
     switch (object.type) {
         case "circle":
             return {

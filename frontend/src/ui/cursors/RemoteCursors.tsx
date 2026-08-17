@@ -1,6 +1,6 @@
-import type { Camera } from "../../types/Types";
-import type { BoardUser } from "../../board/BoardUser";
-import type { RemotePresence } from "../../socket/preview/RemotePresence";
+import type { Camera } from "../../camera/Camera";
+import type { BoardUser } from "../../types/BoardUser";
+import type { RemotePresence } from "../../network/presence/RemotePresence";
 import { RemoteCursor } from "./RemoteCursor";
 
 type Props = {

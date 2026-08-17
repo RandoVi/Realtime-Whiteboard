@@ -1,9 +1,9 @@
-import type { Object } from "@common/types"
+import type { BoardObject } from "@common/types"
 import { getObjectHandler } from "./../objects/registry/getObjectHandler"
 
 export function duplicateObject(
-  object: Object
-): Object {
+  object: BoardObject
+): BoardObject {
 
   const duplicate =
     getObjectHandler(object)

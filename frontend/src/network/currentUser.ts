@@ -1,4 +1,4 @@
-import type { BoardUser } from "../board/BoardUser";
+import type { BoardUser } from "../types/BoardUser";
 
 let currentUser: BoardUser | null = null;
 

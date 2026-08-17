@@ -1,12 +1,12 @@
 import type { MutableRefObject } from "react"
-import type { Object } from "@common/types"
+import type { BoardObject } from "@common/types"
 import type { Point } from "@common/types"
 import type { Interaction } from "../Interaction"
 import { updateCursor } from "../updateCursor"
 import type { CanvasInteractionContext } from "../CanvasInteractionContext"
 
 type Args = {
-  clickedObject: Object | undefined
+  clickedObject: BoardObject | undefined
   world: Point
   interactionRef: MutableRefObject<Interaction>
   selectObject: (id: string | null) => void

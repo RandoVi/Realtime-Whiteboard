@@ -1,4 +1,4 @@
-import type { Object } from "@common/types";
+import type { BoardObject } from "@common/types";
 import type { EditorCommand } from "@common/commands";
 
 export type ExecuteOptions = {
@@ -12,7 +12,7 @@ export interface Editor {
     options?: ExecuteOptions
   ): void;
 
-  getSelectedObject(): Object | undefined;
+  getSelectedObject(): BoardObject | undefined;
   bindProperty(
     property: string,
     transform?: (value: string) => unknown

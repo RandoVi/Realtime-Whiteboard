@@ -1,9 +1,9 @@
-import type { Point, Object } from "@common/types"
+import type { Point, BoardObject } from "@common/types"
 import { getObjectHandler } from "./registry/getObjectHandler"
 
 
 export function updatePreviewObject(
-  object: Object,
+  object: BoardObject,
   start: Point,
   current: Point,
 ) {

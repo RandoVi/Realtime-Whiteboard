@@ -2,7 +2,7 @@ import { WebSocketGateway, OnGatewayConnection, OnGatewayDisconnect, WebSocketSe
 
 import { BoardService } from "./service/BoardService";
 import { Server, Socket } from "socket.io";
-import { InternalServerErrorException, Logger, NotFoundException } from "@nestjs/common";
+import { BadRequestException, InternalServerErrorException, Logger, NotFoundException, UseGuards } from "@nestjs/common";
 import { BoardCommandDTO } from "./dto/BoardCommandDTO";
 import { BoardObjectPresenceDTO } from "../../models/boardObjectPresenceDTO";
 import { BoardObjectEditorDTO } from "../../models/boardObjectEditorDTO";
@@ -10,42 +10,56 @@ import { BoardStateDTO } from "./dto/BoardStateDTO";
 import { BoardCommandType } from "../../common/types/BoardCommandType";
 import { BoardObjectDTO } from "./dto/BoardObjectDTO";
 import { plainToInstance } from "class-transformer";
+import { WsRateLimitGuard } from "../../common/rate-limit/ws-rate-limit.guard";
+import { WsConnectionLimitService } from "../../common/rate-limit/ws-connection-limit-service";
+//import { RateLimit } from "../../common/rate-limit/rate-limit.decorator";
 
 
 @WebSocketGateway({
-  transports: ["websocket"],
-  cors: {
-    origin: "http://localhost:5173",
-    credentials: true,
-  },
+    transports: ["websocket"],
+    cors: {
+        origin: "http://localhost:5173",
+        credentials: true,
+    },
 })
-
+@UseGuards(WsRateLimitGuard)
 export class BoardGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect{
 
-  constructor(
-      private readonly boards: BoardService,
-  ) {}
+    constructor(
+        private readonly boards: BoardService,
+        private readonly connectionLimit: WsConnectionLimitService,
+    ) {}
 
-  private readonly logger = new Logger(BoardGateway.name);
+    private readonly logger = new Logger(BoardGateway.name);
 
-  @WebSocketServer()
-  io!: Server;
+    @WebSocketServer()
+    io!: Server;
 
-  afterInit() {
-    this.logger.log("Initialized");
-  }
-      
-  handleConnection(client: Socket) {
-    const { sockets } = this.io.sockets;
+    afterInit() {
+        this.logger.log("Initialized");
+    }
+        
+    handleConnection(client: Socket) {
+        const userId = client.data.userId;
 
-    this.logger.log(`CONNECTED - Client id: ${client.id} connected`);
-    this.logger.debug(`Number of connected clients: ${sockets.size}`);
-  }
+        this.logger.log(`CONNECTED - Client id: ${client.id} connected`);
+        const allowed =this.connectionLimit.connect(userId, 10);
 
-  handleDisconnect(client: Socket) {
-    this.logger.log(`DISCONNECTED - Client id:${client.id} disconnected`);
-  }
+        if (!allowed) {
+            client.disconnect(true);
+        }
+    }
 
+    handleDisconnect(client: Socket) {
+        const userId = client.data.userId;
+
+        this.connectionLimit.disconnect(userId);
+        this.logger.log(`DISCONNECTED - Client id:${client.id} disconnected`);
+    }
+    // @RateLimit({
+    //     limit: 1,
+    //     windowMs: 1_000,
+    // })
     @SubscribeMessage("boardCommand")
     async handleBoard(
         @ConnectedSocket() socket: Socket,
@@ -190,7 +204,10 @@ export class BoardGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
                 break;
         }
     }
-
+    // @RateLimit({
+    //     limit: 3,
+    //     windowMs: 1_000,
+    // })
     @SubscribeMessage("boardObjectCommand")
     async handleObjectCommand(
         @ConnectedSocket() socket: Socket,
@@ -218,7 +235,6 @@ export class BoardGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
                 await this.boards.createObjectInBoard(board.id, dto);
 
                 socket.broadcast.to(board!.id).emit("boardObjectCommand", data);
-                console.log("SERVER: Object created successfully - " + data.command.boardObject.id + " for boardId: " + data.boardId);
                 break
             }
             case "updateBoardObject": {
@@ -250,7 +266,6 @@ export class BoardGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
                 await this.boards.updateObjectInBoard(board!.id, dto);
                 
                 socket.broadcast.to(board!.id).emit("boardObjectCommand", data);
-                console.log("SERVER: Object updated in server - " + data.command.boardObjectId + " for boardId: " + data.boardId)
                 break
             }
             case "deleteBoardObject": {
@@ -269,7 +284,6 @@ export class BoardGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
                 this.boards.deleteObjectInBoard(board.id, data.command.boardObjectId);
 
                 socket.broadcast.to(board.id).emit("boardObjectCommand", data);
-                console.log("SERVER: Object deleted - " + data.command.boardObjectId)
                 break
             }
 
@@ -284,7 +298,7 @@ export class BoardGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
                 }
                 const board = this.boards.getBoardFromServer(data.boardId)
                 if (!board) {
-                    throw new NotFoundException("Board not found in server @ bringBoardObjectToFront")
+                    throw new NotFoundException("Could not retrieve board from server @ bringBoardObjectToFront")
                 }
                 this.boards.moveObjectToFront(board.id, data.command.boardObjectId);
 
@@ -297,13 +311,30 @@ export class BoardGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
                 
         }
     }
-
+    // @RateLimit({
+    //     limit: 60,
+    //     windowMs: 1_000,
+    // })
     @SubscribeMessage("boardPresenceCommand")
     async handleSocketCommand(
         @ConnectedSocket() socket: Socket,
         @MessageBody() data: BoardObjectPresenceDTO,
     ) {
         if (data) {
+            if(!this.boards.hasBoardInServer(data.boardId)) {
+                    throw new NotFoundException ('No "board" in socket(BRING TO FRONT - OBJECT)')
+            }
+            if(!data.command) {
+                throw new BadRequestException('No "command" in socket(BRING TO FRONT - OBJECT)')
+            }
+            const board = this.boards.getBoardFromServer(data.boardId)
+            if (!board) {
+                throw new NotFoundException("Could not retrieve board from server @ bringBoardObjectToFront")
+            }
+            if (data.command.type === "objectPreview") {
+                //if (data.command.)
+            }
+            /////////////////////////////////////////////////Check if user exists in board before relaying
             socket.broadcast.to(data.boardId).emit("boardPresenceCommand", data);
         } else {
             console.warn("SERVER: No data found to transmit @handleSocketCommand")

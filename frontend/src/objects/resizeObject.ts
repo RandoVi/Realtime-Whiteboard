@@ -1,10 +1,10 @@
-import type { Object } from "@common/types"
+import type { BoardObject } from "@common/types"
 import type { ResizeHandle } from "../types/selection"
 import { getObjectHandler } from "./registry/getObjectHandler";
 
 export function resizeObject(
-  object: Object,
-  original: Object,
+  object: BoardObject,
+  original: BoardObject,
   handle: ResizeHandle,
   point: { x: number; y: number },
   constrain: boolean,

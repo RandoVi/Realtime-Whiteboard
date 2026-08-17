@@ -6,14 +6,14 @@ import { updateObject } from "./commands/updateObject";
 import { deleteObject } from "./commands/deleteObject";
 import type { EditorCommand } from "@common/commands";
 import { insertObject } from "./commands/insertObject";
-import type { Document } from "../document/Document";
-import type { Collaboration } from "../socket/collaboration/Collaboration";
+import type { BoardDocument } from "../document/Document";
+import type { Collaboration } from "../network/collaboration/Collaboration";
 import type { ExecuteOptions } from "./Editor";
 import { duplicateObject } from "./duplicateObject";
 import { bringObjectToFront } from "../interaction/helpers/bringObjectToFront";
 
 type Args = {
-  document: Document;
+  document: BoardDocument;
   selectedObjectIdRef: MutableRefObject<string | null>;
 
   setSelectedObjectId: (id: string | null) => void;

@@ -1,4 +1,4 @@
-import type { Camera } from '../../types/Types'
+import type { Camera } from "../../camera/Camera"
 import type { Rectangle } from '@common/shapes'
 
 export function renderRectangle(

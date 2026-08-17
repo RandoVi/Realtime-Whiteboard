@@ -1,6 +1,11 @@
-import type { Camera } from '../types/Types'
+
 import type { Point } from "@common/types";
 
+export type Camera = {
+  scale: number
+  offsetX: number
+  offsetY: number
+}
 
 export const MIN_ZOOM = 0.1
 export const MAX_ZOOM = 10

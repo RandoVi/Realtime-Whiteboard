@@ -1,11 +1,11 @@
 import type { Editor } from "../../editor/Editor";
-import type { Object } from "@common/types";
+import type { BoardObject } from "@common/types";
 import "./ObjectInspector.css";
 import { ActionsSection } from "./ActionsSection";
 import { PropertySection } from "./PropertySection";
 
 type Props = {
-  object?: Object;
+  object?: BoardObject;
   editor: Editor;
 };
 

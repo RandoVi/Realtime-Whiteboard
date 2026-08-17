@@ -1,6 +1,6 @@
-import type { Camera } from "../../types/Types"
+import type { Camera } from "../../camera/Camera"
 import type { ResizeHandle } from "../../types/selection"
-import { hitTestResizeHandles } from "../../selection/hitTestResizeHandles"
+import { hitTestResizeHandles } from "../../interaction/selection/hitTestResizeHandles"
 import { getTextboxBounds } from "./getTextboxBounds"
 import type { Textbox } from "@common/shapes/Textbox";
 import type { Point } from "@common/types";
