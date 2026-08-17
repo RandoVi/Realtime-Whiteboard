@@ -1,17 +1,17 @@
 import type { MutableRefObject } from "react"
-import type { Object } from "@common/types"
-import type { Camera } from "../../types/Types"
+import type { BoardObject } from "@common/types"
+import type { Camera } from "../../camera/Camera"
 import type { Point } from "@common/types";
-import { getSelectionHandle } from "../../selection/getSelectionHandle"
+import { getSelectionHandle } from "../selection/getSelectionHandle"
 import type { Interaction } from "../Interaction"
-import { getSelectionBounds } from "../../selection/getSelectionBounds"
+import { getSelectionBounds } from "../selection/getSelectionBounds"
 import type { CanvasInteractionContext } from "../CanvasInteractionContext"
 import { updateCursor } from "../updateCursor"
 import { screenToWorld } from "../../camera/Camera";
-import { getResizeHandles } from "../../selection/getResizeHandles";
+import { getResizeHandles } from "../selection/getResizeHandles";
 
 type Args = {
-  selectedObject: Object | undefined
+  selectedObject: BoardObject | undefined
   pointer: Point
   world: Point
   camera: Camera

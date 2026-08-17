@@ -1,11 +1,11 @@
 
-import type { Presence } from "../../socket/preview/Presence";
-import type { ObjectUpdate } from "../../types/ObjectUpdate";
+import type { Presence } from "../../network/presence/Presence";
+import type { InteractionObjectUpdate } from "../InteractionObjectUpdate";
 
 type Args = {
     presence: Presence;
     objectId: string;
-    updates: ObjectUpdate;
+    updates: InteractionObjectUpdate;
 };
 
 export function sendObjectPreview({

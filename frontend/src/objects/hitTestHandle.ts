@@ -1,5 +1,5 @@
 import type { Point } from "@common/types";
-import type { ResizeHandlePosition } from '../selection/getResizeHandles'
+import type { ResizeHandlePosition } from '../interaction/selection/getResizeHandles'
 
 import { HANDLE_SIZE, type ResizeHandle } from '../types/selection'
 

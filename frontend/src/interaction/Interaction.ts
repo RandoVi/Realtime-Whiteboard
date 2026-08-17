@@ -1,4 +1,4 @@
-import type { Point, Object, RotatableObject } from "@common/types"
+import type { Point, BoardObject, RotatableObject } from "@common/types"
 import type { ResizeHandle } from '../types/selection'
 
 export type Interaction =
@@ -8,14 +8,14 @@ export type Interaction =
     | {
         type: 'drawing'
         start: Point
-        preview: Object
+        preview: BoardObject
     }
 
     | {
         type: 'moving'
         start: Point
-        original: Object
-        preview: Object
+        original: BoardObject
+        preview: BoardObject
         objectId: string
         moved: boolean
     }
@@ -23,8 +23,8 @@ export type Interaction =
     | {
         type: 'resizing'
         objectId: string
-        original: Object
-        preview: Object
+        original: BoardObject
+        preview: BoardObject
         handle: ResizeHandle
         offset: Point
     }

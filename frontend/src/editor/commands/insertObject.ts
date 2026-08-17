@@ -1,9 +1,9 @@
-import type { Object } from "@common/types"
+import type { BoardObject } from "@common/types"
 
 
 type Args = {
-  objects: Object[]
-  object: Object
+  objects: BoardObject[]
+  object: BoardObject
 }
 
 

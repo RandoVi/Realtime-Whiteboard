@@ -1,6 +1,6 @@
-import type { SelectionBounds } from "../../selection/getSelectionBounds"
-import type { Object, Point } from "@common/types"
-import type { Camera } from "../../types/Types"
+import type { SelectionBounds } from "../../interaction/selection/getSelectionBounds"
+import type { BoardObject, Point } from "@common/types"
+import type { Camera } from "../../camera/Camera"
 import type { ResizeHandle } from "../../types/selection"
 import type { ObjectStyle } from "../ObjectStyle"
 import type { ObjectProperty } from "../properties/ObjectProperty"
@@ -9,7 +9,7 @@ import type { ObjectProperty } from "../properties/ObjectProperty"
 // It defines methods for creating, moving, resizing, rendering, hit testing, 
 // normalizing, updating previews, getting bounds, getting resize handles, 
 // getting move and resize updates, duplicating objects, and managing object properties.
-export interface ObjectHandler<T extends Object = Object> {
+export interface ObjectHandler<T extends BoardObject = BoardObject> {
 
     create?: (
         point: Point,

@@ -1,5 +1,5 @@
 import type { Circle } from "@common/shapes"
-import type { SelectionBounds } from "../../selection/getSelectionBounds"
+import type { SelectionBounds } from "../../interaction/selection/getSelectionBounds"
 
 export function getCircleBounds(
   object: Circle

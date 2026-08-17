@@ -1,9 +1,9 @@
-import type { Object } from "@common/types";
+import type { BoardObject } from "@common/types";
 import type { Editor } from "../../editor/Editor";
 import type { ObjectProperty } from "../../objects/properties/ObjectProperty";
 
 type Props = {
-    object: Object;
+    object: BoardObject;
     property: ObjectProperty;
     editor: Editor;
 };

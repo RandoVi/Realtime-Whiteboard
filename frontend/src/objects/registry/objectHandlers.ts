@@ -3,7 +3,7 @@ import { circleHandler } from "../circle/circleHandler"
 import { strokeHandler } from "../stroke/strokeHandler"
 // import { arrowHandler } from "../arrow/arrowHandler"
 import type { ObjectHandler } from "./ObjectHandler"
-import type { Object } from "@common/types"
+import type { BoardObject } from "@common/types"
 import { triangleHandler } from "../triangle/triangleHandler"
 import { laserHandler } from "../laser/laserHandler"
 import { arrowHandler } from "../arrow/arrowHandler"
@@ -19,5 +19,5 @@ export const objectHandlers = {
   textbox: textboxHandler,
 //   arrow: arrowHandler,
 } satisfies {
-  [K in Object["type"]]: ObjectHandler<Extract<Object, { type: K }>>
+  [K in BoardObject["type"]]: ObjectHandler<Extract<BoardObject, { type: K }>>
 }

@@ -1,13 +1,13 @@
 import type { MutableRefObject } from "react";
-import type { Camera } from "../types/Types";
+import type { Camera } from "../camera/Camera";
 import type { Interaction } from "./Interaction";
 import type { Editor } from "../editor/Editor";
 import type { Laser } from "@common/shapes/Laser";
-import type { Object } from "@common/types";
-import type { Presence } from "../socket/preview/Presence";
-import type { Document } from "../document/Document";
+import type { BoardObject } from "@common/types";
+import type { Presence } from "../network/presence/Presence";
+import type { BoardDocument } from "../document/Document";
 import type { ObjectStyle } from "../objects/ObjectStyle";
-import type { RemotePresence } from "../socket/preview/RemotePresence";
+import type { RemotePresence } from "../network/presence/RemotePresence";
 
 
 export interface CanvasInteractionContext {
@@ -18,7 +18,7 @@ export interface CanvasInteractionContext {
 
     interactionRef: MutableRefObject<Interaction>;
 
-    document: Document;
+    document: BoardDocument;
 
     editor: Editor;
 
@@ -26,7 +26,7 @@ export interface CanvasInteractionContext {
 
     requestRender: () => void;
 
-    getSelectedObject: () => Object | undefined;
+    getSelectedObject: () => BoardObject | undefined;
 
     selectObject: (id: string | null) => void;
 

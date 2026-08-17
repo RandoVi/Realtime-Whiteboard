@@ -1,9 +1,9 @@
-import type { Object } from "@common/types"
+import type { BoardObject } from "@common/types"
 import { getObjectHandler } from "./registry/getObjectHandler"
 import type { ObjectProperty } from "./properties/ObjectProperty"
 
 export function getObjectProperties(
-  object: Object
+  object: BoardObject
 ): ObjectProperty[] {
 
   return (

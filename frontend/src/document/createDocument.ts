@@ -1,12 +1,12 @@
-import type { BoardUser } from "../board/BoardUser";
-import type { Object } from "@common/types";
-import type { Document } from "./Document";
+import type { BoardUser } from "../types/BoardUser";
+import type { BoardObject } from "@common/types";
+import type { BoardDocument } from "./Document";
 
 
 export function createDocument(
-    objects: Object[],
+    objects: BoardObject[],
     users: BoardUser[] = [],
-): Document {
+): BoardDocument {
 
     const objectsRef = {
         current: objects,

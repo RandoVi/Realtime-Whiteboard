@@ -1,7 +1,7 @@
-import type { Object } from "@common/types";
+import type { BoardObject } from "@common/types";
 
 type Args = {
-  objects: Object[];
+  objects: BoardObject[];
   objectId: string;
 };
 

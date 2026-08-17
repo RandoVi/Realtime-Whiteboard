@@ -1,5 +1,6 @@
-import type { Camera } from '../../types/Types'
+
 import type { Triangle } from "@common/shapes";
+import type { Camera } from "../../camera/Camera";
 
 export function renderTriangle(
     context: CanvasRenderingContext2D,

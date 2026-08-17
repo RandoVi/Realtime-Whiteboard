@@ -1,11 +1,11 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 
-import { renderGrid } from "../render/renderGrid";
-import { renderBackground } from "../render/renderBackground";
-import { renderObjects } from "../render/renderObjects";
-import { renderSelection } from "../render/renderSelection";
+import { renderGrid } from "../rendering/renderGrid";
+import { renderBackground } from "../rendering/renderBackground";
+import { renderObjects } from "../rendering/renderObjects";
+import { renderSelection } from "../rendering/renderSelection";
 
-import { useWhiteboardInput } from "../hooks/useWhiteboardInput";
+import { useWhiteboardInput } from "./hooks/useWhiteboardInput";
 
 import { createEditor } from "../editor/createEditor";
 import { createDocument } from "../document/createDocument";
@@ -13,26 +13,26 @@ import { getObjectById } from "../objects/getObjectById";
 import { getRenderedObject } from "../objects/getRenderedObjects";
 import { DEFAULT_FILL, DEFAULT_STROKE_COLOR } from "../objects/defaults";
 
-import { SocketCollaboration } from "../socket/collaboration/SocketCollaboration";
-import { SocketPresence } from "../socket/preview/SocketPresence";
-import { createRemotePresence } from "../socket/preview/createRemotePresence";
+import { SocketCollaboration } from "../network/collaboration/SocketCollaboration";
+import { SocketPresence } from "../network/presence/SocketPresence";
+import { createRemotePresence } from "../network/presence/createRemotePresence";
 import { getCurrentUser, setCurrentUser } from "../network/currentUser";
 import { setBoardId as setNetworkBoardId } from "../network/board";
 
 import { BottomToolbar } from "../ui/toolbars/BottomToolbar";
 import { ObjectInspector } from "../ui/objectPanel/ObjectInspector";
-import { BoardLobbyModal, type LobbyState } from "../lobby/BoardLobbyModal";
+import { BoardLobbyModal, type LobbyState } from "../ui/lobby/BoardLobbyModal";
 import { ShapeMenu } from "../ui/ShapeMenu";
 import { ShapeSettings } from "../ui/ShapeSettings";
 import { DrawingMenu } from "../ui/DrawingMenu";
 import { RemoteCursors } from "../ui/cursors/RemoteCursors";
 
-import type { Camera } from "../types/Types";
+import type { Camera } from "../camera/Camera";
 import type { Tool } from "../types/Tool";
-import type { RemotePresence } from "../socket/preview/RemotePresence";
+import type { RemotePresence } from "../network/presence/RemotePresence";
 
 import type { Laser } from "@common/shapes";
-import type { Object } from "@common/types";
+import type { BoardObject } from "@common/types";
 
 import "./Whiteboard.css";
 
@@ -183,7 +183,7 @@ function Whiteboard() {
     }
 
 
-    let selectedObject: Object | undefined;
+    let selectedObject: BoardObject | undefined;
 
     if (
       interactionRef.current.type === "moving" ||
@@ -311,7 +311,7 @@ function Whiteboard() {
     collaboration.onCommand(
       command => {
 
-        console.log("COLLABORATION COMMAND RECEIVED:", command);
+        // console.log("COLLABORATION COMMAND RECEIVED:", command);
         editor.execute(
           command,
           {
@@ -319,20 +319,20 @@ function Whiteboard() {
           }
         );
 
-        console.log(
-          "OBJECT AFTER REMOTE COMMAND:",
-          document.objectsRef.current.find(
-            object =>
-              object.id ===
-              (
-                command.type === "createBoardObject"
-                  ? command.boardObject.id
-                  : command.type === "updateBoardObject"
-                    ? command.boardObjectId
-                    : ""
-              )
-          )
-        );
+        // console.log(
+        //   "OBJECT AFTER REMOTE COMMAND:",
+        //   document.objectsRef.current.find(
+        //     object =>
+        //       object.id ===
+        //       (
+        //         command.type === "createBoardObject"
+        //           ? command.boardObject.id
+        //           : command.type === "updateBoardObject"
+        //             ? command.boardObjectId
+        //             : ""
+        //       )
+        //   )
+        // );
 
       }
     );
@@ -601,10 +601,10 @@ function Whiteboard() {
               );
 
               if (!laser) {
-                console.log("LASER NOT FOUND FOR POINT", {
-                  laserId: command.laserId,
-                  lasers: userPresence.lasers,
-                });
+                // console.log("LASER NOT FOUND FOR POINT", {
+                //   laserId: command.laserId,
+                //   lasers: userPresence.lasers,
+                // });
                 break;
               }
 

@@ -1,7 +1,7 @@
-import type { Object, RotatableObject } from "@common/types"
+import type { BoardObject, RotatableObject } from "@common/types"
 
 export function isRotatableObject(
-    object: Object
+    object: BoardObject
 ): object is RotatableObject {
     return (
         object.type === "rectangle" ||

@@ -1,4 +1,4 @@
-import type { Object } from "@common/types";
+import type { BoardObject } from "@common/types";
 import type { Editor } from "../../editor/Editor";
 import type { PropertySection as PropertySectionType } from "../../objects/properties/ObjectProperty";
 
@@ -9,7 +9,7 @@ import { PropertyRow } from "./PropertyRow";
 type Props = {
     title: string;
     section: PropertySectionType;
-    object: Object;
+    object: BoardObject;
     editor: Editor;
 };
 

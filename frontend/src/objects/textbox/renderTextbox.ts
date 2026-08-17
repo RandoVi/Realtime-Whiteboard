@@ -1,4 +1,5 @@
-import type { Textbox } from "@common/shapes/Textbox";import type { Camera } from "../../types/Types";
+import type { Textbox } from "@common/shapes/Textbox";
+import type { Camera } from "../../camera/Camera";
 
 export function renderTextbox(
     context: CanvasRenderingContext2D,

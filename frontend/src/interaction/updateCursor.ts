@@ -10,7 +10,7 @@ export function updateCursor(
     }
 
     const interaction = context.interactionRef.current;
-    console.log("Updating cursor for interaction type:", interaction.type);
+    // console.log("Updating cursor for interaction type:", interaction.type);
     switch (interaction.type) {
         case "panning":
             canvas.style.cursor = "grabbing";
@@ -33,5 +33,5 @@ export function updateCursor(
             canvas.style.cursor = "default";
             break;
     }
-    console.log("Cursor updated to:", canvas.style.cursor);
+    // console.log("Cursor updated to:", canvas.style.cursor);
 }

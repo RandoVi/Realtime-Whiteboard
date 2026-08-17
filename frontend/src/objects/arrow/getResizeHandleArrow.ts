@@ -1,6 +1,6 @@
-import { hitTestResizeHandles } from "../../selection/hitTestResizeHandles";
+import { hitTestResizeHandles } from "../../interaction/selection/hitTestResizeHandles";
 import type { ResizeHandle } from "../../types/selection";
-import type { Camera } from "../../types/Types";
+import type { Camera } from "../../camera/Camera";
 import type { Point } from "@common/types";
 import type { Arrow } from "@common/shapes";
 import { getArrowBounds } from "./getArrowBounds";

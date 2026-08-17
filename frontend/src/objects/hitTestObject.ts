@@ -1,4 +1,4 @@
-import type { Object, Point } from "@common/types"
+import type { BoardObject, Point } from "@common/types"
 import { getObjectHandler } from './registry/getObjectHandler'
 
 
@@ -6,7 +6,7 @@ import { getObjectHandler } from './registry/getObjectHandler'
 //function to check if this world point is inside a object
 export function hitTestObject(
   point: Point,
-  object: Object,
+  object: BoardObject,
 ): boolean {
   return (
     getObjectHandler(object)

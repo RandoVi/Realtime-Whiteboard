@@ -1,9 +1,9 @@
-import type { RemotePresence } from "../socket/preview/RemotePresence";
-import type { Object } from "@common/types";
+import type { RemotePresence } from "../network/presence/RemotePresence";
+import type { BoardObject } from "@common/types";
 export function getRenderedObject(
-    object: Object,
+    object: BoardObject,
     presence: RemotePresence
-): Object {
+): BoardObject {
     if (
         presence.preview?.type === "update" &&
         presence.preview.objectId === object.id

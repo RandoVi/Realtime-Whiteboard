@@ -1,4 +1,4 @@
-import type { Camera } from "../../types/Types";
+import type { Camera } from "../../camera/Camera";
 import { worldToScreen } from "../../camera/Camera";
 import "./RemoteCursor.css";
 import { CursorIcon } from "../icons/CursorIcon";

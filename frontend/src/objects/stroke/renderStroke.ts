@@ -1,4 +1,4 @@
-import type { Camera } from "../../types/Types";
+import type { Camera } from "../../camera/Camera";
 import type { Stroke } from "@common/shapes";
 export function renderStroke(
     context: CanvasRenderingContext2D,

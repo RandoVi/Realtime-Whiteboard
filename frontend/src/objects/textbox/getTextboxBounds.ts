@@ -1,4 +1,4 @@
-import type { SelectionBounds } from "../../selection/getSelectionBounds"
+import type { SelectionBounds } from "../../interaction/selection/getSelectionBounds"
 import type { Textbox } from "@common/shapes/Textbox";
 export function getTextboxBounds(
     object: Textbox
