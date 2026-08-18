@@ -55,7 +55,7 @@ export function BoardLobbyModal({
     onJoin,
     onStart,
 }: Props) {
-
+    const [mode, setMode] = useState<"create" | "join">("create");
     const [copied, setCopied] = useState(false);
 
     if (state === "connected") {
@@ -88,7 +88,6 @@ export function BoardLobbyModal({
                     <h2>Collaborative Whiteboard</h2>
 
                     <div className="lobby-field">
-                        
                         <label htmlFor="username">
                             Username
                         </label>
@@ -107,57 +106,73 @@ export function BoardLobbyModal({
                             {usernameError || "\u00A0"}
                         </p>
                     </div>
-                    <h3 className="create-board">Create board</h3>
-                    <button
-                        onClick={onCreate}
-                        disabled={!validUsername}
-                    >
-                        Create Board
-                    </button>
 
-                    <div className="divider">
-                        <span>OR</span>
-                    </div>
-
-                    <div className="join-section">
-                        <h3>Join board</h3>
-
-                        <div className="lobby-field">
-                            <div className="label-with-info">
-                                <label htmlFor="board-id">
-                                    Board ID
-                                </label>
-
-                                <span
-                                    className="info-icon"
-                                    tabIndex={0}
-                                    aria-label="Board ID information"
-                                >
-                                    ?
-                                    <span className="info-tooltip">
-                                        Enter the Board ID shared with you
-                                        by the person who created the board.
-                                    </span>
-                                </span>
-                            </div>
-
-                            <input
-                                id="board-id"
-                                value={boardId}
-                                onChange={(e) =>
-                                    onBoardIdChange(e.target.value)
-                                }
-                                placeholder="Enter Board ID"
-                            />
-                        </div>
+                    <div className="lobby-tabs">
+                        <button
+                            className={mode === "create" ? "active" : ""}
+                            onClick={() => setMode("create")}
+                        >
+                            Create Board
+                        </button>
 
                         <button
-                            onClick={onJoin}
-                            disabled={!validUsername || !validBoardId}
+                            className={mode === "join" ? "active" : ""}
+                            onClick={() => setMode("join")}
                         >
                             Join Board
                         </button>
                     </div>
+
+                    {mode === "create" ? (
+                        <div className="lobby-section">
+                            <h3>Create a new board</h3>
+
+                            <button
+                                onClick={onCreate}
+                                disabled={!validUsername}
+                            >
+                                Create Board
+                            </button>
+                        </div>
+                    ) : (
+                        <div className="lobby-section">
+                            <div className="lobby-field">
+                                <div className="label-with-info">
+                                    <label htmlFor="board-id">
+                                        Board ID
+                                    </label>
+
+                                    <span
+                                        className="info-icon"
+                                        tabIndex={0}
+                                        aria-label="Board ID information"
+                                    >
+                                        ?
+                                        <span className="info-tooltip">
+                                            Enter the Board ID shared with you
+                                            by the person who created the board.
+                                        </span>
+                                    </span>
+                                </div>
+
+                                <input
+                                    id="board-id"
+                                    value={boardId}
+                                    onChange={(e) =>
+                                        onBoardIdChange(e.target.value)
+                                    }
+                                    placeholder="Enter Board ID"
+                                />
+                            </div>
+
+                            <button
+                                onClick={onJoin}
+                                disabled={!validUsername || !validBoardId}
+                            >
+                                Join Board
+                            </button>
+                        </div>
+                    )}
 
                 </div>
             </div>
