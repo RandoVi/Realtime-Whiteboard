@@ -5,6 +5,7 @@ export function validateCircleUpdate(
     data: Partial<BoardObjectDTO>
 ): void {
     const allowedFields = [
+        "id",
         "x",
         "y",
         "radius",

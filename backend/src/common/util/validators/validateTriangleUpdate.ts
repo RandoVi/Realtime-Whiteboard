@@ -5,6 +5,7 @@ export function validateTriangleUpdate(
     data: Partial<BoardObjectDTO>
 ): void {
     const allowedFields = [
+        "id",
         "x",
         "y",
         "width",

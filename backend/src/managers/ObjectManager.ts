@@ -57,6 +57,10 @@ export class ObjectManager {
     moveToFront(objectId: string) {
         const object = this.objects.get(objectId);
 
+        if (!object) {
+            throw new BadRequestException("Could not find object to bring to front")
+        }
+
         if (object !== undefined) {
             this.objects.delete(objectId)
             this.objects.set(objectId, object)

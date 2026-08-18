@@ -9,29 +9,33 @@ import { validateTextboxUpdate } from "./validators/validateTextboxUpdate";
 import { validateTriangleUpdate } from "./validators/validateTriangleUpdate";
 
 export function validateObjectUpdate(existing: BoardObject, changes: Partial<BoardObjectDTO>): void {
+    const definedChanges = Object.fromEntries(
+        Object.entries(changes).filter(([, value]) => value !== undefined)
+    ) as Partial<BoardObjectDTO>;
+
     switch (existing.type) {
         case "arrow":
-            validateArrowUpdate(changes);
+            validateArrowUpdate(definedChanges);
             return;
 
         case "circle":
-            validateCircleUpdate(changes);
+            validateCircleUpdate(definedChanges);
             return;
 
         case "rectangle":
-            validateRectangleUpdate(changes);
+            validateRectangleUpdate(definedChanges);
             return;
 
         case "stroke":
-            validateStrokeUpdate(changes);
+            validateStrokeUpdate(definedChanges);
             return;
 
         case "textbox":
-            validateTextboxUpdate(changes);
+            validateTextboxUpdate(definedChanges);
             return;
 
         case "triangle":
-            validateTriangleUpdate(changes);
+            validateTriangleUpdate(definedChanges);
             return;
 
         default:

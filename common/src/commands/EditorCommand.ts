@@ -1,14 +1,14 @@
-import type { Object } from "../types/Object";
+import type { BoardObject } from "../types/Object";
 
 export type CreateObjectCommand = {
     type: "createBoardObject";
-    boardObject: Object; //bcs object doesn't exist yet, we send the whole object
+    boardObject: BoardObject; //bcs object doesn't exist yet, we send the whole object
 };
 
 export type UpdateObjectCommand = {
     type: "updateBoardObject";
     boardObjectId: string;
-    updates: Partial<Object>; //Partial object.
+    updates: Partial<BoardObject>; //Partial object.
 };
 
 export type DeleteObjectCommand = {

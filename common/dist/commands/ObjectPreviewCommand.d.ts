@@ -1,13 +1,13 @@
-import type { Object } from "../types/Object";
+import type { BoardObject } from "../types/Object";
 export type ObjectPreviewCommand = {
     type: "objectPreview";
     previewType: "create";
-    boardObject: Object;
+    boardObject: BoardObject;
 } | {
     type: "objectPreview";
     previewType: "update";
     boardObjectId: string;
-    updates: Partial<Object>;
+    updates: Partial<BoardObject>;
 } | {
     type: "objectPreview";
     previewType: "clear";

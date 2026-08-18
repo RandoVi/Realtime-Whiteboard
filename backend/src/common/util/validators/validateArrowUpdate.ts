@@ -6,6 +6,7 @@ export function validateArrowUpdate(
 ): void {
 
     const allowed = new Set([
+        "id",
         "x",
         "y",
         "width",
