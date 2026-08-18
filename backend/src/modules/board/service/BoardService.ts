@@ -217,12 +217,17 @@ export class BoardService implements OnApplicationShutdown {
             );
         }
 
-        validateObjectUpdate(existing, changes);
-        console.log("After validate")
-        //const validatedObject = toMongoBoardObject(changes);
-        board.applyObjectUpdate(changes);
+        const { id, ...fields } = changes;
+
+        const update = Object.fromEntries(
+            Object.entries(fields).filter(([, value]) => value !== undefined)
+        );
+
+        validateObjectUpdate(existing, update);
+
+        board.applyObjectUpdate({id, ...update});
         // Get the now-updated object
-        const object = board.objects.get(changes.id)!;
+        const object = board.objects.get(id)!;
 
 
         const key = this.objectChangeKey(board.id, object.id, 'update');

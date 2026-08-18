@@ -13,7 +13,6 @@ export function validateObjectUpdate(existing: BoardObject, changes: Partial<Boa
     console.log("Existing object: " + existing.id)
     console.log("Existing object: " + existing.type)
     
-    console.log("DTO Object Data: " + changes.id)
     const definedChanges = Object.fromEntries(
         Object.entries(changes).filter(([, value]) => value !== undefined)
     ) as Partial<BoardObjectDTO>;
@@ -28,7 +27,6 @@ export function validateObjectUpdate(existing: BoardObject, changes: Partial<Boa
             return;
 
         case "rectangle":
-            console.log("Inside validateRectangle switch")
             validateRectangleUpdate(definedChanges);
             return;
 
