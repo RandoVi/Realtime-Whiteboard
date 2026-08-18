@@ -1,7 +1,6 @@
 import { IsString, IsNotEmpty, IsOptional, IsNumber, IsArray, ValidateNested } from "class-validator";
-import { Point } from "@whiteboard/common";
 import { Type } from "class-transformer";
-import { PointDTO } from "../../../common/util/PointDTO";
+import { LaserPointsDTO } from "../../../common/util/PointDTO";
 
 export class BoardObjectDTO {
 
@@ -44,8 +43,8 @@ export class BoardObjectDTO {
     @IsOptional()
     @IsArray()
     @ValidateNested({ each: true })
-    @Type(() => PointDTO)
-    points?: Point[]
+    @Type(() => LaserPointsDTO)
+    points?: LaserPointsDTO;
 
     @IsOptional()
     @IsString()

@@ -255,6 +255,7 @@ export class BoardGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
                     console.log("SERVER: No board after fetching, breaking")
                     break
                 }
+                console.log("Type sent: " + data.command.updates.type)
                 const dto = plainToInstance(
                     BoardObjectDTO,
                     {
@@ -262,7 +263,12 @@ export class BoardGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
                         ...data.command.updates
                     }
                 );
-
+                console.log("Transformed type: " + dto.type)
+                console.log("Objects in board currently:")
+                for (const boardObject of board.objects.getAll()) {
+                    console.log(boardObject.id)
+                }
+                console.log("ObjectID being updated: " + data.command.boardObjectId)
                 await this.boards.updateObjectInBoard(board!.id, dto);
                 
                 socket.broadcast.to(board!.id).emit("boardObjectCommand", data);

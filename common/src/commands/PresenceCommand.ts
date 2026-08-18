@@ -1,6 +1,6 @@
 import type { Laser } from "../shapes";
 import type { Point } from "../types";
-import type { Object } from "../types/Object";
+import type { BoardObject } from "../types/Object";
 
 export type ObjectSelectionCommand = {
     type: "selection";
@@ -11,13 +11,13 @@ export type ObjectPreviewCommand =
   | {
       type: "objectPreview";
       previewType: "create";
-      boardObject: Object;
+      boardObject: BoardObject;
     }
   | {
       type: "objectPreview";
       previewType: "update";
       boardObjectId: string;
-      updates: Partial<Object>;
+      updates: Partial<BoardObject>;
     }
   | {
       type: "objectPreview";

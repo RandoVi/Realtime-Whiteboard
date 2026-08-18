@@ -30,10 +30,9 @@ export class ObjectManager {
         if (!object) {
             throw new NotFoundException("BoardObject not found");
         }
-
+        console.log(`Original type: ${object.type}`)
+        console.log(`New type: ${update.type}`)
         Object.assign(object, update);
-
-        object.updatedAt = Date.now();
 
         return object;
     }

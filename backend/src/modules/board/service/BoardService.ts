@@ -12,7 +12,7 @@ import { validateObjectUpdate } from "../../../common/util/validateObjectUpdate"
 @Injectable()
 export class BoardService implements OnApplicationShutdown {
 
-    private static readonly FLUSH_INTERVAL = 5_000;
+    private static readonly FLUSH_INTERVAL = 15_000;
     private static readonly CLEANUP_INTERVAL = 30_000;
     private static readonly DB_EXPIRATION_TIME = 2 * 60 * 1000;
 
@@ -216,11 +216,11 @@ export class BoardService implements OnApplicationShutdown {
                 'Object type cannot be changed'
             );
         }
-        // Validate only the fields being changed
+
         validateObjectUpdate(existing, changes);
-
+        console.log("After validate")
+        //const validatedObject = toMongoBoardObject(changes);
         board.applyObjectUpdate(changes);
-
         // Get the now-updated object
         const object = board.objects.get(changes.id)!;
 
@@ -250,11 +250,7 @@ export class BoardService implements OnApplicationShutdown {
         if (!board) {
             throw new NotFoundException("SERVICE:Board not found with id: " + boardId)
         }
-        console.log("MOVE TO FRONT REQUEST", {
-            objectId,
-            exists: board.objects.getAll().some((object) => object.id === objectId),
-            objectIds: board.objects.getAll().map((object) => object.id),
-        });
+
         board.moveObjectToFrontInObjects(objectId);
 
         const key = this.objectChangeKey(board.id, objectId, 'reorder');
