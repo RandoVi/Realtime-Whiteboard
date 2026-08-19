@@ -1,23 +1,21 @@
-import type { BoardObject } from "@common/types";
-import type { Editor } from "../../editor/Editor";
+import type { ChangeEvent } from "react";
 import type { ObjectProperty } from "../../objects/properties/ObjectProperty";
 
 type Props = {
-    object: BoardObject;
     property: ObjectProperty;
-    editor: Editor;
+    value: unknown;
+    onChange: (
+        event: ChangeEvent<HTMLInputElement>
+    ) => void;
 };
 
 export function PropertyInput({
-    object,
     property,
-    editor,
+    value,
+    onChange,
 }: Props) {
-    const value = String(
-        (object as Record<string, unknown>)[property.key]
-    );
     const disabled = property.editable === false;
-    
+
     switch (property.type) {
         case "number":
             return (
@@ -26,12 +24,9 @@ export function PropertyInput({
                     min={property.min}
                     max={property.max}
                     step={property.step}
-                    value={value}
+                    value={String(value)}
                     disabled={disabled}
-                    onChange={editor.bindProperty(
-                        property.key,
-                        Number
-                    )}
+                    onChange={onChange}
                 />
             );
 
@@ -39,9 +34,9 @@ export function PropertyInput({
             return (
                 <input
                     type="color"
-                    value={value}
+                    value={String(value)}
                     disabled={disabled}
-                    onChange={editor.bindProperty(property.key)}
+                    onChange={onChange}
                 />
             );
 
@@ -49,9 +44,9 @@ export function PropertyInput({
             return (
                 <input
                     type="text"
-                    value={value}
+                    value={String(value)}
                     disabled={disabled}
-                    onChange={editor.bindProperty(property.key)}
+                    onChange={onChange}
                 />
             );
     }

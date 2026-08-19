@@ -3,6 +3,7 @@ import type { EditorCommand } from "@common/commands";
 
 export type ExecuteOptions = {
   broadcast?: boolean;
+  recordHistory?: boolean;
 };
 
 export interface Editor {
@@ -24,5 +25,13 @@ export interface Editor {
 
   duplicateSelectedObject(): void;
 
+  undo(): void;
 
+  redo(): void;
+
+  canUndo(): boolean;
+
+  canRedo(): boolean;
+
+  resetHistory(): void;
 }

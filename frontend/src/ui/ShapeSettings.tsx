@@ -1,55 +1,52 @@
+import type { ChangeEvent } from "react";
+import type { ObjectProperty } from "../objects/properties/ObjectProperty";
+import { PropertyInput } from "./objectPanel/PropertyInput";
+import { PropertyRow } from "./objectPanel/PropertyRow";
+
+// import "./ShapeSettings.css";
+
 type Props = {
-    fill: string;
-    stroke: string;
-    setFill: (value: string) => void;
-    setStroke: (value: string) => void;
+    properties: ObjectProperty[];
+    values: Record<string, unknown>;
+    onChange: (key: string, value: unknown) => void;
 };
 
 export function ShapeSettings({
-    fill,
-    stroke,
-    setFill,
-    setStroke,
+    properties,
+    values,
+    onChange,
 }: Props) {
+    const appearanceProperties = properties.filter(
+        property => property.section === "appearance"
+    );
+
+    if (appearanceProperties.length === 0) {
+        return null;
+    }
+
     return (
         <div className="shape-settings">
-    <label className="shape-color">
-        <span className="shape-color-label">Fill</span>
+            {appearanceProperties.map(property => (
+                <PropertyRow
+                    key={property.key}
+                    label={property.label}
+                >
+                    <PropertyInput
+                        property={property}
+                        value={values[property.key]}
+                        onChange={(
+                            event: ChangeEvent<HTMLInputElement>
+                        ) => {
+                            const value =
+                                property.type === "number"
+                                    ? Number(event.target.value)
+                                    : event.target.value;
 
-        <span
-            className="shape-color-preview"
-            style={{ backgroundColor: fill }}
-        />
-
-        <span className="shape-color-value">
-            {fill.toUpperCase()}
-        </span>
-
-        <input
-            type="color"
-            value={fill}
-            onChange={(e) => setFill(e.target.value)}
-        />
-    </label>
-
-    <label className="shape-color">
-        <span className="shape-color-label">Stroke</span>
-
-        <span
-            className="shape-color-preview"
-            style={{ backgroundColor: stroke }}
-        />
-
-        <span className="shape-color-value">
-            {stroke.toUpperCase()}
-        </span>
-
-        <input
-            type="color"
-            value={stroke}
-            onChange={(e) => setStroke(e.target.value)}
-        />
-    </label>
-</div>
+                            onChange(property.key, value);
+                        }}
+                    />
+                </PropertyRow>
+            ))}
+        </div>
     );
 }

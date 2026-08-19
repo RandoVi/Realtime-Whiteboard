@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
-import { Point } from "@whiteboard/common";
 import { HydratedDocument, Schema as MongooseSchema } from "mongoose";
+import { LaserPointsDTO } from "../../../common/util/PointDTO";
 
 
 export type BoardObjectDocument = HydratedDocument<BoardObject>;
@@ -46,7 +46,7 @@ export class BoardObject {
 
 
   @Prop({required: false, type: [MongooseSchema.Types.Mixed],})
-  points?: Point[];
+  points?: LaserPointsDTO;
 
   @Prop({ required: false, type: String })
   text?: string;

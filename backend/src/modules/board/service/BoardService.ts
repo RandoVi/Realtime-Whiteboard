@@ -12,7 +12,7 @@ import { validateObjectUpdate } from "../../../common/util/validateObjectUpdate"
 @Injectable()
 export class BoardService implements OnApplicationShutdown {
 
-    private static readonly FLUSH_INTERVAL = 5_000;
+    private static readonly FLUSH_INTERVAL = 15_000;
     private static readonly CLEANUP_INTERVAL = 30_000;
     private static readonly DB_EXPIRATION_TIME = 2 * 60 * 1000;
 
@@ -216,13 +216,18 @@ export class BoardService implements OnApplicationShutdown {
                 'Object type cannot be changed'
             );
         }
-        // Validate only the fields being changed
-        validateObjectUpdate(existing, changes);
 
-        board.applyObjectUpdate(changes);
+        const { id, ...fields } = changes;
 
+        const update = Object.fromEntries(
+            Object.entries(fields).filter(([, value]) => value !== undefined)
+        );
+
+        validateObjectUpdate(existing, update);
+
+        board.applyObjectUpdate({id, ...update});
         // Get the now-updated object
-        const object = board.objects.get(changes.id)!;
+        const object = board.objects.get(id)!;
 
 
         const key = this.objectChangeKey(board.id, object.id, 'update');
@@ -250,11 +255,7 @@ export class BoardService implements OnApplicationShutdown {
         if (!board) {
             throw new NotFoundException("SERVICE:Board not found with id: " + boardId)
         }
-        console.log("MOVE TO FRONT REQUEST", {
-            objectId,
-            exists: board.objects.getAll().some((object) => object.id === objectId),
-            objectIds: board.objects.getAll().map((object) => object.id),
-        });
+
         board.moveObjectToFrontInObjects(objectId);
 
         const key = this.objectChangeKey(board.id, objectId, 'reorder');

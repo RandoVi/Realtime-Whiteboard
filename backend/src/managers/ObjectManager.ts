@@ -30,11 +30,7 @@ export class ObjectManager {
         if (!object) {
             throw new NotFoundException("BoardObject not found");
         }
-
         Object.assign(object, update);
-
-        object.updatedAt = Date.now();
-
         return object;
     }
 

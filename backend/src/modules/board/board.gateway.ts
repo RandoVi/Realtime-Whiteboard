@@ -238,6 +238,7 @@ export class BoardGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
                 break
             }
             case "updateBoardObject": {
+                
                 if(!this.boards.hasBoardInServer(data.boardId)) {
                     console.error('SERVER:  No "board" in socket(UPDATE - OBJECT)')
                     break
@@ -255,6 +256,7 @@ export class BoardGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
                     console.log("SERVER: No board after fetching, breaking")
                     break
                 }
+
                 const dto = plainToInstance(
                     BoardObjectDTO,
                     {

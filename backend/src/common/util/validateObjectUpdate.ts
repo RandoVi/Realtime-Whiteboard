@@ -9,6 +9,10 @@ import { validateTextboxUpdate } from "./validators/validateTextboxUpdate";
 import { validateTriangleUpdate } from "./validators/validateTriangleUpdate";
 
 export function validateObjectUpdate(existing: BoardObject, changes: Partial<BoardObjectDTO>): void {
+    console.log("Inside validate switch")
+    console.log("Existing object: " + existing.id)
+    console.log("Existing object: " + existing.type)
+    
     const definedChanges = Object.fromEntries(
         Object.entries(changes).filter(([, value]) => value !== undefined)
     ) as Partial<BoardObjectDTO>;

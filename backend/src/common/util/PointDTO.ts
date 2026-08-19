@@ -1,6 +1,6 @@
 import { IsNumber } from "class-validator";
 
-export class PointDTO {
+export class LaserPointsDTO {
     @IsNumber()
     x!: number;
 

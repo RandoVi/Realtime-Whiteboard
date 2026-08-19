@@ -87,7 +87,7 @@ const textboxProperties: ObjectProperty<Textbox>[] = [
 
     {
         key: "fill",
-        label: "Color",
+        label: "Text",
         type: "color",
         section: "appearance",
         editable: true,

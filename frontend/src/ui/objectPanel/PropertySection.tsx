@@ -1,6 +1,8 @@
 import type { BoardObject } from "@common/types";
 import type { Editor } from "../../editor/Editor";
-import type { PropertySection as PropertySectionType } from "../../objects/properties/ObjectProperty";
+import type {
+    PropertySection as PropertySectionType,
+} from "../../objects/properties/ObjectProperty";
 
 import { getObjectProperties } from "../../objects/getObjectProperties";
 import { PropertyInput } from "./PropertyInput";
@@ -28,7 +30,6 @@ export function PropertySection({
 
     return (
         <section className="inspector-section">
-
             <h4>{title}</h4>
 
             {properties.map(property => (
@@ -37,13 +38,12 @@ export function PropertySection({
                     label={property.label}
                 >
                     <PropertyInput
-                        object={object}
                         property={property}
-                        editor={editor}
+                        value={(object as Record<string, unknown>)[property.key]}
+                        onChange={editor.bindProperty(property.key)}
                     />
                 </PropertyRow>
             ))}
-
         </section>
     );
 }
