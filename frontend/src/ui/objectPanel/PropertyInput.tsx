@@ -18,6 +18,7 @@ export function PropertyInput({
         case "number":
             return (
                 <input
+                    className="property-input"
                     type="number"
                     min={property.min}
                     max={property.max}
@@ -33,6 +34,7 @@ export function PropertyInput({
         case "color":
             return (
                 <input
+                    className="property-input property-color-input"
                     type="color"
                     value={String(value)}
                     disabled={disabled}
