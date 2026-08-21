@@ -12,4 +12,5 @@ export type Circle = {
 
   fill: string
   stroke: string
+  strokeWidth: number
 }

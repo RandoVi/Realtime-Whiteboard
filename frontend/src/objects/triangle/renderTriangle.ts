@@ -35,7 +35,7 @@ export function renderTriangle(
 
     context.fillStyle = triangle.fill
     context.strokeStyle = triangle.stroke
-    context.lineWidth = 2
+    context.lineWidth = triangle.strokeWidth
 
     context.beginPath()
 

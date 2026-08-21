@@ -12,4 +12,5 @@ export type Rectangle = {
 
   fill: string
   stroke: string
+  strokeWidth: number
 }

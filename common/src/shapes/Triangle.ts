@@ -13,4 +13,5 @@ export interface Triangle {
 
     fill: string;
     stroke: string;
+    strokeWidth: number;
 }
