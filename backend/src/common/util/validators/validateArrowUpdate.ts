@@ -14,6 +14,7 @@ export function validateArrowUpdate(
         "rotation",
         "fill",
         "stroke",
+        "strokeWidth",
     ]);
 
     for (const key of Object.keys(changes)) {
