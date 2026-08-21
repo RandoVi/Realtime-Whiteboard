@@ -14,5 +14,6 @@ export function createTriangle(point: Point, style: ObjectStyle): Triangle {
         rotation: 0,
         fill: style.fill,
         stroke: style.stroke,
+        strokeWidth: style.strokeWidth,
     };
 }

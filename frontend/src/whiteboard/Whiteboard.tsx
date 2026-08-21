@@ -11,7 +11,7 @@ import { createEditor } from "../editor/createEditor";
 import { createDocument } from "../document/createDocument";
 import { getObjectById } from "../objects/getObjectById";
 import { getRenderedObject } from "../objects/getRenderedObjects";
-import { DEFAULT_FILL, DEFAULT_STROKE_COLOR } from "../objects/defaults";
+import { DEFAULT_FILL, DEFAULT_STROKE_COLOR, DEFAULT_STROKE_WIDTH } from "../objects/defaults";
 
 import { SocketCollaboration } from "../network/collaboration/SocketCollaboration";
 import { SocketPresence } from "../network/presence/SocketPresence";
@@ -36,6 +36,7 @@ import type { BoardObject } from "@common/types";
 
 import "./Whiteboard.css";
 import { getObjectPropertiesForType } from "../objects/getObjectProperties";
+import { penProperties } from "../ui/penProperties";
 
 
 function Whiteboard() {
@@ -71,6 +72,7 @@ function Whiteboard() {
   const [shapeSettings, setShapeSettings] = useState({
     fill: DEFAULT_FILL,
     stroke: DEFAULT_STROKE_COLOR,
+    strokeWidth: DEFAULT_STROKE_WIDTH,
     background: "#FEF3C7",
   });
 
@@ -845,7 +847,12 @@ function Whiteboard() {
           onSelectTool={(tool) => {
             setTool(tool);
             setShowDrawingMenu(false);
-            setShowShapeSettings(false);
+
+            if (tool === "stroke") {
+              setShowShapeSettings(true);
+            } else {
+              setShowShapeSettings(false);
+            }
           }}
           showShortcuts={true}
         />
@@ -863,7 +870,20 @@ function Whiteboard() {
         />
       )}
 
-      {showShapeSettings && (
+      {showShapeSettings && tool === "stroke" && (
+        <ShapeSettings
+          properties={penProperties}
+          values={shapeSettings}
+          onChange={(key, value) => {
+            setShapeSettings(prev => ({
+              ...prev,
+              [key]: value,
+            }));
+          }}
+        />
+      )}
+
+      {showShapeSettings && shapeType && tool !== "stroke" && (
         <ShapeSettings
           properties={shapeProperties}
           values={shapeSettings}

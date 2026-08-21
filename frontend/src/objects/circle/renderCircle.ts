@@ -32,7 +32,7 @@ export function renderCircle(
 
   context.fillStyle = circle.fill
   context.strokeStyle = circle.stroke
-  context.lineWidth = 2
+  context.lineWidth = circle.strokeWidth
 
   context.fill()
   context.stroke()

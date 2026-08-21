@@ -59,6 +59,15 @@ const arrowProperties: ObjectProperty<Arrow>[] = [
         section: "appearance",
         editable: true,
     },
+    {
+        key: "strokeWidth",
+        label: "Width",
+        type: "number",
+        section: "appearance",
+        min: 1,
+        max: 20,
+        editable: true,
+    },
 ];
 
 export const arrowHandler: ObjectHandler<Arrow> = {

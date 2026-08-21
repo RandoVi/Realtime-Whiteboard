@@ -60,6 +60,15 @@ const rectangleProperties: ObjectProperty<Rectangle>[] = [
         section: "appearance",
         editable: true,
     },
+    {
+        key: "strokeWidth",
+        label: "Width",
+        type: "number",
+        section: "appearance",
+        min: 1,
+        max: 20,
+        editable: true,
+    },
 ];
 
 export const rectangleHandler: ObjectHandler<Rectangle> = {
