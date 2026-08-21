@@ -1,4 +1,3 @@
-import type { ChangeEvent } from "react";
 import type { ObjectProperty } from "../objects/properties/ObjectProperty";
 import { PropertyInput } from "./objectPanel/PropertyInput";
 import { PropertyRow } from "./objectPanel/PropertyRow";
@@ -34,14 +33,7 @@ export function ShapeSettings({
                     <PropertyInput
                         property={property}
                         value={values[property.key]}
-                        onChange={(
-                            event: ChangeEvent<HTMLInputElement>
-                        ) => {
-                            const value =
-                                property.type === "number"
-                                    ? Number(event.target.value)
-                                    : event.target.value;
-
+                        onChange={(value) => {
                             onChange(property.key, value);
                         }}
                     />

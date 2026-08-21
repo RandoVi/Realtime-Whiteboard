@@ -1,12 +1,10 @@
-import type { ChangeEvent } from "react";
+
 import type { ObjectProperty } from "../../objects/properties/ObjectProperty";
 
 type Props = {
     property: ObjectProperty;
     value: unknown;
-    onChange: (
-        event: ChangeEvent<HTMLInputElement>
-    ) => void;
+    onChange: (value: unknown) => void;
 };
 
 export function PropertyInput({
@@ -26,7 +24,9 @@ export function PropertyInput({
                     step={property.step}
                     value={String(value)}
                     disabled={disabled}
-                    onChange={onChange}
+                    onChange={event =>
+                        onChange(Number(event.target.value))
+                    }
                 />
             );
 
@@ -36,7 +36,9 @@ export function PropertyInput({
                     type="color"
                     value={String(value)}
                     disabled={disabled}
-                    onChange={onChange}
+                    onChange={event =>
+                        onChange(event.target.value)
+                    }
                 />
             );
 
@@ -46,8 +48,39 @@ export function PropertyInput({
                     type="text"
                     value={String(value)}
                     disabled={disabled}
-                    onChange={onChange}
+                    onChange={event =>
+                        onChange(event.target.value)
+                    }
                 />
+            );
+
+        case "select":
+            return (
+                <select
+                    value={String(value)}
+                    disabled={disabled}
+                    onChange={event => {
+                        const selectedOption = property.options.find(
+                            option =>
+                                String(option.value) === event.target.value
+                        );
+
+                        if (!selectedOption) {
+                            return;
+                        }
+
+                        onChange(selectedOption.value);
+                    }}
+                >
+                    {property.options.map(option => (
+                        <option
+                            key={String(option.value)}
+                            value={String(option.value)}
+                        >
+                            {option.label}
+                        </option>
+                    ))}
+                </select>
             );
     }
 }

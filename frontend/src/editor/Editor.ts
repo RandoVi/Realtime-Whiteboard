@@ -15,11 +15,8 @@ export interface Editor {
 
   getSelectedObject(): BoardObject | undefined;
   bindProperty(
-    property: string,
-    transform?: (value: string) => unknown
-  ): (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => void;
+    property: string
+  ): (value: unknown) => void;
 
   deleteSelectedObject(): void;
 

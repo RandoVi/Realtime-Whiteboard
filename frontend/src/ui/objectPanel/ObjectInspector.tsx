@@ -41,6 +41,20 @@ export function ObjectInspector({
         editor={editor}
       />
 
+      <PropertySection
+        title="Content"
+        section="content"
+        object={object}
+        editor={editor}
+      />
+
+      <PropertySection
+        title="Text"
+        section="text"
+        object={object}
+        editor={editor}
+      />
+
       <ActionsSection editor={editor} />
 
     </aside>

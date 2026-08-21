@@ -14,7 +14,7 @@ const strokeProperties: ObjectProperty<Stroke>[] = [
     {
         key: "stroke",
         label: "Stroke",
-        type: "color",
+        type: "number",
         section: "appearance",
         min: 1,
         max: 20,

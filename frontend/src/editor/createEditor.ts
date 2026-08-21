@@ -1,7 +1,6 @@
 import type { MutableRefObject } from "react";
 import type { Editor } from "./Editor";
 import { getObjectById } from "../objects/getObjectById";
-import type { ChangeEvent } from "react";
 import { updateObject } from "./commands/updateObject";
 import { deleteObject } from "./commands/deleteObject";
 import type { EditorCommand } from "@common/commands";
@@ -29,7 +28,6 @@ type Args = {
 
   onDocumentChange: () => void;
 };
-
 
 
 export function createEditor({
@@ -65,6 +63,19 @@ export function createEditor({
     return next;
   }
 
+  function setObjectVersion(
+    objectId: string,
+    version: number
+  ): void {
+    objectVersions.set(objectId, version);
+
+    console.log(
+      "[VERSION]",
+      objectId,
+      `-> ${version}`
+    );
+  }
+
   function getAffectedObjectIds(
     command: EditorCommand
   ): string[] {
@@ -95,7 +106,7 @@ export function createEditor({
   ): boolean {
 
     for (const [objectId, version] of Object.entries(
-      entry.objectVersions
+      entry.afterVersions
     )) {
 
       const currentVersion =
@@ -160,17 +171,8 @@ export function createEditor({
   }
 
   // Bind a property of the selected object to an input field
-  function bindProperty(
-    property: string,
-    transform?: (value: string) => unknown
-  ) {
-    return (event: ChangeEvent<HTMLInputElement>) => {
-      const raw = event.target.value;
-
-      const value = transform
-        ? transform(raw)
-        : raw;
-
+  function bindProperty(property: string) {
+    return (value: unknown) => {
       const object = getSelectedObject();
 
       if (!object) {
@@ -301,14 +303,22 @@ export function createEditor({
       inverseCommand = createInverseCommand(command);
     }
 
-    apply(command);
-
-    const resultingVersions: Record<string, number> = {};
+    const beforeVersions: Record<string, number> = {};
 
     for (const objectId of affectedObjectIds) {
-      const version = incrementObjectVersion(objectId);
+      beforeVersions[objectId] =
+        getObjectVersion(objectId);
+    }
 
-      resultingVersions[objectId] = version;
+    apply(command);
+
+    const afterVersions: Record<string, number> = {};
+
+    for (const objectId of affectedObjectIds) {
+      const version =
+        incrementObjectVersion(objectId);
+
+      afterVersions[objectId] = version;
     }
 
     if (shouldRecordHistory && inverseCommand) {
@@ -323,7 +333,8 @@ export function createEditor({
           command,
           inverseCommand,
 
-          objectVersions: resultingVersions,
+          beforeVersions,
+          afterVersions,
         };
 
         history.push(entry);
@@ -337,7 +348,7 @@ export function createEditor({
     requestRender();
     onDocumentChange();
 
-    return resultingVersions;
+    return afterVersions;
   }
 
   function undo() {
@@ -368,6 +379,12 @@ export function createEditor({
       recordHistory: false,
     });
 
+    for (const [objectId, version] of Object.entries(
+      entry.beforeVersions
+    )) {
+      setObjectVersion(objectId, version);
+    }
+
     history.pushRedo(entry);
   }
 
@@ -378,14 +395,15 @@ export function createEditor({
       return;
     }
 
-    const resultingVersions = execute(
-      entry.command,
-      {
-        recordHistory: false,
-      }
-    );
+    execute(entry.command, {
+      recordHistory: false,
+    });
 
-    entry.objectVersions = resultingVersions;
+    for (const [objectId, version] of Object.entries(
+      entry.afterVersions
+    )) {
+      setObjectVersion(objectId, version);
+    }
 
     history.pushUndo(entry);
   }
