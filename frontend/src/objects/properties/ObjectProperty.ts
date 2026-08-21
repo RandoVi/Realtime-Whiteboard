@@ -4,21 +4,38 @@ export type PropertySection =
     | "content"
     | "text";
 
-export type PropertyType =
-    | "number"
-    | "color"
-    | "text";
-
-export type ObjectProperty<T = any> = {
+type BaseProperty<T> = {
     key: Extract<keyof T, string>;
     label: string;
-
-    type: PropertyType;
     section: PropertySection;
-
     editable?: boolean;
+};
 
+type NumberProperty<T> = BaseProperty<T> & {
+    type: "number";
     min?: number;
     max?: number;
     step?: number;
 };
+
+type ColorProperty<T> = BaseProperty<T> & {
+    type: "color";
+};
+
+type TextProperty<T> = BaseProperty<T> & {
+    type: "text";
+};
+
+type SelectProperty<T> = BaseProperty<T> & {
+    type: "select";
+    options: {
+        value: string | number;
+        label: string;
+    }[];
+};
+
+export type ObjectProperty<T = any> =
+    | NumberProperty<T>
+    | ColorProperty<T>
+    | TextProperty<T>
+    | SelectProperty<T>;

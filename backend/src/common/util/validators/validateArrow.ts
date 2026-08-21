@@ -13,6 +13,7 @@ export function validateArrow(data: BoardObjectDTO): BoardObject {
         data.width === undefined ||
         data.height === undefined ||
         data.rotation === undefined ||
+        data.strokeWidth === undefined ||
         data.fill === undefined ||
         data.stroke === undefined
     ) {
@@ -31,5 +32,6 @@ export function validateArrow(data: BoardObjectDTO): BoardObject {
         rotation: data.rotation,
         fill: data.fill,
         stroke: data.stroke,
+        strokeWidth: data.strokeWidth
     };
 }

@@ -15,7 +15,6 @@ import { updateTextboxPreview } from "./updateTextboxPreview"
 import type { Textbox } from "@common/shapes/Textbox";
 
 const textboxProperties: ObjectProperty<Textbox>[] = [
-
     {
         key: "x",
         label: "X",
@@ -70,37 +69,53 @@ const textboxProperties: ObjectProperty<Textbox>[] = [
     {
         key: "fontFamily",
         label: "Font",
-        type: "text",
+        type: "select",
         section: "text",
         editable: true,
+        options: [
+            { value: "Inter", label: "Inter" },
+            { value: "Arial", label: "Arial" },
+            { value: "Georgia", label: "Georgia" },
+            { value: "Verdana", label: "Verdana" },
+            { value: "Times New Roman", label: "Times New Roman" },
+        ],
     },
 
     {
         key: "fontWeight",
         label: "Weight",
-        type: "number",
+        type: "select",
         section: "text",
-        min: 100,
-        max: 900,
         editable: true,
+        options: [
+            { value: 100, label: "Thin" },
+            { value: 200, label: "Extra Light" },
+            { value: 300, label: "Light" },
+            { value: 400, label: "Normal" },
+            { value: 500, label: "Medium" },
+            { value: 600, label: "Semi Bold" },
+            { value: 700, label: "Bold" },
+            { value: 800, label: "Extra Bold" },
+            { value: 900, label: "Black" },
+        ],
     },
 
     {
         key: "fill",
-        label: "Color",
+        label: "Text",
         type: "color",
         section: "appearance",
         editable: true,
     },
 
     {
-    key: "background",
-    label: "Background",
-    type: "color",
-    section: "appearance",
-    editable: true,
-},
-]
+        key: "background",
+        label: "Background",
+        type: "color",
+        section: "appearance",
+        editable: true,
+    },
+];
 
 
 export const textboxHandler: ObjectHandler<Textbox> = {

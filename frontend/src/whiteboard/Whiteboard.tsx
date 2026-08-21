@@ -11,7 +11,7 @@ import { createEditor } from "../editor/createEditor";
 import { createDocument } from "../document/createDocument";
 import { getObjectById } from "../objects/getObjectById";
 import { getRenderedObject } from "../objects/getRenderedObjects";
-import { DEFAULT_FILL, DEFAULT_STROKE_COLOR } from "../objects/defaults";
+import { DEFAULT_FILL, DEFAULT_STROKE_COLOR, DEFAULT_STROKE_WIDTH } from "../objects/defaults";
 
 import { SocketCollaboration } from "../network/collaboration/SocketCollaboration";
 import { SocketPresence } from "../network/presence/SocketPresence";
@@ -35,6 +35,8 @@ import type { Laser } from "@common/shapes";
 import type { BoardObject } from "@common/types";
 
 import "./Whiteboard.css";
+import { getObjectPropertiesForType } from "../objects/getObjectProperties";
+import { penProperties } from "../ui/penProperties";
 
 
 function Whiteboard() {
@@ -70,7 +72,12 @@ function Whiteboard() {
   const [shapeSettings, setShapeSettings] = useState({
     fill: DEFAULT_FILL,
     stroke: DEFAULT_STROKE_COLOR,
+    strokeWidth: DEFAULT_STROKE_WIDTH,
+    background: "#FEF3C7",
   });
+
+  const [shapeType, setShapeType] =
+    useState<BoardObject["type"] | null>(null);
 
   const [, setDocumentRevision] = useState(0)
   const [, setCursorRevision] = useState(0);
@@ -104,6 +111,14 @@ function Whiteboard() {
     useState<string | null>(null);
   const selectedObjectIdRef = useRef<string | null>(null)
 
+
+  const shapeProperties = useMemo(() => {
+    if (!shapeType) {
+      return [];
+    }
+
+    return getObjectPropertiesForType(shapeType);
+  }, [shapeType]);
 
   //--------------------- RENDERER
   const render = () => {
@@ -316,6 +331,7 @@ function Whiteboard() {
           command,
           {
             broadcast: false,
+            recordHistory: false,
           }
         );
 
@@ -429,6 +445,8 @@ function Whiteboard() {
           boardState.objects,
           boardState.users,
         );
+
+        editor.resetHistory();
 
         const currentUser = boardState.users.find(
           user => user.userId === boardState.userId
@@ -654,6 +672,8 @@ function Whiteboard() {
           boardState.users,
         );
 
+        editor.resetHistory();
+
         const currentUser = boardState.users.find(
           user => user.userId === boardState.userId
         );
@@ -675,6 +695,125 @@ function Whiteboard() {
 
     // collaboration.startBoard(boardId);
   };
+
+  useEffect(() => {
+    const handleShortcut = (event: KeyboardEvent) => {
+      // Ignore shortcuts while lobby modal is open
+      if (lobbyState !== "connected") {
+        return;
+      }
+
+      if (
+        event.ctrlKey ||
+        event.altKey ||
+        event.metaKey
+      ) {
+        return;
+      }
+
+      if (!/^[0-9]$/.test(event.key)) {
+        return;
+      }
+
+      const index =
+        event.key === "0"
+          ? 9
+          : Number(event.key) - 1;
+
+      // -------------------------
+      // Shape menu
+      // -------------------------
+
+      if (showShapeMenu) {
+        const shapes = [
+          "rectangle",
+          "triangle",
+          "circle",
+          "arrow",
+          "textbox",
+        ] as const;
+
+        const shape = shapes[index];
+
+        if (!shape) {
+          return;
+        }
+
+        setTool(shape);
+        setShapeType(shape);
+        setShowShapeMenu(false);
+        setShowShapeSettings(true);
+
+        return;
+      }
+
+      // -------------------------
+      // Drawing menu
+      // -------------------------
+
+      if (showDrawingMenu) {
+        const drawingTools: Tool[] = [
+          "stroke",
+          "laser",
+        ];
+
+        const drawingTool = drawingTools[index];
+
+        if (!drawingTool) {
+          return;
+        }
+
+        setTool(drawingTool);
+        setShowDrawingMenu(false);
+        setShowShapeSettings(false);
+
+        return;
+      }
+
+      // -------------------------
+      // Shape settings
+      // -------------------------
+
+      if (showShapeSettings) {
+        return;
+      }
+
+      // -------------------------
+      // Bottom toolbar
+      // -------------------------
+
+      switch (event.key) {
+        case "1":
+          selectTool("pan");
+          break;
+
+        case "2":
+          selectTool("select");
+          break;
+
+        case "3":
+          openDrawingMenu();
+          break;
+
+        case "4":
+          openShapeMenu();
+          break;
+      }
+    };
+
+    window.addEventListener("keydown", handleShortcut);
+
+    return () => {
+      window.removeEventListener("keydown", handleShortcut);
+    };
+  }, [
+    lobbyState,
+    showDrawingMenu,
+    showShapeMenu,
+    showShapeSettings,
+  ]);
+
+
   return (
     <div className='whiteboard-page'>
       <canvas
@@ -708,8 +847,14 @@ function Whiteboard() {
           onSelectTool={(tool) => {
             setTool(tool);
             setShowDrawingMenu(false);
-            setShowShapeSettings(false);
+
+            if (tool === "stroke") {
+              setShowShapeSettings(true);
+            } else {
+              setShowShapeSettings(false);
+            }
           }}
+          showShortcuts={true}
         />
       )}
 
@@ -717,36 +862,50 @@ function Whiteboard() {
         <ShapeMenu
           onSelectShape={(tool) => {
             setTool(tool);
+            setShapeType(tool);
             setShowShapeMenu(false);
             setShowShapeSettings(true);
+          }}
+          showShortcuts={true}
+        />
+      )}
+
+      {showShapeSettings && tool === "stroke" && (
+        <ShapeSettings
+          properties={penProperties}
+          values={shapeSettings}
+          onChange={(key, value) => {
+            setShapeSettings(prev => ({
+              ...prev,
+              [key]: value,
+            }));
           }}
         />
       )}
 
-      {showShapeSettings && (
+      {showShapeSettings && shapeType && tool !== "stroke" && (
         <ShapeSettings
-          fill={shapeSettings.fill}
-          stroke={shapeSettings.stroke}
-          setFill={(fill) =>
+          properties={shapeProperties}
+          values={shapeSettings}
+          onChange={(key, value) => {
             setShapeSettings(prev => ({
               ...prev,
-              fill
-            }))
-          }
-          setStroke={(stroke) =>
-            setShapeSettings(prev => ({
-              ...prev,
-              stroke
-            }))
-          }
+              [key]: value,
+            }));
+          }}
         />
       )}
 
       <BottomToolbar
         tool={tool}
-        setTool={selectTool}
+        setTool={setTool}
         onShapeClick={openShapeMenu}
         onDrawingClick={openDrawingMenu}
+        showShortcuts={
+          !showDrawingMenu &&
+          !showShapeMenu &&
+          !showShapeSettings
+        }
       />
       {selectedObjectId && (
         // <ObjectInspector editor={editor} />

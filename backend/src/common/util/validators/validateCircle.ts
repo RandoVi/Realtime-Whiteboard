@@ -13,7 +13,8 @@ export function validateCircle(data: BoardObjectDTO): BoardObject {
         data.radius === undefined ||
         data.rotation === undefined ||
         data.fill === undefined ||
-        data.stroke === undefined
+        data.stroke === undefined ||
+        data.strokeWidth === undefined
     ) {
         throw new BadRequestException(
             "Invalid circle: missing required fields"
@@ -29,5 +30,6 @@ export function validateCircle(data: BoardObjectDTO): BoardObject {
         rotation: data.rotation,
         fill: data.fill,
         stroke: data.stroke,
+        strokeWidth: data.strokeWidth
     };
 }

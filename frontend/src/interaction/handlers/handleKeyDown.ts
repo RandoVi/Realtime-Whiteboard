@@ -14,12 +14,46 @@ export function handleKeyDown({
 }: Args) {
   return (event: KeyboardEvent) => {
 
-    if (event.key.toLowerCase() === 'm' && !event.repeat) {
+    // Undo
+    if (
+      event.ctrlKey &&
+      event.key.toLowerCase() === "z" &&
+      !event.repeat
+    ) {
+      event.preventDefault()
+
+      if (event.shiftKey) {
+        editor.redo()
+      } else {
+        editor.undo()
+      }
+
+      return
+    }
+
+    // Redo
+    if (
+      event.ctrlKey &&
+      event.key.toLowerCase() === "y" &&
+      !event.repeat
+    ) {
+      event.preventDefault()
+
+      editor.redo()
+
+      return
+    }
+
+    // Toggle coordinates
+    if (
+      event.key.toLowerCase() === "m" &&
+      !event.repeat
+    ) {
       setShowCoordinates((value) => !value)
       return
     }
 
-
+    // Delete selected object
     if (
       event.key === "Delete" ||
       event.key === "Backspace"
@@ -31,12 +65,10 @@ export function handleKeyDown({
         return
       }
 
-
       editor.execute({
         type: "deleteBoardObject",
         boardObjectId,
       })
-
     }
   }
 }

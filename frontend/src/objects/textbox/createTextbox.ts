@@ -14,7 +14,6 @@ export function createTextbox(
     point: Point,
     style: ObjectStyle
 ): Textbox {
-
     return {
         id: crypto.randomUUID(),
         type: "textbox",
@@ -34,6 +33,6 @@ export function createTextbox(
         fontWeight: DEFAULT_FONT_WEIGHT,
 
         fill: style.stroke,
-        background: "#FEF3C7",
-    }
+        background: style.background ?? "#FEF3C7",
+    };
 }

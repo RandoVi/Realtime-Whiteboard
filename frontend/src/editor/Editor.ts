@@ -3,6 +3,7 @@ import type { EditorCommand } from "@common/commands";
 
 export type ExecuteOptions = {
   broadcast?: boolean;
+  recordHistory?: boolean;
 };
 
 export interface Editor {
@@ -14,15 +15,20 @@ export interface Editor {
 
   getSelectedObject(): BoardObject | undefined;
   bindProperty(
-    property: string,
-    transform?: (value: string) => unknown
-  ): (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => void;
+    property: string
+  ): (value: unknown) => void;
 
   deleteSelectedObject(): void;
 
   duplicateSelectedObject(): void;
 
+  undo(): void;
 
+  redo(): void;
+
+  canUndo(): boolean;
+
+  canRedo(): boolean;
+
+  resetHistory(): void;
 }

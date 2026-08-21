@@ -13,8 +13,15 @@ import { updateStrokePreview } from './updateStrokePreview'
 const strokeProperties: ObjectProperty<Stroke>[] = [
     {
         key: "stroke",
-        label: "Stroke",
+        label: "Color",
         type: "color",
+        section: "appearance",
+        editable: true,
+    },
+    {
+        key: "strokeWidth",
+        label: "Width",
+        type: "number",
         section: "appearance",
         min: 1,
         max: 20,

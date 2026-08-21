@@ -216,7 +216,7 @@ export class BoardService implements OnApplicationShutdown {
                 'Object type cannot be changed'
             );
         }
-
+        //  Remove id from the object
         const { id, ...fields } = changes;
 
         const update = Object.fromEntries(

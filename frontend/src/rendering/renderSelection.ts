@@ -85,6 +85,7 @@ function renderObjectSelection(
 
     context.fillStyle = "white"
     context.strokeStyle = color
+    context.lineWidth = 2
 
     const handles = getResizeHandles(bounds, camera)
 

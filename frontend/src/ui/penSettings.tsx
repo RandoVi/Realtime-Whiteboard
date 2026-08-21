@@ -2,30 +2,20 @@ import type { ObjectProperty } from "../objects/properties/ObjectProperty";
 import { PropertyInput } from "./objectPanel/PropertyInput";
 import { PropertyRow } from "./objectPanel/PropertyRow";
 
-// import "./ShapeSettings.css";
-
-type Props = {
+type PenSettingsProps = {
     properties: ObjectProperty[];
     values: Record<string, unknown>;
     onChange: (key: string, value: unknown) => void;
 };
 
-export function ShapeSettings({
+export function PenSettings({
     properties,
     values,
     onChange,
-}: Props) {
-    const appearanceProperties = properties.filter(
-        property => property.section === "appearance"
-    );
-
-    if (appearanceProperties.length === 0) {
-        return null;
-    }
-
+}: PenSettingsProps) {
     return (
         <div className="shape-settings">
-            {appearanceProperties.map(property => (
+            {properties.map(property => (
                 <PropertyRow
                     key={property.key}
                     label={property.label}

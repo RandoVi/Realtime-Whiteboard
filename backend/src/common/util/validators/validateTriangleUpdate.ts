@@ -13,6 +13,7 @@ export function validateTriangleUpdate(
         "rotation",
         "fill",
         "stroke",
+        "strokeWidth",
     ];
 
     for (const field of Object.keys(data)) {

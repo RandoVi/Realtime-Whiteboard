@@ -63,6 +63,15 @@ const triangleProperties: ObjectProperty<Triangle>[] = [
         section: "appearance",
         editable: true,
     },
+    {
+        key: "strokeWidth",
+        label: "Width",
+        type: "number",
+        section: "appearance",
+        min: 1,
+        max: 20,
+        editable: true,
+    },
 ];
 
 export const triangleHandler: ObjectHandler<Triangle> = {

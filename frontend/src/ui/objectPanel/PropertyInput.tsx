@@ -1,23 +1,19 @@
-import type { BoardObject } from "@common/types";
-import type { Editor } from "../../editor/Editor";
+
 import type { ObjectProperty } from "../../objects/properties/ObjectProperty";
 
 type Props = {
-    object: BoardObject;
     property: ObjectProperty;
-    editor: Editor;
+    value: unknown;
+    onChange: (value: unknown) => void;
 };
 
 export function PropertyInput({
-    object,
     property,
-    editor,
+    value,
+    onChange,
 }: Props) {
-    const value = String(
-        (object as Record<string, unknown>)[property.key]
-    );
     const disabled = property.editable === false;
-    
+
     switch (property.type) {
         case "number":
             return (
@@ -26,12 +22,11 @@ export function PropertyInput({
                     min={property.min}
                     max={property.max}
                     step={property.step}
-                    value={value}
+                    value={String(value)}
                     disabled={disabled}
-                    onChange={editor.bindProperty(
-                        property.key,
-                        Number
-                    )}
+                    onChange={event =>
+                        onChange(Number(event.target.value))
+                    }
                 />
             );
 
@@ -39,9 +34,11 @@ export function PropertyInput({
             return (
                 <input
                     type="color"
-                    value={value}
+                    value={String(value)}
                     disabled={disabled}
-                    onChange={editor.bindProperty(property.key)}
+                    onChange={event =>
+                        onChange(event.target.value)
+                    }
                 />
             );
 
@@ -49,10 +46,41 @@ export function PropertyInput({
             return (
                 <input
                     type="text"
-                    value={value}
+                    value={String(value)}
                     disabled={disabled}
-                    onChange={editor.bindProperty(property.key)}
+                    onChange={event =>
+                        onChange(event.target.value)
+                    }
                 />
+            );
+
+        case "select":
+            return (
+                <select
+                    value={String(value)}
+                    disabled={disabled}
+                    onChange={event => {
+                        const selectedOption = property.options.find(
+                            option =>
+                                String(option.value) === event.target.value
+                        );
+
+                        if (!selectedOption) {
+                            return;
+                        }
+
+                        onChange(selectedOption.value);
+                    }}
+                >
+                    {property.options.map(option => (
+                        <option
+                            key={String(option.value)}
+                            value={String(option.value)}
+                        >
+                            {option.label}
+                        </option>
+                    ))}
+                </select>
             );
     }
 }

@@ -17,5 +17,6 @@ export function createArrow(point: Point, style: ObjectStyle): Arrow {
 
     fill: style.fill,
     stroke: style.stroke,
+    strokeWidth: style.strokeWidth,
   }
 }

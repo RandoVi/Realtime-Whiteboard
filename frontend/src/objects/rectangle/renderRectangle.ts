@@ -31,7 +31,7 @@ export function renderRectangle(
 
     context.fillStyle = rectangle.fill
     context.strokeStyle = rectangle.stroke
-    context.lineWidth = 2
+    context.lineWidth = rectangle.strokeWidth
 
     context.beginPath()
 

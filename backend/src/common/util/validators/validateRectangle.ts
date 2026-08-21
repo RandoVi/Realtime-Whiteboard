@@ -14,7 +14,8 @@ export function validateRectangle(data: BoardObjectDTO): BoardObject {
         data.height === undefined ||
         data.rotation === undefined ||
         data.fill === undefined ||
-        data.stroke === undefined
+        data.stroke === undefined ||
+        data.strokeWidth === undefined
     ) {
         throw new BadRequestException(
             "Invalid rectangle: missing required fields"
@@ -31,5 +32,6 @@ export function validateRectangle(data: BoardObjectDTO): BoardObject {
         rotation: data.rotation,
         fill: data.fill,
         stroke: data.stroke,
+        strokeWidth: data.strokeWidth
     };
 }

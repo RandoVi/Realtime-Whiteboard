@@ -13,5 +13,6 @@ export function createCircle(point: Point, style: ObjectStyle): Circle {
         rotation: 0,
         fill: style.fill,
         stroke: style.stroke,
+        strokeWidth: style.strokeWidth,
     };
 }
