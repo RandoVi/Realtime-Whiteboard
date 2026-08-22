@@ -9,7 +9,7 @@ export function resizeObject(
   point: { x: number; y: number },
   constrain: boolean,
 ) {
-  console.log("Resizing object", object, original, handle, point, constrain)
+  // console.log("Resizing object", object, original, handle, point, constrain)
   getObjectHandler(object).resize?.(
     object,
     original,

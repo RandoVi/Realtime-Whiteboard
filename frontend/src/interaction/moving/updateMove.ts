@@ -54,10 +54,10 @@ export function updateMoving({
     dx,
     dy,
 );
-console.log(
-  "LOCAL PREVIEW",
-  interaction.preview
-);
+// console.log(
+//   "LOCAL PREVIEW",
+//   interaction.preview
+// );
 
   sendObjectPreview({
     presence,

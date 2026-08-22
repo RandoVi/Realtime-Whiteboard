@@ -8,7 +8,7 @@ import { screenToWorld, type Camera } from '../../camera/Camera'
 import { getPointer } from '../../interaction/helpers/getPointer'
 import { handleMouseMove as handleInteractionMouseMove } from '../../interaction/handlers/handleMouseMove'
 import { handleMouseDown as handleInteractionMouseDown } from '../../interaction/handlers/handleMouseDown'
-import type { CanvasInteractionContext } from '../../interaction/CanvasInteractionContext'
+import type { CanvasInteractionContext, TextEditorRef } from '../../interaction/CanvasInteractionContext'
 import { handleDoubleClick } from '../../interaction/handlers/handleDoubleClick'
 import { rotateDrawing } from '../../interaction/drawing/rotateDrawing'
 import type { Laser } from '@common/shapes'
@@ -19,25 +19,25 @@ import type { Tool } from '../../types/Tool'
 import type { BoardDocument } from '../../document/Document'
 
 export type UseWhiteboardInputProps = {
-    cameraRef: RefObject<Camera>
-    viewportRef: RefObject<{
-        width: number
-        height: number
-        dpr: number
-    }>
-    requestRender: () => void
-    document: BoardDocument
-    tool: Tool
-    editor: Editor
-    presence: any
-    setSelectedObjectId: React.Dispatch<
-        React.SetStateAction<string | null>
-    >
-    selectedObjectIdRef: React.RefObject<string | null>
-    onStartInteraction: () => void;
-    objectStyle: ObjectStyle;
-    remotePresence: Map<string, RemotePresence>;
-    localLasers: Laser[];
+  cameraRef: RefObject<Camera>
+  viewportRef: RefObject<{
+    width: number
+    height: number
+    dpr: number
+  }>
+  requestRender: () => void
+  document: BoardDocument
+  tool: Tool
+  editor: Editor
+  presence: any
+  setSelectedObjectId: React.Dispatch<
+    React.SetStateAction<string | null>
+  >
+  selectedObjectIdRef: React.RefObject<string | null>
+  onStartInteraction: () => void;
+  objectStyle: ObjectStyle;
+  remotePresence: Map<string, RemotePresence>;
+  localLasers: Laser[];
 }
 
 
@@ -64,6 +64,8 @@ export function useWhiteboardInput({
   const interactionRef = useRef<Interaction>({
     type: "idle",
   })
+  const textEditorRef =
+    useRef<TextEditorRef | null>(null);
 
   const bindCanvas = (canvas: HTMLCanvasElement | null) => {
     canvasRef.current = canvas
@@ -85,6 +87,7 @@ export function useWhiteboardInput({
     canvas: canvasRef.current!,
     cameraRef,
     interactionRef,
+    textEditorRef,
     document,
     editor,
     presence,
@@ -131,6 +134,7 @@ export function useWhiteboardInput({
         event,
         canvas,
         cameraRef,
+        textEditorRef,
         requestRender,
         showCoordinates,
         mouseScreenRef,
@@ -142,10 +146,16 @@ export function useWhiteboardInput({
     const handleMouseMove = (event: MouseEvent) => {
       const pointer = getPointer(event, canvas);
 
+      mouseScreenRef.current = pointer;
+
       const world = screenToWorld(
         pointer,
         cameraRef.current
       );
+
+      if (showCoordinates) {
+        setMouseWorld(world);
+      }
 
       handleInteractionMouseMove({
         pointer,
@@ -154,6 +164,7 @@ export function useWhiteboardInput({
         constrain: event.ctrlKey,
       });
     };
+    
     // Handle mouse down events for drawing, moving, and selecting objects
     const handleMouseDown = (event: MouseEvent) => {
 
@@ -207,7 +218,17 @@ export function useWhiteboardInput({
     window.addEventListener('mouseup', handleMouseUpEvent)
     window.addEventListener('keydown', keyDownHandler)
 
-    canvas.addEventListener('wheel', handleWheel, { passive: false })
+    // const parent is used because of textbox that is not inside the canvas while editing. Maybe improve later.
+    const parent = canvas.parentElement;
+
+    parent?.addEventListener(
+      "wheel",
+      handleWheel,
+      {
+        passive: false,
+        capture: true,
+      }
+    );
     canvas.addEventListener('mousedown', handleMouseDown)
     canvas.addEventListener('dblclick', handleDoubleClickEvent)
 
@@ -216,7 +237,7 @@ export function useWhiteboardInput({
       window.removeEventListener('mouseup', handleMouseUpEvent)
       window.removeEventListener('keydown', keyDownHandler)
 
-      canvas.removeEventListener('wheel', handleWheel)
+      parent?.removeEventListener("wheel", handleWheel, { capture: true });
       canvas.removeEventListener('mousedown', handleMouseDown)
       canvas.removeEventListener('dblclick', handleDoubleClickEvent)
     }

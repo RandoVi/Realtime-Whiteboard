@@ -71,13 +71,6 @@ export function renderObjects(
       interaction.preview.id === object.id
     ) {
 
-      if (object.type === "textbox") {
-        console.log(
-          "RENDER TEXTBOX:",
-          object.id,
-          JSON.stringify(object.text)
-        );
-      }
       renderObject(
         context,
         interaction.preview,
@@ -98,14 +91,14 @@ export function renderObjects(
     );
 
     if (isPreviewed) {
-      console.log(
-        "REMOTE PREVIEW HIDING COMMITTED OBJECT",
-        {
-          objectId: object.id,
-          object,
-          remotePreviews: Array.from(remotePresence.entries()),
-        }
-      );
+      // console.log(
+      //   "REMOTE PREVIEW HIDING COMMITTED OBJECT",
+      //   {
+      //     objectId: object.id,
+      //     object,
+      //     remotePreviews: Array.from(remotePresence.entries()),
+      //   }
+      // );
       continue;
     }
 

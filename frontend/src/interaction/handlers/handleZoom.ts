@@ -6,12 +6,14 @@ import type {
 import type { Point } from "@common/types";
 import type { Camera } from "../../camera/Camera";
 import { screenToWorld, ZOOM_SENSITIVITY, zoomAtPoint } from "../../camera/Camera"
+import type { TextEditorRef } from "../CanvasInteractionContext";
 
 
 type Args = {
     event: WheelEvent
     canvas: HTMLCanvasElement
     cameraRef: MutableRefObject<Camera>
+    textEditorRef: MutableRefObject<TextEditorRef | null>
     requestRender: () => void
     showCoordinates: boolean
     mouseScreenRef: MutableRefObject<Point>
@@ -22,6 +24,7 @@ export function handleZoom({
     event,
     canvas,
     cameraRef,
+    textEditorRef,
     requestRender,
     showCoordinates,
     mouseScreenRef,
@@ -50,6 +53,8 @@ export function handleZoom({
         worldBeforeZoom,
         zoomFactor
     )
+
+    textEditorRef.current?.update();
 
     requestRender()
 

@@ -30,10 +30,10 @@ export function updateLaser({
         createdAt: performance.now(),
     });
 
-    console.log("SENDING LASER POINT", {
-        laserId: laser.id,
-        point: world,
-    });
+    // console.log("SENDING LASER POINT", {
+    //     laserId: laser.id,
+    //     point: world,
+    // });
 
     context.presence.send({
         type: "laser",

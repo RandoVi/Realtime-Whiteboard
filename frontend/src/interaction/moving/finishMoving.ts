@@ -23,12 +23,12 @@ export function finishMoving({
     if (interaction.type !== "moving") {
         return false;
     }
-    console.log("FINISH ORIGINAL", interaction.original);
-    console.log("FINISH PREVIEW", interaction.preview);
+    // console.log("FINISH ORIGINAL", interaction.original);
+    // console.log("FINISH PREVIEW", interaction.preview);
 
-    const updates = getObjectMoveUpdates(interaction.preview);
+    // const updates = getObjectMoveUpdates(interaction.preview);
 
-    console.log("FINISH UPDATES", updates);
+    // console.log("FINISH UPDATES", updates);
 
     if (interaction.moved) {
         editor.execute({

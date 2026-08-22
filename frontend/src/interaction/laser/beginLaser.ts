@@ -25,6 +25,7 @@ export function beginLaser({
     const laser = createLaser(world, {
         fill: "transparent",
         stroke: currentUser.color || "#000000",
+        strokeWidth: 5,
     });
 
     context.localLasers.push(laser);

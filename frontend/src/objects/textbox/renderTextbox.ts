@@ -137,7 +137,7 @@ export function renderTextbox(
 
     context.fillStyle =
         textbox.fill;
-
+    
     context.font =
         `${textbox.fontWeight} ${fontSize}px ${textbox.fontFamily}`;
 

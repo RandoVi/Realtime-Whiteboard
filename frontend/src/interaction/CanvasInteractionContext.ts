@@ -9,6 +9,9 @@ import type { BoardDocument } from "../document/Document";
 import type { ObjectStyle } from "../objects/ObjectStyle";
 import type { RemotePresence } from "../network/presence/RemotePresence";
 
+export type TextEditorRef = {
+    update: () => void;
+};
 
 export interface CanvasInteractionContext {
 
@@ -17,6 +20,8 @@ export interface CanvasInteractionContext {
     cameraRef: MutableRefObject<Camera>;
 
     interactionRef: MutableRefObject<Interaction>;
+
+    textEditorRef: MutableRefObject<TextEditorRef | null>;
 
     document: BoardDocument;
 

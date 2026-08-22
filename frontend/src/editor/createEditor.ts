@@ -54,11 +54,11 @@ export function createEditor({
 
     objectVersions.set(objectId, next);
 
-    console.log(
-      "[VERSION]",
-      objectId,
-      `${previous} -> ${next}`
-    );
+    // console.log(
+    //   "[VERSION]",
+    //   objectId,
+    //   `${previous} -> ${next}`
+    // );
 
     return next;
   }
@@ -69,11 +69,11 @@ export function createEditor({
   ): void {
     objectVersions.set(objectId, version);
 
-    console.log(
-      "[VERSION]",
-      objectId,
-      `-> ${version}`
-    );
+    // console.log(
+    //   "[VERSION]",
+    //   objectId,
+    //   `-> ${version}`
+    // );
   }
 
   function getAffectedObjectIds(
@@ -256,7 +256,7 @@ export function createEditor({
         break;
 
       case "updateBoardObject":
-        console.log("APPLYING REMOTE UPDATE:", command);
+        // console.log("APPLYING REMOTE UPDATE:", command);
         updateObject({
           objects: document.objectsRef.current,
           objectId: command.boardObjectId,

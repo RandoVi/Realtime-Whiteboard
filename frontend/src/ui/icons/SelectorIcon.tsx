@@ -7,7 +7,7 @@ const SelectorIcon = ({ color: _color }: SelectorIconProps) => {
         <svg
             fill="#000000"
             version="1.1"
-            viewBox="-6 -6 36 36"
+            viewBox="-10 -10 43 43"
             enableBackground="new 0 0 24 24"
             xmlns="http://www.w3.org/2000/svg"
         >

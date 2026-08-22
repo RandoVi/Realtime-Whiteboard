@@ -78,6 +78,10 @@ const textboxProperties: ObjectProperty<Textbox>[] = [
             { value: "Georgia", label: "Georgia" },
             { value: "Verdana", label: "Verdana" },
             { value: "Times New Roman", label: "Times New Roman" },
+            { value: "Playpen Sans", label: "Playpen Sans" },
+            { value: "Elms Sans", label: "Elms Sans" },
+            { value: "Story Script", label: "Story Script 400" },
+            { value: "Kranky", label: "Kranky 400" },
         ],
     },
 

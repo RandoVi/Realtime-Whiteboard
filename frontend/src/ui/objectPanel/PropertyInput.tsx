@@ -1,4 +1,3 @@
-
 import type { ObjectProperty } from "../../objects/properties/ObjectProperty";
 
 type Props = {
@@ -15,6 +14,7 @@ export function PropertyInput({
     const disabled = property.editable === false;
 
     switch (property.type) {
+
         case "number":
             return (
                 <input
@@ -23,7 +23,11 @@ export function PropertyInput({
                     min={property.min}
                     max={property.max}
                     step={property.step}
-                    value={String(value)}
+                    value={
+                        typeof value === "number"
+                            ? Number(value.toFixed(2))
+                            : String(value)
+                    }
                     disabled={disabled}
                     onChange={event =>
                         onChange(Number(event.target.value))
@@ -47,6 +51,7 @@ export function PropertyInput({
         case "text":
             return (
                 <input
+                    className="property-input"
                     type="text"
                     value={String(value)}
                     disabled={disabled}
@@ -59,13 +64,28 @@ export function PropertyInput({
         case "select":
             return (
                 <select
+                    className="property-input"
                     value={String(value)}
                     disabled={disabled}
+                    style={{
+                        fontFamily:
+                            property.key === "fontFamily"
+                                ? String(value)
+                                : undefined,
+
+                        fontWeight:
+                            property.key === "fontWeight"
+                                ? Number(value)
+                                : undefined,
+                    }}
                     onChange={event => {
-                        const selectedOption = property.options.find(
-                            option =>
-                                String(option.value) === event.target.value
-                        );
+
+                        const selectedOption =
+                            property.options.find(
+                                option =>
+                                    String(option.value) ===
+                                    event.target.value
+                            );
 
                         if (!selectedOption) {
                             return;
@@ -78,6 +98,17 @@ export function PropertyInput({
                         <option
                             key={String(option.value)}
                             value={String(option.value)}
+                            style={{
+                                fontFamily:
+                                    property.key === "fontFamily"
+                                        ? String(option.value)
+                                        : undefined,
+
+                                fontWeight:
+                                    property.key === "fontWeight"
+                                        ? Number(option.value)
+                                        : undefined,
+                            }}
                         >
                             {option.label}
                         </option>
