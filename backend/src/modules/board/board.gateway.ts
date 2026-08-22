@@ -67,8 +67,11 @@ export class BoardGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
     ) {
         switch (data.type) {
             case BoardCommandType.CREATE: {
-
-                const board = await this.boards.createBoardAndPersist();
+                
+                if (!data.user || !data.user.username) {
+                    throw new BadRequestException("No user data provided while creating board")
+                }
+                const board = await this.boards.createBoardAndPersist(data.user.username);
 
                 if (!board) {
                     console.error('SERVER: Failed to create board at CREATE')
