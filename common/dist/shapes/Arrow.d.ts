@@ -8,5 +8,6 @@ export type Arrow = {
     rotation: number;
     fill: string;
     stroke: string;
+    strokeWidth: number;
 };
 //# sourceMappingURL=Arrow.d.ts.map

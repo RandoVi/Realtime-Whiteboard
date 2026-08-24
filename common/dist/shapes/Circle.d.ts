@@ -7,5 +7,6 @@ export type Circle = {
     rotation: number;
     fill: string;
     stroke: string;
+    strokeWidth: number;
 };
 //# sourceMappingURL=Circle.d.ts.map

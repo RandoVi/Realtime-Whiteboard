@@ -8,5 +8,6 @@ export type Rectangle = {
     rotation: number;
     fill: string;
     stroke: string;
+    strokeWidth: number;
 };
 //# sourceMappingURL=Rectangle.d.ts.map

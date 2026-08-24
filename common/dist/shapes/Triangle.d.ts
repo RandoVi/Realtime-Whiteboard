@@ -8,5 +8,6 @@ export interface Triangle {
     rotation: number;
     fill: string;
     stroke: string;
+    strokeWidth: number;
 }
 //# sourceMappingURL=Triangle.d.ts.map

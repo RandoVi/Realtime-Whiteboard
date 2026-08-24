@@ -21,4 +21,5 @@ __exportStar(require("./Laser"), exports);
 __exportStar(require("./Stroke"), exports);
 __exportStar(require("./Triangle"), exports);
 __exportStar(require("./Textbox"), exports);
+__exportStar(require("./CanvasText"), exports);
 //# sourceMappingURL=index.js.map
