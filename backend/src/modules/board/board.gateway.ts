@@ -235,8 +235,9 @@ export class BoardGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
                     BoardObjectDTO,
                     data.command.boardObject
                 );
-                await this.boards.createObjectInBoard(board.id, dto);
 
+                await this.boards.createObjectInBoard(board.id, dto);
+                
                 socket.broadcast.to(board!.id).emit("boardObjectCommand", data);
                 break
             }

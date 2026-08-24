@@ -731,6 +731,7 @@ function Whiteboard() {
           "circle",
           "arrow",
           "textbox",
+          "text",
         ] as const;
 
         const shape = shapes[index];

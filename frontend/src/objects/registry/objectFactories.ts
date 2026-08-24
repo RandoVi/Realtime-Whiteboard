@@ -5,7 +5,7 @@ import { createTriangle } from "../triangle/createTriangle"
 import { createLaser } from "../laser/createLaser"
 import { createArrow } from "../arrow/createArrow"
 import { createTextbox } from "../textbox/createTextbox"
-// import { createArrow } from "../arrow/createArrow"
+import { createText } from "../text/createText"
 
 
 export const objectFactories = {
@@ -16,4 +16,5 @@ export const objectFactories = {
   arrow: createArrow,
   laser: createLaser,
   textbox: createTextbox,
+  text: createText,
 }

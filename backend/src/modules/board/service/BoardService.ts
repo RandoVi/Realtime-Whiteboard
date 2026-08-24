@@ -171,9 +171,8 @@ export class BoardService implements OnApplicationShutdown {
         if (existing) {
             throw new ConflictException(`Object already exists for id : ${objectData.id}`)
         }
-
         const verifiedObject = validateObjectType(objectData);
-
+        
         board.addObject(verifiedObject);
 
         const key = this.objectChangeKey(board.id, objectData.id, 'create');
@@ -255,7 +254,8 @@ export class BoardService implements OnApplicationShutdown {
         if (!board) {
             throw new NotFoundException("SERVICE:Board not found with id: " + boardId)
         }
-
+        console.log("ObjectID before moveObjectFront" + objectId)
+        console.log("Board object IDs: " + board.objects.getAll().toString())
         board.moveObjectToFrontInObjects(objectId);
 
         const key = this.objectChangeKey(board.id, objectId, 'reorder');

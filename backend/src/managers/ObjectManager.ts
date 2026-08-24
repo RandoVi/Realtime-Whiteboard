@@ -15,7 +15,7 @@ export class ObjectManager {
         }
 
         this.objects.set(boardObject.id, boardObject);
-
+        console.log("After create: " + boardObject.id)
         return boardObject;
     }
 
