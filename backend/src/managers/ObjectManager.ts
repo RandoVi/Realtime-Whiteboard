@@ -1,4 +1,3 @@
-import { BadRequestException, ConflictException, NotFoundException } from "@nestjs/common";
 import { BoardObject } from "../modules/board/schemas/BoardObjectSchema";
 
 
@@ -6,29 +5,32 @@ export class ObjectManager {
 
     private readonly objects = new Map<string, BoardObject>();
     
-    create(boardObject: BoardObject): BoardObject {
+    create(boardObject: BoardObject): BoardObject | null {
         if (!boardObject.id) {
-            throw new NotFoundException("BoardObject id is missing")
+            console.error("BoardObject id is missing")
+            return null;
         }
         if (this.objects.has(boardObject.id)) {
-            throw new ConflictException("BoardObject already exists");
+            console.error("BoardObject already exists");
+            return null;
         }
 
         this.objects.set(boardObject.id, boardObject);
-        console.log("After create: " + boardObject.id)
         return boardObject;
     }
 
-    update(update: Partial<BoardObject>): BoardObject {
+    update(update: Partial<BoardObject>): BoardObject | null {
 
         if (!update.id) {
-            throw new BadRequestException ("No id for object update @ ObjectManager")
+            console.error ("No id for object update @ ObjectManager")
+            return null;
         }
 
         const object = this.objects.get(update.id);
 
         if (!object) {
-            throw new NotFoundException("BoardObject not found");
+            console.error("BoardObject not found");
+            return null;
         }
         Object.assign(object, update);
         return object;
@@ -54,7 +56,8 @@ export class ObjectManager {
         const object = this.objects.get(objectId);
 
         if (!object) {
-            throw new BadRequestException("Could not find object to bring to front")
+            console.error("Could not find object to bring to front")
+            return;
         }
 
         if (object !== undefined) {

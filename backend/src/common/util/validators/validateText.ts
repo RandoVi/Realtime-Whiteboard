@@ -23,7 +23,6 @@ export function validateText(data: BoardObjectDTO): BoardObject {
             "Invalid textbox: missing required fields"
         );
     }
-    console.log("RETURNING DATA")
     return {
         id: data.id,
         type: "text",

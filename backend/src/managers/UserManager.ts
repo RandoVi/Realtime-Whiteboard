@@ -1,4 +1,3 @@
-import { BadRequestException, NotFoundException } from "@nestjs/common";
 import { BoardUser } from "../models/boardUser";
 import { UserColor, ColorManager } from "./ColorManager";
 
@@ -20,16 +19,18 @@ export class UserManager {
         }
     }
 
-    update(update: Partial<BoardUser>): BoardUser {
+    update(update: Partial<BoardUser>): BoardUser | null{
     
             if (!update.userId) {
-                throw new BadRequestException ("No id for user update @ UserManager")
+                console.error("No id for user update @ UserManager")
+                return null;
             }
     
             const user = this.users.get(update.userId);
     
             if (!user) {
-                throw new NotFoundException("Could not retrieve user to update @UserManager");
+                console.error("Could not retrieve user to update @UserManager");
+                return null;
             }
     
             Object.assign(user, update);
