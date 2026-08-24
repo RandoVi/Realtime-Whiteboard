@@ -2,7 +2,7 @@ export function LaserIcon(_color: { color: string }) {
   return (
     <svg
       width="40"
-      height="40"
+      height="32"
       viewBox="0 0 512 512"
       fill="#000000"
       xmlns="http://www.w3.org/2000/svg"

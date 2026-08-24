@@ -771,14 +771,6 @@ function Whiteboard() {
       }
 
       // -------------------------
-      // Shape settings
-      // -------------------------
-
-      if (showShapeSettings) {
-        return;
-      }
-
-      // -------------------------
       // Bottom toolbar
       // -------------------------
 
@@ -903,8 +895,7 @@ function Whiteboard() {
         onDrawingClick={openDrawingMenu}
         showShortcuts={
           !showDrawingMenu &&
-          !showShapeMenu &&
-          !showShapeSettings
+          !showShapeMenu
         }
       />
       {selectedObjectId && (
@@ -917,7 +908,20 @@ function Whiteboard() {
         <div className="coordinates-overlay">
           <div>x: {mouseWorld.x.toFixed(2)}</div>
           <div>y: {mouseWorld.y.toFixed(2)}</div>
-          <div>Board ID: {boardId || "none"}</div>
+          <div className="coordinates-board-id-row">
+            <span>Board ID: {boardId || "none"}</span>
+
+            {boardId && (
+              <button
+                className="coordinates-copy-button"
+                onClick={() => navigator.clipboard.writeText(boardId)}
+                title="Copy Board ID"
+                type="button"
+              >
+                ⧉
+              </button>
+            )}
+          </div>
         </div>
 
       )}

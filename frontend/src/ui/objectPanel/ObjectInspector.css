@@ -3,6 +3,7 @@
 
   left: 24px;
   top: 50%;
+
   transform: translateY(-50%);
 
   width: 240px;
@@ -13,7 +14,10 @@
 
   padding: 16px;
 
+  box-sizing: border-box;
+
   background: rgba(255, 255, 255, 0.78);
+
   backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);
 
@@ -27,7 +31,10 @@
   z-index: 10;
 }
 
-/* Header */
+
+/* ------------------------------------------------ */
+/* Header                                           */
+/* ------------------------------------------------ */
 
 .inspector-header {
   display: flex;
@@ -44,7 +51,9 @@
 
   font-size: 15px;
   font-weight: 600;
+
   color: #222;
+
   text-transform: capitalize;
 }
 
@@ -54,15 +63,21 @@
   margin-top: 3px;
 
   font-size: 12px;
+
   color: #888;
+
   text-transform: capitalize;
 }
 
-/* Sections */
+
+/* ------------------------------------------------ */
+/* Sections                                         */
+/* ------------------------------------------------ */
 
 .inspector-section {
   display: flex;
   flex-direction: column;
+
   gap: 10px;
 }
 
@@ -71,46 +86,66 @@
 
   font-size: 11px;
   font-weight: 600;
+
   letter-spacing: 0.06em;
+
   text-transform: uppercase;
 
   color: #888;
 }
 
-/* Properties */
+
+/* ------------------------------------------------ */
+/* Property rows                                    */
+/* ------------------------------------------------ */
 
 .property-row {
   display: flex;
   align-items: center;
 
   gap: 12px;
+
   min-height: 32px;
 }
 
-.property-row > label {
-  flex: 0 0 70px;
+.property-row>label {
+  flex: 0 0 64px;
+
+  width: 64px;
 
   font-size: 13px;
+
   color: #555;
 }
 
 .property-control {
-  flex: 1;
+  width: 120px;
+  min-width: 120px;
 
-  min-width: 0;
+  flex: 0 0 120px;
 
   display: flex;
+  align-items: center;
   justify-content: flex-end;
 }
 
-/* Inputs */
 
-.property-control input {
+/* ------------------------------------------------ */
+/* All normal property controls                    */
+/* ------------------------------------------------ */
+
+.property-input {
   box-sizing: border-box;
 
-  width: 100%;
-  height: 30px;
+  display: block;
 
+  width: 120px;
+  min-width: 120px;
+  max-width: 120px;
+
+  height: 32px;
+
+  margin: 0;
   padding: 5px 8px;
 
   border: 1px solid #d8d8d8;
@@ -119,7 +154,12 @@
   background: rgba(255, 255, 255, 0.7);
 
   color: #333;
+
+  font-family: inherit;
   font-size: 13px;
+  font-weight: 400;
+
+  line-height: normal;
 
   outline: none;
 
@@ -129,40 +169,146 @@
     background-color 0.15s ease;
 }
 
-.property-control input:hover {
+.property-input:hover {
   border-color: #c4c4c4;
 }
 
-.property-control input:focus {
+.property-input:focus {
   border-color: #8b5cf6;
 
-  box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.12);
+  box-shadow:
+    0 0 0 2px rgba(139, 92, 246, 0.12);
 
   background: #fff;
 }
 
-.property-control input:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
+/* ------------------------------------------------ */
+/* Disabled                                        */
+/* ------------------------------------------------ */
+
+input.property-input[type="text"]:disabled,
+select.property-input:disabled {
+  background: rgba(245, 245, 245, 0.7);
 }
 
-/* Color input */
+/* ------------------------------------------------ */
+/* Text input                                      */
+/* ------------------------------------------------ */
 
-.property-control input[type="color"] {
-  width: 42px;
+input.property-input[type="text"] {
+  background: rgba(255, 255, 255, 0.85);
 
-  padding: 3px;
+  color: #2f2f2f;
+
+  font-size: 13px;
+  font-weight: 400;
+
+  letter-spacing: 0.01em;
+}
+
+input.property-input[type="text"]::placeholder {
+  color: #aaa;
+}
+
+
+/* ------------------------------------------------ */
+/* Number input                                    */
+/* ------------------------------------------------ */
+
+input.property-input[type="number"] {
+  width: 120px;
+  min-width: 120px;
+  max-width: 120px;
+
+  text-align: right;
+}
+
+
+/* ------------------------------------------------ */
+/* Select                                          */
+/* ------------------------------------------------ */
+
+select.property-input {
+  appearance: none;
+  -webkit-appearance: none;
+
+  background-color: rgba(255, 255, 255, 0.85);
+
+  background-image:
+    linear-gradient(45deg, transparent 50%, #888 50%),
+    linear-gradient(135deg, #888 50%, transparent 50%);
+
+  background-position:
+    calc(100% - 12px) 13px,
+    calc(100% - 8px) 13px;
+
+  background-size:
+    4px 4px,
+    4px 4px;
+
+  background-repeat: no-repeat;
+
+  padding-left: 9px;
+  padding-right: 24px;
+
+  color: #333;
+
+  font-size: 13px;
+  font-weight: 400;
 
   cursor: pointer;
 }
 
-/* Number input */
-
-.property-control input[type="number"] {
-  text-align: right;
+select.property-input:hover {
+  background-color: #fff;
 }
 
-/* Actions */
+select.property-input:focus {
+  background-color: #fff;
+}
+
+
+/* ------------------------------------------------ */
+/* Color input                                     */
+/* ------------------------------------------------ */
+
+.property-color-input {
+  width: 42px !important;
+  min-width: 42px !important;
+  max-width: 42px !important;
+
+  height: 32px;
+
+  padding: 3px;
+
+  cursor: pointer;
+
+  appearance: none;
+  -webkit-appearance: none;
+
+  background: white;
+}
+
+.property-color-input::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+
+.property-color-input::-webkit-color-swatch {
+  border: none;
+
+  border-radius: 4px;
+}
+
+.property-color-input::-moz-color-swatch {
+  border: none;
+
+  border-radius: 4px;
+}
+
+
+/* ------------------------------------------------ */
+/* Actions                                          */
+/* ------------------------------------------------ */
 
 .inspector-actions {
   padding-top: 14px;
@@ -172,6 +318,7 @@
 
 .action-buttons {
   display: flex;
+
   gap: 8px;
 }
 
@@ -186,6 +333,7 @@
   background: rgba(255, 255, 255, 0.6);
 
   color: #444;
+
   font-size: 12px;
   font-weight: 500;
 
@@ -199,6 +347,7 @@
 
 .inspector-action:hover {
   background: rgba(0, 0, 0, 0.05);
+
   border-color: #ccc;
 }
 
@@ -208,6 +357,8 @@
 
 .inspector-action-danger:hover {
   background: rgba(220, 38, 38, 0.08);
+
   border-color: rgba(220, 38, 38, 0.2);
+
   color: #b42318;
 }

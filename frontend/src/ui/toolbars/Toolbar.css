@@ -1,19 +1,18 @@
 .drawing-menu {
   position: fixed;
-
   left: 50%;
-  bottom: 90px;
-
+  bottom: 80px;
   transform: translateX(-50%);
 
-  width: 150px;
-  height: 56px;
+  width: auto;
+  height: 52px;
 
   display: flex;
   align-items: center;
-  gap: 8px;
+  justify-content: center;
+  gap: 4px;
 
-  padding: 8px 12px;
+  padding: 4px 8px;
 
   background: rgba(255, 255, 255, 0.75);
   backdrop-filter: blur(18px);
@@ -30,7 +29,7 @@
   position: fixed;
 
   left: 50%;
-  bottom: 90px;
+  bottom: 80px;
 
   transform: translateX(-50%);
 
@@ -107,28 +106,29 @@
 /* Shape Menu */
 .shape-menu {
   position: fixed;
-
   left: 50%;
-  bottom: 90px;
-
+  bottom: 80px;
   transform: translateX(-50%);
 
-  width: 240px;
-  height: 60px;
+  width: auto;
+  height: 52px;
 
   display: flex;
   align-items: center;
-  gap: 8px;
+  justify-content: center;
+  gap: 4px;
 
-  padding: 8px 12px;
+  padding: 4px 8px;
 
-  background: rgba(255,255,255,.75);
+  background: rgba(255, 255, 255, 0.75);
   backdrop-filter: blur(18px);
 
   border: 1px solid #ddd;
   border-radius: 14px;
 
-  box-shadow: 0 8px 24px rgba(0,0,0,.12);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+
+  z-index: 10;
 }
 
 /* Bottom Toolbar */
@@ -138,17 +138,20 @@
   bottom: 24px;
   transform: translateX(-50%);
 
-  width: 320px;
-  height: 64px;
+  width: auto;
+  height: 52px;
 
   display: flex;
   align-items: center;
+  justify-content: center;
+  gap: 4px;
 
-  padding: 0 12px;
+  padding: 4px 8px;
 
   background: rgba(255, 255, 255, 0.358);
   border: 1px solid #ddd;
-  border-radius: 16px;
+  border-radius: 14px;
+
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
 }
 
@@ -219,13 +222,16 @@
 .tool-button {
   position: relative;
 
-  flex: 1;
-  min-width: 35px;
-  height: 60px;
+  width: 44px;
+  min-width: 44px;
+  height: 44px;
+  flex: 0 0 44px;
 
   display: flex;
   justify-content: center;
   align-items: center;
+
+  padding: 0;
 
   background-color: transparent;
   border: none;
@@ -255,56 +261,3 @@
   pointer-events: none;
 }
 
-/* Property Input */
-
-.property-input {
-    box-sizing: border-box;
-    width: 64px;
-    min-width: 64px;
-    height: 32px;
-
-    margin: 0;
-    padding: 4px 6px;
-
-    font: inherit;
-    font-size: 13px;
-
-    border: 1px solid #bbb;
-    border-radius: 6px;
-    background: white;
-
-    color: #333;
-}
-
-.property-input:focus {
-    outline: none;
-    border-color: #888;
-}
-
-.property-color-input {
-    width: 40px;
-    min-width: 40px;
-    height: 32px;
-
-    padding: 3px;
-    cursor: pointer;
-
-    appearance: none;
-    -webkit-appearance: none;
-
-    background: white;
-}
-
-.property-color-input::-webkit-color-swatch-wrapper {
-    padding: 0;
-}
-
-.property-color-input::-webkit-color-swatch {
-    border: none;
-    border-radius: 4px;
-}
-
-.property-color-input::-moz-color-swatch {
-    border: none;
-    border-radius: 4px;
-}

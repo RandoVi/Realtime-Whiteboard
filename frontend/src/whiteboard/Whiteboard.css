@@ -28,3 +28,47 @@
   pointer-events: none;
   user-select: none;
 }
+
+.coordinates-board-id-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.coordinates-copy-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 22px;
+  height: 22px;
+
+  padding: 0;
+
+  border: none;
+  border-radius: 5px;
+
+  background: rgba(0, 0, 0, 0.06);
+
+  color: #777;
+
+  font-size: 14px;
+  line-height: 1;
+
+  cursor: pointer;
+
+  pointer-events: auto;
+
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease;
+}
+
+.coordinates-copy-button:hover {
+  background: rgba(0, 0, 0, 0.1);
+  color: #333;
+}
+
+.coordinates-copy-button:active {
+  background: rgba(0, 0, 0, 0.2);
+}

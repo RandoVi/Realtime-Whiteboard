@@ -7,6 +7,7 @@ import { validateStroke } from "./validators/validateStroke";
 import { validateTextbox } from "./validators/validateTextbox";
 import { validateTriangle } from "./validators/validateTriangle";
 import { BoardObject } from "../../modules/board/schemas/BoardObjectSchema";
+import { validateText } from "./validators/validateText";
 
 export function validateObjectType(objectData: BoardObjectDTO): BoardObject{
     switch(objectData.type) {
@@ -27,6 +28,9 @@ export function validateObjectType(objectData: BoardObjectDTO): BoardObject{
         }
         case "triangle": {
             return validateTriangle(objectData)
+        }
+        case "canvastext": {
+            return validateText(objectData)
         }
         default: {
             throw new BadRequestException("Unsupported object type");

@@ -1,8 +1,8 @@
 export function LeftArrowIcon() {
   return (
     <svg
-      width="24"
-      height="24"
+      width="30"
+      height="30"
       viewBox="-1.6 -1.6 19.2 19.2"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"

@@ -1,8 +1,8 @@
 export function StickyNoteIcon() {
     return (
         <svg
-            width="48"
-            height="48"
+            width="35"
+            height="35"
             viewBox="-2.4 -2.4 28.8 28.8"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"

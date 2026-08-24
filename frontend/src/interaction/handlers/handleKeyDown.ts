@@ -13,7 +13,6 @@ export function handleKeyDown({
   editor,
 }: Args) {
   return (event: KeyboardEvent) => {
-
     // Undo
     if (
       event.ctrlKey &&
