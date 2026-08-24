@@ -8,3 +8,4 @@ export type Tool =
   | 'laser'
   | 'arrow'
   | 'textbox'
+  | 'text'

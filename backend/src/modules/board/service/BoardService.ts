@@ -57,7 +57,7 @@ export class BoardService implements OnApplicationShutdown {
         return `${boardId}:${userId}`;
     }
 
-    async createBoardAndPersist(): Promise<BoardManager> {
+    async createBoardAndPersist(username: string): Promise<BoardManager> {
 
         const ownerId = randomUUID();
 
@@ -70,7 +70,7 @@ export class BoardService implements OnApplicationShutdown {
         try {
             const savedBoard = await this.boardRepository.create(randomUUID(), ownerId);
             const newBoard = new BoardManager(savedBoard.id, savedBoard.ownerId);
-            const newUser = new BoardUser(ownerId, "Host");
+            const newUser = new BoardUser(ownerId, username);
 
             this.boards.set(newBoard.id, newBoard);
 

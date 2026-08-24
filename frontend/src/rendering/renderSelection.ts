@@ -1,11 +1,15 @@
 import type { Camera } from "../camera/Camera"
 import type { BoardObject } from '@common/types'
-import { HANDLE_SIZE } from '../types/selection'
+import {
+    HANDLE_SIZE,
+    type ResizeHandle,
+} from "../types/selection"
 import { getResizeHandles } from '../interaction/selection/getResizeHandles'
 import { getSelectionBounds } from "../interaction/selection/getSelectionBounds"
 import type { SelectionBounds } from '../interaction/selection/getSelectionBounds'
 import { getObjectHandler } from '../objects/registry/getObjectHandler'
 import { getRotationHandle, type RotationHandle } from '../interaction/selection/getRotationHandle'
+
 
 export function renderSelection(
     context: CanvasRenderingContext2D,
@@ -17,6 +21,9 @@ export function renderSelection(
     const bounds = getSelectionBounds(object)
 
     const handler = getObjectHandler(object)
+
+    const resizeHandles =
+        handler.resizeHandles
 
     const canResize =
         handler.resize !== undefined &&
@@ -35,6 +42,7 @@ export function renderSelection(
         color,
         showHandles,
         canResize,
+        resizeHandles,
         rotationHandle,
     )
 }
@@ -46,6 +54,7 @@ function renderObjectSelection(
     color: string,
     showHandles: boolean,
     canResize: boolean,
+    resizeHandles: ResizeHandle[] | undefined,
     rotationHandle: RotationHandle,
 ) {
     const centerX =
@@ -87,7 +96,11 @@ function renderObjectSelection(
     context.strokeStyle = color
     context.lineWidth = 2
 
-    const handles = getResizeHandles(bounds, camera)
+    const handles = getResizeHandles(
+        bounds,
+        camera,
+        resizeHandles,
+    )
 
     for (const handle of handles) {
         context.save()

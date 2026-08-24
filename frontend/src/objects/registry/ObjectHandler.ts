@@ -31,6 +31,8 @@ export interface ObjectHandler<T extends BoardObject = BoardObject> {
         constrain: boolean,
     ) => void;
 
+    resizeHandles?: ResizeHandle[]
+    
     render?: (
         context: CanvasRenderingContext2D,
         object: T,

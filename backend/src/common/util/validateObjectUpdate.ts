@@ -7,6 +7,7 @@ import { validateRectangleUpdate } from "./validators/validateRectangleUpdate";
 import { validateStrokeUpdate } from "./validators/validateStrokeUpdate";
 import { validateTextboxUpdate } from "./validators/validateTextboxUpdate";
 import { validateTriangleUpdate } from "./validators/validateTriangleUpdate";
+import { validateTextUpdate } from "./validators/validateTextUpdate";
 
 export function validateObjectUpdate(existing: BoardObject, changes: Partial<BoardObjectDTO>): void {
     console.log("Inside validate switch")
@@ -40,6 +41,9 @@ export function validateObjectUpdate(existing: BoardObject, changes: Partial<Boa
 
         case "triangle":
             validateTriangleUpdate(definedChanges);
+            return;
+        case "text":
+            validateTextUpdate(definedChanges);
             return;
 
         default:

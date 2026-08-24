@@ -1,13 +1,13 @@
 import { rectangleHandler } from "../rectangle/rectangleHandler"
 import { circleHandler } from "../circle/circleHandler"
 import { strokeHandler } from "../stroke/strokeHandler"
-// import { arrowHandler } from "../arrow/arrowHandler"
 import type { ObjectHandler } from "./ObjectHandler"
 import type { BoardObject } from "@common/types"
 import { triangleHandler } from "../triangle/triangleHandler"
 import { laserHandler } from "../laser/laserHandler"
 import { arrowHandler } from "../arrow/arrowHandler"
 import { textboxHandler } from "../textbox/textboxHandler"
+import { textHandler } from "../text/textHandler"
 
 export const objectHandlers = {
   rectangle: rectangleHandler,
@@ -17,7 +17,7 @@ export const objectHandlers = {
   laser: laserHandler,
   arrow: arrowHandler,
   textbox: textboxHandler,
-//   arrow: arrowHandler,
+  text: textHandler,
 } satisfies {
   [K in BoardObject["type"]]: ObjectHandler<Extract<BoardObject, { type: K }>>
 }

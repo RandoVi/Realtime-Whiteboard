@@ -9,6 +9,7 @@ import type { CanvasInteractionContext } from "../CanvasInteractionContext"
 import { updateCursor } from "../updateCursor"
 import { screenToWorld } from "../../camera/Camera";
 import { getResizeHandles } from "../selection/getResizeHandles";
+import { getObjectHandler } from "../../objects/registry/getObjectHandler";
 
 type Args = {
   selectedObject: BoardObject | undefined
@@ -46,16 +47,20 @@ export function beginResize({
     return false
   }
 
-  const bounds = getSelectionBounds(selectedObject)
+const bounds = getSelectionBounds(selectedObject)
 
-  const handles = getResizeHandles(
+const handler =
+    getObjectHandler(selectedObject)
+
+const handles = getResizeHandles(
     bounds,
     camera,
-  )
+    handler.resizeHandles,
+)
 
-  const handleScreenPosition = handles.find(
+const handleScreenPosition = handles.find(
     item => item.type === handle
-  )
+)
 
   if (!handleScreenPosition) {
     return false

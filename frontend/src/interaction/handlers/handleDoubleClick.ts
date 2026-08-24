@@ -1,7 +1,8 @@
 import type { Point } from "@common/types";
 import type { CanvasInteractionContext } from "../CanvasInteractionContext";
+
 import { getTopObjectAtPoint } from "../../objects/getTopObjectAtPoint";
-import { startTextboxEditing } from "../textEditing/startTextboxEditing";
+import { startTextEditing } from "../textEditing/startTextEditing";
 
 type Args = {
     world: Point;
@@ -26,12 +27,15 @@ export function handleDoubleClick({
         return;
     }
 
-    if (object.type !== "textbox") {
+    if (
+        object.type !== "textbox" &&
+        object.type !== "text"
+    ) {
         return;
     }
 
-    startTextboxEditing({
-        textbox: object,
+    startTextEditing({
+        object,
         context,
     });
 }

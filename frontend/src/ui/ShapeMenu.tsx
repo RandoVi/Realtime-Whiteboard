@@ -10,7 +10,9 @@ export type ShapeTool =
   | "triangle"
   | "circle"
   | "arrow"
-  | "textbox";
+  | "textbox"
+  | "text";
+  
 
 type Props = {
   onSelectShape: (tool: ShapeTool) => void;
@@ -59,6 +61,14 @@ export function ShapeMenu({
       <button
         className="tool-button"
         onClick={() => onSelectShape("textbox")}
+      >
+        <StickyNoteIcon />
+        {showShortcuts && <ShortcutHint shortcut="5" />}
+      </button>
+
+            <button
+        className="tool-button"
+        onClick={() => onSelectShape("text")}
       >
         <StickyNoteIcon />
         {showShortcuts && <ShortcutHint shortcut="5" />}

@@ -1,5 +1,6 @@
 import type { Textbox } from "@common/shapes/Textbox";
 import type { Camera } from "../../camera/Camera";
+import { TEXT_LINE_HEIGHT } from "../text/textConstants";
 
 export function renderTextbox(
     context: CanvasRenderingContext2D,
@@ -151,7 +152,7 @@ export function renderTextbox(
     );
 
     const lineHeight =
-        fontSize * 1.3;
+        fontSize * TEXT_LINE_HEIGHT;
 
     /*
      * Text is centered inside the area below
