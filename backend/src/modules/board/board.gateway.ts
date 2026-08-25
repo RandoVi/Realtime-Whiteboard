@@ -12,9 +12,8 @@ import { BoardObjectDTO } from "./dto/BoardObjectDTO";
 import { plainToInstance } from "class-transformer";
 import { WsRateLimitGuard } from "../../lib/rate-limit/ws-rate-limit.guard";
 import { WsConnectionLimitService } from "../../lib/rate-limit/ws-connection-limit-service";
-import { RateLimit } from "../../lib/rate-limit/rate-limit.decorator";
+//import { RateLimit } from "../../lib/rate-limit/rate-limit.decorator";
 import { appError, AppErrorCode } from "../../lib/errors/app.exception";
-//import { RateLimit } from "../../common/rate-limit/rate-limit.decorator";
 
 
 @WebSocketGateway({
@@ -230,10 +229,10 @@ export class BoardGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
                 
         }
     }
-    @RateLimit({
-        limit: 60,
-        windowMs: 1_000,
-    })
+    // @RateLimit({
+    //     limit: 120,
+    //     windowMs: 1_000,
+    // })
     @SubscribeMessage("boardPresenceCommand")
     async handleSocketCommand(
         @ConnectedSocket() socket: Socket,
