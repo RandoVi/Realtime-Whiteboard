@@ -20,7 +20,7 @@ export class BoardManager {
         this.lastActivity = new Date();
     }
 
-    removeObject(objectId: string): void {
+    deleteObject(objectId: string): void {
         this.objects.delete(objectId);
         this.lastActivity = new Date();
     }
@@ -42,8 +42,8 @@ export class BoardManager {
         this.lastActivity = new Date();
     }
 
-    removeUser(userId:string): void {
-        this.users.remove(userId);
+    deleteUser(userId:string): void {
+        this.users.delete(userId);
         this.lastActivity = new Date();
     }
 

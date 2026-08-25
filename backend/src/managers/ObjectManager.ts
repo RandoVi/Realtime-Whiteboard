@@ -1,3 +1,4 @@
+import { appError, AppErrorCode } from "../lib/errors/app.exception";
 import { BoardObject } from "../modules/board/schemas/BoardObjectSchema";
 
 
@@ -7,12 +8,18 @@ export class ObjectManager {
     
     create(boardObject: BoardObject): BoardObject | null {
         if (!boardObject.id) {
-            console.error("BoardObject id is missing")
-            return null;
+            throw appError(AppErrorCode.NO_DATA, {
+                details: "No board Object id provided",
+            })
         }
         if (this.objects.has(boardObject.id)) {
-            console.error("BoardObject already exists");
-            return null;
+            throw appError(AppErrorCode.ALREADY_EXISTS, {
+                details: "Object with id already exists, cannot create",
+                context: {
+                    objectId: boardObject.id,
+                    objectType: boardObject.type
+                }
+            })
         }
 
         this.objects.set(boardObject.id, boardObject);
@@ -22,15 +29,20 @@ export class ObjectManager {
     update(update: Partial<BoardObject>): BoardObject | null {
 
         if (!update.id) {
-            console.error ("No id for object update @ ObjectManager")
-            return null;
+            throw appError(AppErrorCode.NO_DATA, {
+                details: "No board Object id provided",
+            })
         }
 
         const object = this.objects.get(update.id);
 
         if (!object) {
-            console.error("BoardObject not found");
-            return null;
+            throw appError(AppErrorCode.NOT_FOUND, {
+                details: "No object with id in server",
+                context: {
+                    objectId: update.id
+                }
+            })
         }
         Object.assign(object, update);
         return object;
@@ -56,8 +68,12 @@ export class ObjectManager {
         const object = this.objects.get(objectId);
 
         if (!object) {
-            console.error("Could not find object to bring to front")
-            return;
+            throw appError(AppErrorCode.NOT_FOUND, {
+                details: "No object with id in server",
+                context: {
+                    objectId: objectId
+                }
+            })
         }
 
         if (object !== undefined) {

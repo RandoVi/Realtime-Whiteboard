@@ -1,17 +1,20 @@
-import {  Injectable, OnApplicationShutdown } from "@nestjs/common";
+import {  Injectable, Logger, OnApplicationShutdown } from "@nestjs/common";
 import { BoardManager } from "../../../managers/BoardManager";
 import { BoardRepository } from "../repository/BoardRepository";
-import { IDLE_TIMEOUT } from "../../../common/idle-timeout";
+import { IDLE_TIMEOUT } from "../../../lib/idle-timeout";
 import { BoardUser } from "../../../models/boardUser";
-import { ObjectChange, UserChange } from "../../../common/types/BoardChanges";
+import { ObjectChange, UserChange } from "../../../lib/types/BoardChanges";
 import { randomUUID } from "crypto";
 import { BoardObjectDTO } from "../dto/BoardObjectDTO";
-import { validateObjectType } from "../../../common/util/validateObjectType";
-import { validateObjectUpdate } from "../../../common/util/validateObjectUpdate";
+import { validateObjectType } from "../../../lib/util/validateObjectType";
+import { validateObjectUpdate } from "../../../lib/util/validateObjectUpdate";
+import { appError, AppErrorCode } from "../../../lib/errors/app.exception";
 
 @Injectable()
 export class BoardService implements OnApplicationShutdown {
 
+    private readonly logger = new Logger(BoardService.name);
+    
     private static readonly FLUSH_INTERVAL = 15_000;
     private static readonly CLEANUP_INTERVAL = 30_000;
     private static readonly DB_EXPIRATION_TIME = 2 * 60 * 1000;
@@ -62,7 +65,12 @@ export class BoardService implements OnApplicationShutdown {
         const ownerId = randomUUID();
 
         if (this.creationLocks.has(ownerId)) {
-            console.error('Board creation already in progress. Please wait.');
+            throw appError(AppErrorCode.INVALID_INPUT, {
+                details: "A board is already being created for the same host",
+                context: {
+                    ownerId: ownerId
+                }
+            })
         }
 
         this.creationLocks.add(ownerId);
@@ -85,24 +93,31 @@ export class BoardService implements OnApplicationShutdown {
             });
 
             return newBoard;
+
         } finally {
             this.creationLocks.delete(ownerId);
         }
     }
 
-    async upsertUserInBoard(boardId: string, username: string) : Promise<BoardUser | null>  {
-        if (!username) {
-            console.error("No data in DTO @ addUserToBoard")
-            return null;
+    async upsertUserInBoard(boardId: string, username: string) : Promise<BoardUser>  {
+        if (!username || !boardId) {
+            throw appError(AppErrorCode.NO_DATA, {
+                details: "No data provided for updating/inserting user",
+                context: {
+                    boardId: boardId,
+                    username: username
+                }
+            })
         }
-        if (!this.boards.has(boardId)) {
-            console.error("Cannot update board with this id, it does not exist @ addUserToBoard")
-            return null;
-        }
+
         const board = this.boards.get(boardId);
         if (!board) {
-            console.error(`Failed to retrieve board from boards manager`)
-            return null;
+            throw appError(AppErrorCode.NOT_FOUND, {
+                details: "Failed to retrieve board",
+                context: {
+                    boardId: boardId
+                }
+            })
         }
 
         const user = new BoardUser(
@@ -128,24 +143,33 @@ export class BoardService implements OnApplicationShutdown {
         return user;
     }
 
-    async removeUserFromBoard(boardId: string, userId: string) : Promise<boolean | null> {
-        if (!userId) {
-            console.error("No id provided @ removeUserFromBoard")
-            return null;
+    async deleteUserFromBoard(boardId: string, userId: string) : Promise<boolean> {
+        if (!boardId || !userId) {
+            throw appError(AppErrorCode.NO_DATA, {
+                details: "No data provided for removing user",
+                context: {
+                    boardId: boardId,
+                    userId: userId
+                }
+            })
         }
         const board = this.boards.get(boardId);
         
         if (!board) {
-            console.error("SERVICE:Board not found with id: " + boardId)
-            return null;
+            throw appError(AppErrorCode.NOT_FOUND, {
+                details: "No board with id in server",
+                context: {
+                    boardId: boardId
+                }
+            })
         }
 
-        board.removeUser(userId);
+        board.deleteUser(userId);
 
         const key = this.userChangeKey(board.id, userId);
 
         this.dirtyUsers.set(key, {
-            type: 'remove',
+            type: 'delete',
             boardId: board.id,
             userId,
         });
@@ -159,26 +183,38 @@ export class BoardService implements OnApplicationShutdown {
     }
 
     async createObjectInBoard(boardId: string, objectData: BoardObjectDTO) {
-        if (!objectData) {
-            console.error("No data in DTO @ createObjectInBoard")
-            return
+        if (!boardId || !objectData) {
+            throw appError(AppErrorCode.NO_DATA, {
+                details: "No data provided for creating object",
+                context: {
+                    boardId: boardId,
+                    objectDataType: objectData.type
+                }
+            })
         }
 
-        if (!this.boards.has(boardId)) {
-            console.error("Cannot update board with this id, it does not exist (server)")
-            return
-        }
         const board = this.boards.get(boardId);
         
         if (!board) {
-            console.error(`Board not found with id: ${boardId}`)
-            return
+            throw appError(AppErrorCode.NOT_FOUND, {
+                details: "No board with id in server",
+                context: {
+                    boardId: boardId
+                }
+            })
         }
         const existing = board.objects.get(objectData.id);
 
         if (existing) {
-            console.error(`Object already exists for id : ${objectData.id}`)
-            return
+            throw appError(AppErrorCode.ALREADY_EXISTS, {
+                details: "Object with id already exists",
+                context: {
+                    boardId: boardId,
+                    objectId: objectData.id,
+                    existingObjectType: existing.type,
+                    newObjectType: objectData.type,
+                }
+            })
         }
         const verifiedObject = validateObjectType(objectData);
 
@@ -202,29 +238,49 @@ export class BoardService implements OnApplicationShutdown {
 
     async updateObjectInBoard(boardId: string, changes: Partial<BoardObjectDTO> & { id: string}) {
 
-        if (!changes) {
-            console.error("No data in DTO @ updateBoardObjectState")
-            return
+        if (!boardId || !changes) {
+            throw appError(AppErrorCode.NO_DATA, {
+                details: "No data provided for updating object",
+                context: {
+                    boardId: boardId,
+                    objectId: changes.id
+                }
+            })
         }
 
         const board = this.boards.get(boardId);
 
         if (!board) {
-            console.error(`Board not found with id: ${boardId}`)
-            return
+            throw appError(AppErrorCode.NOT_FOUND, {
+                details: "No board with id in server",
+                context: {
+                    boardId: boardId
+                }
+            })
         }
 
         const existing = board.objects.get(changes.id);
 
         if (!existing) {
-            console.error(`Object not found with id: ${changes.id}`);
-            return
+            throw appError(AppErrorCode.NOT_FOUND, {
+                details: "No object with id in server",
+                context: {
+                    objectId: changes.id
+                }
+            })
         }
         if (changes.type !== undefined && existing.type !== changes.type) {
-            console.error('Object type cannot be changed');
-            return
+            throw appError(AppErrorCode.INVALID_INPUT, {
+                details: "Update contains invalid type for existing object",
+                context: {
+                    boardId: boardId,
+                    objectId: changes.id,
+                    existingType: existing.type,
+                    newType: changes.type
+                }
+            })
         }
-        //  Remove id from the object
+        //  delete id from the object
         const { id, ...fields } = changes;
 
         const update = Object.fromEntries(
@@ -255,15 +311,24 @@ export class BoardService implements OnApplicationShutdown {
     }
 
     async moveObjectToFront(boardId: string, objectId: string) {
-        if (!objectId) {
-            console.error("No id provided @ moveObjectToFront")
-            return
+        if (!boardId || !objectId) {
+            throw appError(AppErrorCode.NO_DATA, {
+                details: "No data provided for moving object to front",
+                context: {
+                    boardId: boardId,
+                    objectId: objectId
+                }
+            })
         }
         const board = this.boards.get(boardId);
         
         if (!board) {
-            console.error("SERVICE:Board not found with id: " + boardId)
-            return
+            throw appError(AppErrorCode.NOT_FOUND, {
+                details: "No board with id in server",
+                context: {
+                    boardId: boardId
+                }
+            })
         }
 
         board.moveObjectToFrontInObjects(objectId);
@@ -282,24 +347,45 @@ export class BoardService implements OnApplicationShutdown {
         );
     }
 
-    async deleteObjectInBoard(boardId: string, objectId: string) : Promise<boolean | null> {
-        if (!objectId) {
-            console.error("No id provided @ removeObjectFromBoard")
-            return null;
+    async deleteObjectInBoard(boardId: string, objectId: string) : Promise<BoardManager> {
+        if (!boardId || !objectId) {
+            throw appError(AppErrorCode.NO_DATA, {
+                details: "No data provided for deleting object",
+                context: {
+                    boardId: boardId,
+                    objectId: objectId
+                }
+            })
         }
         const board = this.boards.get(boardId);
         
         if (!board) {
-            console.error("SERVICE:Board not found with id: " + boardId)
-            return null;
+            throw appError(AppErrorCode.NOT_FOUND, {
+                details: "No board with id in server",
+                context: {
+                    boardId: boardId
+                }
+            })
         }
 
-        board.removeObject(objectId);
+        const existing = board.objects.get(objectId);
 
-        const key = this.objectChangeKey(board.id, objectId, 'remove');
+        if (!existing) {
+            throw appError(AppErrorCode.NOT_FOUND, {
+                details: "No object with id in board",
+                context: {
+                    boardId,
+                    objectId,
+                },
+            });
+        }
+
+        board.deleteObject(objectId);
+
+        const key = this.objectChangeKey(board.id, objectId, 'delete');
 
         this.dirtyObjects.set(key, {
-            type: 'remove',
+            type: 'delete',
             boardId: board.id,
             objectId,
         });
@@ -309,19 +395,29 @@ export class BoardService implements OnApplicationShutdown {
             board.lastActivity,
         );
 
-        return true;
+        return board;
     }
 
-    getBoardFromServer(id: string) {
-        return this.boards.get(id);
+    getBoardFromServer(id: string): BoardManager {
+        const board = this.boards.get(id);
+
+        if (!board) {
+            throw appError(AppErrorCode.NOT_FOUND, {
+                details: "No board with id in server",
+                context: {
+                    boardId: id,
+                },
+            });
+        }
+
+        return board;
     }
 
     hasBoardInServer(id: string) {
         return this.boards.has(id);
     }
 
-    async getBoardFromDatabase(id: string): Promise<BoardManager | undefined> {
-        try {
+    async getBoardFromDatabase(id: string): Promise<BoardManager> {
             const retrievedBoard = await this.boardRepository.findByCustomId(id);
             if(retrievedBoard !== null) {
 
@@ -330,32 +426,56 @@ export class BoardService implements OnApplicationShutdown {
 
                 return manager;
             } else {
-                console.error("Board not found within database with id: " + id + "(GET)")
-                return undefined;
+                throw appError(AppErrorCode.NOT_FOUND, {
+                    details: "No board with id in database",
+                    context: {
+                        boardId: id
+                    }
+                })
             }
-        } catch {
-            console.error("Something went wrong while getting board with id: " + id + "(GET)")
-            return undefined;
+    }
+
+    async getBoardOrThrow(boardId: string): Promise<BoardManager> {
+
+        if (!boardId) {
+            throw appError(AppErrorCode.NO_DATA, {
+                details: "No board id provided",
+                context: {
+                    boardId: boardId,
+                }
+            })
         }
+        const board = this.boards.get(boardId);
+
+        if (!board) {
+            return this.getBoardFromDatabase(boardId);
+        }
+        return board;
     }
 
     async hasBoardInDatabase(id: string) {
         try {
             return await this.boardRepository.existsByCustomId(id);
         } catch {
-            console.error("Board not found within database with id: " + id + "(HAS)")
-            return
+            throw appError(AppErrorCode.NOT_FOUND, {
+                details: "Failed to verify board existence in database, likely does not exist",
+                context: {
+                    boardId: id
+                }
+            })
         }
     }
 
-    async removeBoardFromServer(id: string) {
-        try {
-            this.boards.delete(id);
-            console.log(`${id} - board removed from server`);
-            return true;
-        } catch {
-            console.error("Board not found within database with id: " + id + "(DELETE)")
-            return
+    async deleteBoardFromServer(id: string) {
+        const deleted = this.boards.delete(id);
+
+        if (!deleted) {
+            throw appError(AppErrorCode.NOT_FOUND, {
+                details: "No board with id in server",
+                context: {
+                    boardId: id,
+                },
+            });
         }
     }
 
@@ -367,7 +487,6 @@ export class BoardService implements OnApplicationShutdown {
     private isFlushing = false;
 
     private async flushToDatabase() {
-        //console.log('-');
         if (this.isFlushing) {
             return;
         }
@@ -399,22 +518,29 @@ export class BoardService implements OnApplicationShutdown {
 
         const deletedObjects = objectChanges
             .map(([, change]) => change)
-            .filter((change) => change.type === 'remove');
+            .filter((change) => change.type === 'delete');
 
         if (createdObjects.length > 0) {
             try {
                 await this.boardRepository.saveManyCreatedObjects(createdObjects);
             } catch (error) {
-                console.error("Failed to save created objects. Re-queueing...", error)
+
                 this.requeueObjects(objectChanges, "create");
+
+                throw appError(AppErrorCode.TRANSFORMATION_FAILED, {
+                    details: `Failed to save created objects. Re-queueing...  ${error}`,
+                })
             }
         }
         if (reorderedObjects.length > 0) {
             try {
                 await this.boardRepository.saveManyReorderedObjects(reorderedObjects);
             } catch (error) {
-                console.log(error)
                 this.requeueObjects(objectChanges, "reorder");
+
+                throw appError(AppErrorCode.TRANSFORMATION_FAILED, {
+                    details: `Failed to save created objects. Re-queueing...  ${error}`,
+                })
             }
         }
 
@@ -422,8 +548,11 @@ export class BoardService implements OnApplicationShutdown {
             try {
                 await this.boardRepository.saveManyUpdatedObjects(updatedObjects);
             } catch (error) {
-                console.log(error)
                 this.requeueObjects(objectChanges, "update");
+
+                throw appError(AppErrorCode.TRANSFORMATION_FAILED, {
+                    details: `Failed to save created objects. Re-queueing...  ${error}`,
+                })
             }
         }
 
@@ -433,8 +562,11 @@ export class BoardService implements OnApplicationShutdown {
             try {
                 await this.boardRepository.saveManyDeletedObjects(deletedObjects);
             } catch (error) {
-                console.log(error)
-                this.requeueObjects(objectChanges, "remove");
+                this.requeueObjects(objectChanges, "delete");
+
+                throw appError(AppErrorCode.TRANSFORMATION_FAILED, {
+                    details: `Failed to save created objects. Re-queueing...  ${error}`,
+                })
             }
         }
             
@@ -448,14 +580,17 @@ export class BoardService implements OnApplicationShutdown {
 
         const deletedUsers = userChanges
             .map(([, change]) => change)
-            .filter((change) => change.type === "remove");
+            .filter((change) => change.type === "delete");
 
         if (createdUsers.length > 0) {
             try {
                 await this.boardRepository.saveManyCreatedUsers(createdUsers);
             } catch (error) {
-                console.error("Failed to save created users. Re-queueing...", error)
                 this.requeueUsers(userChanges, "create");
+
+                throw appError(AppErrorCode.TRANSFORMATION_FAILED, {
+                    details: `Failed to save created users. Re-queueing...  ${error}`,
+                })
             }
         }
 
@@ -463,8 +598,11 @@ export class BoardService implements OnApplicationShutdown {
             try {
                 await this.boardRepository.saveManyUpdatedUsers(updatedUsers);
             } catch (error) {
-                console.error("Failed to save updated users. Re-queueing...", error)
                 this.requeueUsers(userChanges, "update");
+
+                throw appError(AppErrorCode.TRANSFORMATION_FAILED, {
+                    details: `Failed to save updated users. Re-queueing...  ${error}`,
+                })
             }
         }
 
@@ -472,8 +610,11 @@ export class BoardService implements OnApplicationShutdown {
             try {
                 await this.boardRepository.saveManyDeletedUsers(deletedUsers);
             } catch (error) {
-                console.error("Failed to save deleted users. Re-queueing...", error)
                 this.requeueUsers(userChanges, "delete");
+
+                throw appError(AppErrorCode.TRANSFORMATION_FAILED, {
+                    details: `Failed to save deleted users. Re-queueing...  ${error}`,
+                })
             }
         }
 
@@ -482,8 +623,11 @@ export class BoardService implements OnApplicationShutdown {
                 await this.boardRepository.saveManyActivityUpdates(activityUpdates);
 
             } catch (error) {
-                console.error('Failed to save activity updates. Re-queueing...', error);
                 this.requeueActivities(activityUpdates);
+
+                throw appError(AppErrorCode.TRANSFORMATION_FAILED, {
+                    details: `Failed to save activity updates. Re-queueing...  ${error}`,
+                })
             }
         }
         } finally {
@@ -492,7 +636,7 @@ export class BoardService implements OnApplicationShutdown {
     }
 
     async onApplicationShutdown() {
-        console.log('Server shutting down...');
+        this.logger.log('Server shutting down...');
 
         clearInterval(this.flushInterval);
         clearInterval(this.cleanupInterval);
@@ -509,7 +653,7 @@ export class BoardService implements OnApplicationShutdown {
                 board.users.getAll().length === 0 &&
                 now - board.lastActivity.getTime() > IDLE_TIMEOUT
             ) {
-                await this.removeBoardFromServer(board.id);
+                await this.deleteBoardFromServer(board.id);
             }
         }
     }
@@ -520,7 +664,7 @@ export class BoardService implements OnApplicationShutdown {
         );
         // Give last non expired date basically
         const result = await this.boardRepository.deleteExpiredBoards(cutoff);
-        console.log(`Deleted ${result.deletedCount} expired boards.`);
+        this.logger.log(`Deleted ${result.deletedCount} expired boards.`);
     }
 
     private requeueObjects(changes: [string, ObjectChange][], type: string) {
@@ -545,21 +689,5 @@ export class BoardService implements OnApplicationShutdown {
                     this.dirtyActivity.set(boardId, lastActivity);
                 }
             }
-    }
-
-    private getObjectChangeKey(change: ObjectChange): string {
-        switch (change.type) {
-            case 'create':
-                return `${change.boardId}:${change.object.id}:create`;
-
-            case 'update':
-                return `${change.boardId}:${change.object.id}:update`;
-
-            case 'remove':
-                return `${change.boardId}:${change.objectId}:remove`;
-
-            case 'reorder':
-                return `${change.boardId}:${change.objectId}:reorder`;
-        }
     }
 }

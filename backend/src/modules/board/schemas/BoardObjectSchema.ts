@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { HydratedDocument, Schema as MongooseSchema } from "mongoose";
-import { LaserPointsDTO } from "../../../common/util/PointDTO";
+import { LaserPointsDTO } from "../../../lib/util/PointDTO";
 
 
 export type BoardObjectDocument = HydratedDocument<BoardObject>;

@@ -7,8 +7,8 @@ import { Reflector } from '@nestjs/core';
 import { WsException } from '@nestjs/websockets';
 
 import { RATE_LIMIT_KEY } from './rate-limit.decorator';
-import { RateLimiterService } from '../rate-limit/rate-limit.service';
-import { RateLimitOptions } from '../rate-limit/rate-limit.types';
+import { RateLimiterService } from './rate-limit.service';
+import { RateLimitOptions } from './rate-limit.types';
 
 @Injectable()
 export class WsRateLimitGuard implements CanActivate {

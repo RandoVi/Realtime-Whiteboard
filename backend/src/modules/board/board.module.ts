@@ -4,9 +4,9 @@ import { BoardService } from './service/BoardService';
 import { BoardRepository } from './repository/BoardRepository';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Board, BoardSchema } from './schemas/BoardSchema';
-import { RateLimiterService } from '../../common/rate-limit/rate-limit.service';
-import { WsConnectionLimitService } from '../../common/rate-limit/ws-connection-limit-service';
-import { WsRateLimitGuard } from '../../common/rate-limit/ws-rate-limit.guard';
+import { RateLimiterService } from '../../lib/rate-limit/rate-limit.service';
+import { WsConnectionLimitService } from '../../lib/rate-limit/ws-connection-limit-service';
+import { WsRateLimitGuard } from '../../lib/rate-limit/ws-rate-limit.guard';
 
 @Module({
   imports: [

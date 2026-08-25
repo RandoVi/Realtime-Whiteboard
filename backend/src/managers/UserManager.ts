@@ -1,3 +1,4 @@
+import { appError, AppErrorCode } from "../lib/errors/app.exception";
 import { BoardUser } from "../models/boardUser";
 import { UserColor, ColorManager } from "./ColorManager";
 
@@ -14,7 +15,6 @@ export class UserManager {
             user.color = color;
             this.users.set(user.userId, user);
         } else {
-            console.log("No colors available, falling back to default(RED).")
             user.color = UserColor.RED;
         }
     }
@@ -22,15 +22,20 @@ export class UserManager {
     update(update: Partial<BoardUser>): BoardUser | null{
     
             if (!update.userId) {
-                console.error("No id for user update @ UserManager")
-                return null;
+                throw appError(AppErrorCode.NO_DATA, {
+                    details: "No user id provided",
+                })
             }
     
             const user = this.users.get(update.userId);
     
             if (!user) {
-                console.error("Could not retrieve user to update @UserManager");
-                return null;
+                throw appError(AppErrorCode.NOT_FOUND, {
+                    details: "No user with id in server",
+                    context: {
+                        userId: update.userId
+                    }
+                })
             }
     
             Object.assign(user, update);
@@ -38,31 +43,34 @@ export class UserManager {
             return user;
         }
 
-    remove(id: string) {
+    delete(id: string) {
         const user = this.users.get(id);
         if(user) {
             this.colors.returnColor(user!.color!);
             this.users.delete(id);
+        } else {
+            throw appError(AppErrorCode.NOT_FOUND, {
+                details: "No user with id in server",
+                context: {
+                    userId: id
+                }
+            })
         }
     }
 
     get(id: string) {
-
         return this.users.get(id);
     }
 
     has(id: string) {
-
         return this.users.has(id);
     }
 
     getAll() {
-
         return [...this.users.values()];
     }
 
     count() {
-
         return this.users.size;
     }
 

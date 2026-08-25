@@ -1,11 +1,14 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { AnyBulkWriteOperation, Model } from 'mongoose';
 import { Board, BoardDocument } from '../schemas/BoardSchema';
-import { ObjectChange, UserChange } from '../../../common/types/BoardChanges';
+import { ObjectChange, UserChange } from '../../../lib/types/BoardChanges';
 
 @Injectable()
     export class BoardRepository {
+
+    private readonly logger = new Logger(BoardRepository.name);
+
     constructor(
         @InjectModel(Board.name) private readonly boardModel: Model<BoardDocument>,
     ) {}
@@ -57,7 +60,7 @@ import { ObjectChange, UserChange } from '../../../common/types/BoardChanges';
             }));
 
         const result = await this.boardModel.bulkWrite(bulkOps);
-        console.log(`MONGO: Created objects: matched=${result.matchedCount} and modified=${result.modifiedCount}`);
+        this.logger.log(`MONGO: Created objects: matched=${result.matchedCount} and modified=${result.modifiedCount}`);
     }
     async saveManyUpdatedObjects(changes: Extract<ObjectChange, { type: 'update' }>[],): Promise<void> {
     if (changes.length === 0) {
@@ -85,7 +88,7 @@ import { ObjectChange, UserChange } from '../../../common/types/BoardChanges';
 
     const result = await this.boardModel.bulkWrite(bulkOps);
 
-    console.log(`MONGO: Updated objects: matched=${result.matchedCount}, modified=${result.modifiedCount}`);
+    this.logger.log(`MONGO: Updated objects: matched=${result.matchedCount}, modified=${result.modifiedCount}`);
     }
 
     async saveManyReorderedObjects(changes: Extract<ObjectChange, { type: 'reorder' }>[],): Promise<void> {
@@ -149,12 +152,12 @@ import { ObjectChange, UserChange } from '../../../common/types/BoardChanges';
 
         const result = await this.boardModel.bulkWrite(bulkOps);
 
-        console.log(
+        this.logger.log(
             `MONGO: Reordered objects: matched=${result.matchedCount}, modified=${result.modifiedCount}`,
         );
     }
 
-    async saveManyDeletedObjects(changes: Extract<ObjectChange, { type: 'remove' }>[],): Promise<void> {
+    async saveManyDeletedObjects(changes: Extract<ObjectChange, { type: 'delete' }>[],): Promise<void> {
         if (changes.length === 0) {
             return;
         }
@@ -180,7 +183,7 @@ import { ObjectChange, UserChange } from '../../../common/types/BoardChanges';
 
         const result = await this.boardModel.bulkWrite(bulkOps);
 
-        console.log(
+        this.logger.log(
         `MONGO: Deleted objects matched=${result.matchedCount}, modified=${result.modifiedCount}`,
         );
     }
@@ -214,7 +217,7 @@ import { ObjectChange, UserChange } from '../../../common/types/BoardChanges';
             }));
 
         const result = await this.boardModel.bulkWrite(bulkOps);
-        console.log(`MONGO: Created users: matched=${result.matchedCount} and modified=${result.modifiedCount}`,);
+        this.logger.log(`MONGO: Created users: matched=${result.matchedCount} and modified=${result.modifiedCount}`,);
     }
     async saveManyUpdatedUsers(changes: Extract<UserChange, { type: 'update' }>[],): Promise<void> {
         if (changes.length === 0) {
@@ -241,10 +244,10 @@ import { ObjectChange, UserChange } from '../../../common/types/BoardChanges';
 
         const result = await this.boardModel.bulkWrite(bulkOps);
 
-        console.log(`MONGO: Updated users: matched=${result.matchedCount}, modified=${result.modifiedCount}`);
+        this.logger.log(`MONGO: Updated users: matched=${result.matchedCount}, modified=${result.modifiedCount}`);
     }
 
-    async saveManyDeletedUsers(changes: Extract<UserChange, { type: 'remove' }>[],): Promise<void> {
+    async saveManyDeletedUsers(changes: Extract<UserChange, { type: 'delete' }>[],): Promise<void> {
         if (changes.length === 0) {
             return;
         }
@@ -270,7 +273,7 @@ import { ObjectChange, UserChange } from '../../../common/types/BoardChanges';
 
         const result = await this.boardModel.bulkWrite(bulkOps);
 
-        console.log(`MONGO: Deleted users matched=${result.matchedCount},  and modified=${result.modifiedCount}`);
+        this.logger.log(`MONGO: Deleted users matched=${result.matchedCount},  and modified=${result.modifiedCount}`);
     }
 
     // ---------------------------------------------------------
@@ -298,7 +301,6 @@ import { ObjectChange, UserChange } from '../../../common/types/BoardChanges';
                     },
                 },
             }));
-        /*const result = */await this.boardModel.bulkWrite(bulkOps);
-        //console.log(`MONGO: Updated activity trackers: matched=${result.matchedCount}, modified=${result.modifiedCount}`);
+        await this.boardModel.bulkWrite(bulkOps);
     }
 }

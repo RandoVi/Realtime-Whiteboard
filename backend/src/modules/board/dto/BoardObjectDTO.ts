@@ -1,6 +1,6 @@
 import { IsString, IsNotEmpty, IsOptional, IsNumber, IsArray, ValidateNested } from "class-validator";
 import { Type } from "class-transformer";
-import { LaserPointsDTO } from "../../../common/util/PointDTO";
+import { LaserPointsDTO } from "../../../lib/util/PointDTO";
 
 export class BoardObjectDTO {
 
