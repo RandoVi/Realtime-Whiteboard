@@ -16,19 +16,12 @@ dotenv.config();
       inject: [ConfigService],
       useFactory: (config: ConfigService) => ({
         uri: config.getOrThrow<string>('DATABASE_URL'),
+        /*
+        This needs certificates and setup for docker as well
+        tls: true,
+        */
       }),
     }),
-
-    // Example injection of env variables using config service managed by nestJS, which allows for safer and more reusable injections.
-  
-//   @Injectable()
-//   export class AuthService {
-//   constructor(private readonly config: ConfigService) {}
-
-//   getSecret() {
-//     return this.config.getOrThrow<string>('JWT_SECRET');
-//     }
-//   }
     
     BoardModule
   ],

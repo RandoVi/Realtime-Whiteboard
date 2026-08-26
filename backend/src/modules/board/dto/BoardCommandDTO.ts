@@ -3,7 +3,7 @@ import { Type } from 'class-transformer';
 import { BoardUser } from '../../../models/boardUser';
 
 import { BoardUserDTO } from './BoardUserDTO';
-import { BoardCommandType } from '../../../common/types/BoardCommandType';
+import { BoardCommandType } from '../../../lib/types/BoardCommandType';
 
 export class BoardCommandDTO {
   @IsString()

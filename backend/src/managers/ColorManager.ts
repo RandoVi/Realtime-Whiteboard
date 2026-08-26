@@ -1,3 +1,5 @@
+import { appError, AppErrorCode } from "../lib/errors/app.exception";
+
 export enum UserColor {
     GREEN = "green",
     RED = "red",
@@ -24,16 +26,21 @@ export class ColorManager {
 
     takeColor(preferredColor?: UserColor):UserColor | null {
         if(this.availableColors.length === 0) {
-            console.error("No colors available! Pool exhausted!")
-            return null;
+            throw appError(AppErrorCode.INVALID_STATE, {
+                details: "No colors available, all are already taken",
+            })
         }
         let selectedIndex = 0;
 
         if(preferredColor) {
             selectedIndex = this.availableColors.indexOf(preferredColor);
             if(selectedIndex === -1) {
-                console.error(`Color ${preferredColor} is already in use or invalid.`)
-                return null;
+                throw appError(AppErrorCode.INVALID_INPUT, {
+                    details: `Color ${preferredColor} is already in use or invalid.`,
+                    context: {
+                        preferredColor: preferredColor
+                    }
+                })
             }
         }
 
@@ -44,13 +51,21 @@ export class ColorManager {
 
     returnColor(color:UserColor): boolean {
         if(!this.validColors.includes(color)) {
-            console.error(`Cannot return invalid color: ${color}`)
-            return false;
+            throw appError(AppErrorCode.INVALID_INPUT, {
+                details: `Invalid color`,
+                context: {
+                    color: color
+                }
+            })
         }
 
         if (!this.inUseColors.has(color)) {
-            console.error(`Color ${color} is not currently checked out`)
-            return false;
+            throw appError(AppErrorCode.INVALID_INPUT, {
+                details: "Color is not in use, choose a valid color in that is being used",
+                context: {
+                    color: color
+                }
+            })
         }
 
         this.inUseColors.delete(color);
