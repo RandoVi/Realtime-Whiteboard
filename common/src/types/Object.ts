@@ -5,6 +5,7 @@ import type { Rectangle } from '../shapes/Rectangle'
 import type { Stroke } from '../shapes/Stroke'
 import type { Textbox } from '../shapes/Textbox'
 import type { Triangle } from '../shapes/Triangle'
+import type { CanvasText } from '../shapes/CanvasText'
 
 export type BoardObject =
   | Rectangle
@@ -14,6 +15,7 @@ export type BoardObject =
   | Laser
   | Arrow
   | Textbox
+  | CanvasText
 
 export type RotatableObject =
   | Rectangle
@@ -21,6 +23,7 @@ export type RotatableObject =
   | Triangle
   | Textbox
   | Arrow
+  | CanvasText
 
 export type Point = {
   x: number

@@ -6,6 +6,12 @@ export type Interaction =
     | { type: 'idle' }
 
     | {
+        type: 'selecting'
+        start: Point
+        current: Point
+    }
+
+    | {
         type: 'drawing'
         start: Point
         preview: BoardObject
@@ -14,9 +20,17 @@ export type Interaction =
     | {
         type: 'moving'
         start: Point
-        original: BoardObject
-        preview: BoardObject
-        objectId: string
+        original: BoardObject[]
+        preview: BoardObject[]
+        objectIds: string[]
+        moved: boolean
+    }
+
+    | {
+        type: 'groupMoving'
+        start: Point
+        originals: BoardObject[]
+        previews: BoardObject[]
         moved: boolean
     }
 

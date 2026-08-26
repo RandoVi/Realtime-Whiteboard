@@ -1,7 +1,9 @@
 import type { RemotePresence } from "./RemotePresence";
 
 export function createRemotePresence(): RemotePresence {
-    return {
-        lasers: [],
-    };
+  return {
+    selectedObjectIds: [],
+    lasers: [],
+    previews: [],
+  };
 }

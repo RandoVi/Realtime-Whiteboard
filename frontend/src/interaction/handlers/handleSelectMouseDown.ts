@@ -6,12 +6,13 @@ import { getTopObjectAtPoint } from "../../objects/getTopObjectAtPoint"
 import { hitTestRotationHandle } from "../selection/hitTestRotationHandle";
 import { isRotatableObject } from "../../objects/isRotatableObject";
 import { beginRotation } from "../rotation/beginRotation";
-import { handleSelectionClearMouseDown } from "../selection/handleSelectionClearMouseDown";
+// import { handleSelectionClearMouseDown } from "../selection/handleSelectionClearMouseDown";
 
 type Args = {
   pointer: Point
   world: Point
   context: CanvasInteractionContext
+  multiSelect: boolean;
 }
 
 
@@ -20,6 +21,7 @@ export function handleSelectMouseDown({
   pointer,
   world,
   context,
+  multiSelect,
 }: Args) {
 
   const {
@@ -29,6 +31,10 @@ export function handleSelectMouseDown({
     getSelectedObject,
     selectObject,
     requestRender,
+    selectedObjectIdRef,
+    setSelectedObjectId,
+    selectedObjectIdsRef,
+    setSelectedObjectIds,
   } = context;
 
   const selectedObject = getSelectedObject();
@@ -47,7 +53,7 @@ export function handleSelectMouseDown({
       object: selectedObject,
       interactionRef,
       context,
-    })
+    });
   }
 
   // Check if the user is trying to resize the selected object
@@ -61,16 +67,71 @@ export function handleSelectMouseDown({
       context,
     })
   ) {
-    return true
+    return true;
   }
-
 
   const clickedObject = getTopObjectAtPoint(
     document.objectsRef.current,
     world,
   );
 
-  // If the user clicked on a object, select it and start moving it
+  if (!clickedObject) {
+    // Clear the current selection immediately.
+    selectedObjectIdsRef.current = [];
+    setSelectedObjectIds([]);
+
+    selectedObjectIdRef.current = null;
+    setSelectedObjectId(null);
+
+    interactionRef.current = {
+      type: "selecting",
+      start: world,
+      current: world,
+    };
+
+    requestRender();
+    return true;
+  }
+
+  // Multi-select
+  // Multi-select
+  if (multiSelect && clickedObject) {
+    const selectedIds = selectedObjectIdsRef.current;
+
+    if (selectedIds.includes(clickedObject.id)) {
+      const nextSelectedIds = selectedIds.filter(
+        id => id !== clickedObject.id
+      );
+
+      selectedObjectIdsRef.current = nextSelectedIds;
+      setSelectedObjectIds(nextSelectedIds);
+
+      if (selectedObjectIdRef.current === clickedObject.id) {
+        selectedObjectIdRef.current =
+          nextSelectedIds[0] ?? null;
+
+        setSelectedObjectId(
+          nextSelectedIds[0] ?? null
+        );
+      }
+    } else {
+      const nextSelectedIds = [
+        ...selectedIds,
+        clickedObject.id,
+      ];
+
+      selectedObjectIdsRef.current = nextSelectedIds;
+      setSelectedObjectIds(nextSelectedIds);
+
+      selectedObjectIdRef.current = clickedObject.id;
+      setSelectedObjectId(clickedObject.id);
+    }
+
+    requestRender();
+    return;
+  }
+
+  // Existing single-selection behavior
   if (
     beginMoving({
       clickedObject,
@@ -81,12 +142,6 @@ export function handleSelectMouseDown({
       context,
     })
   ) {
-    return true
+    return true;
   }
-
-  // If the user clicked on an empty area, clear the selection
-  handleSelectionClearMouseDown({
-    selectObject,
-    requestRender,
-  })
 }

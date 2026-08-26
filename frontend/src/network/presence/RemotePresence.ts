@@ -3,11 +3,13 @@ import type { Laser } from "@common/shapes";
 import type { PreviewData } from "../../rendering/renderObjects";
 
 export type RemotePresence = {
-    preview?: PreviewData;
+  preview?: PreviewData;
 
-    selectedObjectId?: string | null;
+  previews: PreviewData[];
 
-    cursor?: Point;
+  selectedObjectIds: string[];
 
-    lasers: Laser[];
+  cursor?: Point;
+
+  lasers: Laser[];
 };

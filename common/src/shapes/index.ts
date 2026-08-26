@@ -5,3 +5,4 @@ export * from "./Laser";
 export * from "./Stroke";
 export * from "./Triangle";
 export * from "./Textbox";
+export * from "./CanvasText";

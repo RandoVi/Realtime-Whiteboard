@@ -37,6 +37,14 @@ export function renderText(
     const screenFontSize =
         text.fontSize *
         camera.scale;
+    /*
+     * Small visual adjustment so the canvas text
+     * aligns better with the DOM contentEditable editor.
+     */
+
+    const verticalOffset =
+        text.fontSize * 0.26 * camera.scale;
+
 
     context.save();
 
@@ -59,11 +67,12 @@ export function renderText(
         "top";
 
     for (let i = 0; i < lines.length; i++) {
-
         context.fillText(
             lines[i],
             screenX,
-            screenY + i * screenLineHeight,
+            screenY +
+            verticalOffset +
+            i * screenLineHeight,
         );
     }
 

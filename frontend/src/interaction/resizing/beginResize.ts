@@ -1,15 +1,15 @@
 import type { MutableRefObject } from "react"
 import type { BoardObject } from "@common/types"
 import type { Camera } from "../../camera/Camera"
-import type { Point } from "@common/types";
+import type { Point } from "@common/types"
 import { getSelectionHandle } from "../selection/getSelectionHandle"
 import type { Interaction } from "../Interaction"
 import { getSelectionBounds } from "../selection/getSelectionBounds"
 import type { CanvasInteractionContext } from "../CanvasInteractionContext"
 import { updateCursor } from "../updateCursor"
-import { screenToWorld } from "../../camera/Camera";
-import { getResizeHandles } from "../selection/getResizeHandles";
-import { getObjectHandler } from "../../objects/registry/getObjectHandler";
+import { screenToWorld } from "../../camera/Camera"
+import { getResizeHandles } from "../selection/getResizeHandles"
+import { getObjectHandler } from "../../objects/registry/getObjectHandler"
 
 type Args = {
   selectedObject: BoardObject | undefined
@@ -17,8 +17,9 @@ type Args = {
   world: Point
   camera: Camera
   interactionRef: MutableRefObject<Interaction>
-  context: CanvasInteractionContext;
+  context: CanvasInteractionContext
 }
+
 // Handles the mouse down event for resizing a selected object
 export function beginResize({
   selectedObject,
@@ -32,11 +33,6 @@ export function beginResize({
     return false
   }
 
-  context.editor.execute({
-    type: "bringBoardObjectToFront",
-    boardObjectId: selectedObject.id,
-  })
-
   const handle = getSelectionHandle(
     selectedObject,
     pointer,
@@ -47,20 +43,20 @@ export function beginResize({
     return false
   }
 
-const bounds = getSelectionBounds(selectedObject)
+  const bounds = getSelectionBounds(selectedObject)
 
-const handler =
+  const handler =
     getObjectHandler(selectedObject)
 
-const handles = getResizeHandles(
+  const handles = getResizeHandles(
     bounds,
     camera,
     handler.resizeHandles,
-)
+  )
 
-const handleScreenPosition = handles.find(
+  const handleScreenPosition = handles.find(
     item => item.type === handle
-)
+  )
 
   if (!handleScreenPosition) {
     return false
@@ -78,6 +74,13 @@ const handleScreenPosition = handles.find(
     return false
   }
 
+  // Only change z-order once we know
+  // that an actual resize is starting.
+  context.editor.execute({
+    type: "bringBoardObjectToFront",
+    boardObjectId: selectedObject.id,
+  })
+
   interactionRef.current = {
     type: "resizing",
     objectId: selectedObject.id,
@@ -90,7 +93,7 @@ const handleScreenPosition = handles.find(
     },
   }
 
-  updateCursor(context);
+  updateCursor(context)
 
   return true
 }

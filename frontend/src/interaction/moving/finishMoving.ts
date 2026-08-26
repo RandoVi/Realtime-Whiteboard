@@ -31,17 +31,19 @@ export function finishMoving({
     // console.log("FINISH UPDATES", updates);
 
     if (interaction.moved) {
-        editor.execute({
-            type: "updateBoardObject",
-            boardObjectId: interaction.objectId,
-            updates: getObjectMoveUpdates(
-                interaction.preview
-            ),
-        });
+        for (let i = 0; i < interaction.preview.length; i++) {
+            editor.execute({
+                type: "updateBoardObject",
+                boardObjectId: interaction.objectIds[i],
+                updates: getObjectMoveUpdates(
+                    interaction.preview[i]
+                ),
+            });
+        }
+
         clearObjectPreview({
             presence,
         });
-
     }
 
 

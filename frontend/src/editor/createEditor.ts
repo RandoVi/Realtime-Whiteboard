@@ -14,6 +14,7 @@ import { EditorHistory } from "./history/EditorHistory";
 import type { BoardObject } from "@common/types";
 import type { HistoryEntry } from "./history/HistoryEntry";
 import { getCurrentUser } from "../network/currentUser";
+import { bringObjectsToFront } from "../interaction/helpers/bringObjectsToFront";
 
 type Args = {
   document: BoardDocument;
@@ -90,6 +91,8 @@ export function createEditor({
         return [command.boardObjectId];
 
       case "bringBoardObjectToFront":
+        return [];
+      case "bringBoardObjectsToFront":
         return [];
     }
   }
@@ -243,6 +246,9 @@ export function createEditor({
 
       case "bringBoardObjectToFront":
         return undefined;
+
+      case "bringBoardObjectsToFront":
+        return undefined;
     }
   }
 
@@ -281,6 +287,13 @@ export function createEditor({
         bringObjectToFront({
           objects: document.objectsRef.current,
           objectId: command.boardObjectId,
+        });
+        break;
+
+      case "bringBoardObjectsToFront":
+        bringObjectsToFront({
+          objects: document.objectsRef.current,
+          objectIds: command.boardObjectIds,
         });
         break;
     }

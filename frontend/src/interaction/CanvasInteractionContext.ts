@@ -35,6 +35,14 @@ export interface CanvasInteractionContext {
 
     selectObject: (id: string | null) => void;
 
+    selectedObjectIdRef: MutableRefObject<string | null>;
+
+    setSelectedObjectId: (id: string | null) => void;
+
+    selectedObjectIdsRef: MutableRefObject<string[]>;
+
+    setSelectedObjectIds: (ids: string[]) => void;
+
     objectStyle: ObjectStyle;
 
     remotePresence: Map<string, RemotePresence>;

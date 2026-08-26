@@ -14,6 +14,7 @@ type Args = {
     tool: Tool;
     canvas: HTMLCanvasElement;
     context: CanvasInteractionContext;
+    multiSelect: boolean;
 };
 
 
@@ -23,6 +24,7 @@ export function handleMouseDown({
     tool,
     canvas,
     context,
+    multiSelect,
 }: Args) {
 
     switch (tool) {
@@ -32,6 +34,7 @@ export function handleMouseDown({
                 pointer,
                 world,
                 context,
+                multiSelect,
             });
             break;
 
