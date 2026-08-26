@@ -1,4 +1,4 @@
-export type ObjectSelectionCommand = {
+export type SelectionCommand = {
     type: "selection";
-    objectId?: string;
+    objectIds: string[];
 };

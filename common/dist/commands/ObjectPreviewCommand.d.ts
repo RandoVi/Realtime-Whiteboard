@@ -6,8 +6,10 @@ export type ObjectPreviewCommand = {
 } | {
     type: "objectPreview";
     previewType: "update";
-    boardObjectId: string;
-    updates: Partial<BoardObject>;
+    objects: {
+        boardObjectId: string;
+        updates: Partial<BoardObject>;
+    }[];
 } | {
     type: "objectPreview";
     previewType: "clear";

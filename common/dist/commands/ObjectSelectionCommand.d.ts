@@ -1,5 +1,5 @@
 export type ObjectSelectionCommand = {
     type: "selection";
-    objectId?: string;
+    objectIds: string[];
 };
 //# sourceMappingURL=ObjectSelectionCommand.d.ts.map

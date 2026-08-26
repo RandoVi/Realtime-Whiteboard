@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type RefObject } from 'react'
+import { useEffect, useRef, useState, type MutableRefObject, type RefObject } from 'react'
 import type { Interaction } from '../../interaction/Interaction'
 import { handleKeyDown } from '../../interaction/handlers/handleKeyDown'
 import { handleMouseUp } from '../../interaction/handlers/handleMouseUp'
@@ -34,6 +34,10 @@ export type UseWhiteboardInputProps = {
     React.SetStateAction<string | null>
   >
   selectedObjectIdRef: React.RefObject<string | null>
+
+  selectedObjectIdsRef: MutableRefObject<string[]>;
+  setSelectedObjectIds: (ids: string[]) => void;
+
   onStartInteraction: () => void;
   objectStyle: ObjectStyle;
   remotePresence: Map<string, RemotePresence>;
@@ -48,8 +52,13 @@ export function useWhiteboardInput({
   tool,
   editor,
   presence,
+
   setSelectedObjectId,
   selectedObjectIdRef,
+
+  selectedObjectIdsRef,
+  setSelectedObjectIds,
+
   onStartInteraction,
   objectStyle,
   remotePresence,
@@ -72,14 +81,19 @@ export function useWhiteboardInput({
   }
 
   const selectObject = (id: string | null) => {
-    selectedObjectIdRef.current = id
-    setSelectedObjectId(id)
-    // console.log("sending selection:", id);
+    selectedObjectIdRef.current = id;
+    setSelectedObjectId(id);
+
+    const nextSelectedIds = id ? [id] : [];
+
+    selectedObjectIdsRef.current = nextSelectedIds;
+    setSelectedObjectIds(nextSelectedIds);
+
     presence.send({
       type: "selection",
-      objectId: id,
+      objectIds: nextSelectedIds,
     });
-  }
+  };
 
   const contextRef = useRef<CanvasInteractionContext | null>(null);
 
@@ -94,6 +108,13 @@ export function useWhiteboardInput({
     requestRender,
     getSelectedObject: editor.getSelectedObject,
     selectObject,
+
+    selectedObjectIdRef,
+    setSelectedObjectId,
+
+    selectedObjectIdsRef,
+    setSelectedObjectIds,
+
     objectStyle,
     remotePresence,
     localLasers,
@@ -164,12 +185,14 @@ export function useWhiteboardInput({
         constrain: event.ctrlKey,
       });
     };
-    
+
     // Handle mouse down events for drawing, moving, and selecting objects
     const handleMouseDown = (event: MouseEvent) => {
 
       if (event.button !== 0) return;
+
       onStartInteraction();
+
       const pointer = getPointer(event, canvas);
 
       const world = screenToWorld(
@@ -183,6 +206,7 @@ export function useWhiteboardInput({
         tool,
         canvas,
         context: contextRef.current!,
+        multiSelect: event.ctrlKey || event.metaKey,
       });
     };
     // Stop dragging or drawing when the mouse is released
@@ -250,6 +274,8 @@ export function useWhiteboardInput({
     editor,
     presence,
     document,
+    selectedObjectIdsRef,
+    setSelectedObjectIds,
   ])
 
   return {

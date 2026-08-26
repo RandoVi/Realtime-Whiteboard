@@ -29,7 +29,7 @@ export function validateObjectType(objectData: BoardObjectDTO): BoardObject{
         case "triangle": {
             return validateTriangle(objectData)
         }
-        case "canvastext": {
+        case "text": {
             return validateText(objectData)
         }
         default: {

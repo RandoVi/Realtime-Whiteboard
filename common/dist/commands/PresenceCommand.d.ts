@@ -3,7 +3,7 @@ import type { Point } from "../types";
 import type { BoardObject } from "../types/Object";
 export type ObjectSelectionCommand = {
     type: "selection";
-    objectId?: string;
+    objectIds: string[];
 };
 export type ObjectPreviewCommand = {
     type: "objectPreview";
@@ -12,8 +12,10 @@ export type ObjectPreviewCommand = {
 } | {
     type: "objectPreview";
     previewType: "update";
-    boardObjectId: string;
-    updates: Partial<BoardObject>;
+    objects: {
+        boardObjectId: string;
+        updates: Partial<BoardObject>;
+    }[];
 } | {
     type: "objectPreview";
     previewType: "clear";
@@ -34,7 +36,7 @@ export type CursorMovementCommand = {
 };
 export type SelectionCommand = {
     type: "selection";
-    objectId: string | null;
+    objectIds: string[];
 };
 export type PresenceCommand = CursorMovementCommand | ObjectPreviewCommand | SelectionCommand | LaserCommand;
 //# sourceMappingURL=PresenceCommand.d.ts.map

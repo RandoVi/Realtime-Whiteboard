@@ -1,4 +1,4 @@
-import { BadRequestException, ConflictException, Injectable, InternalServerErrorException, NotFoundException, OnApplicationShutdown } from "@nestjs/common";
+import {  Injectable, OnApplicationShutdown } from "@nestjs/common";
 import { BoardManager } from "../../../managers/BoardManager";
 import { BoardRepository } from "../repository/BoardRepository";
 import { IDLE_TIMEOUT } from "../../../common/idle-timeout";
@@ -62,7 +62,7 @@ export class BoardService implements OnApplicationShutdown {
         const ownerId = randomUUID();
 
         if (this.creationLocks.has(ownerId)) {
-            throw new ConflictException('Board creation already in progress. Please wait.');
+            console.error('Board creation already in progress. Please wait.');
         }
 
         this.creationLocks.add(ownerId);
@@ -90,16 +90,19 @@ export class BoardService implements OnApplicationShutdown {
         }
     }
 
-    async upsertUserInBoard(boardId: string, username: string) : Promise<BoardUser> {
+    async upsertUserInBoard(boardId: string, username: string) : Promise<BoardUser | null>  {
         if (!username) {
-            throw new BadRequestException("No data in DTO @ addUserToBoard")
+            console.error("No data in DTO @ addUserToBoard")
+            return null;
         }
         if (!this.boards.has(boardId)) {
-            throw new BadRequestException("Cannot update board with this id, it does not exist @ addUserToBoard")
+            console.error("Cannot update board with this id, it does not exist @ addUserToBoard")
+            return null;
         }
         const board = this.boards.get(boardId);
         if (!board) {
-            throw new NotFoundException(`Failed to retrieve board from boards manager`)
+            console.error(`Failed to retrieve board from boards manager`)
+            return null;
         }
 
         const user = new BoardUser(
@@ -125,14 +128,16 @@ export class BoardService implements OnApplicationShutdown {
         return user;
     }
 
-    async removeUserFromBoard(boardId: string, userId: string) : Promise<boolean> {
+    async removeUserFromBoard(boardId: string, userId: string) : Promise<boolean | null> {
         if (!userId) {
-            throw new BadRequestException("No id provided @ removeUserFromBoard")
+            console.error("No id provided @ removeUserFromBoard")
+            return null;
         }
         const board = this.boards.get(boardId);
         
         if (!board) {
-            throw new NotFoundException("SERVICE:Board not found with id: " + boardId)
+            console.error("SERVICE:Board not found with id: " + boardId)
+            return null;
         }
 
         board.removeUser(userId);
@@ -155,23 +160,26 @@ export class BoardService implements OnApplicationShutdown {
 
     async createObjectInBoard(boardId: string, objectData: BoardObjectDTO) {
         if (!objectData) {
-            throw new BadRequestException("No data in DTO @ createObjectInBoard")
+            console.error("No data in DTO @ createObjectInBoard")
+            return
         }
 
         if (!this.boards.has(boardId)) {
-            throw new BadRequestException("Cannot update board with this id, it does not exist (server)")
+            console.error("Cannot update board with this id, it does not exist (server)")
+            return
         }
         const board = this.boards.get(boardId);
         
         if (!board) {
-            throw new NotFoundException(`Board not found with id: ${boardId}`)
+            console.error(`Board not found with id: ${boardId}`)
+            return
         }
         const existing = board.objects.get(objectData.id);
 
         if (existing) {
-            throw new ConflictException(`Object already exists for id : ${objectData.id}`)
+            console.error(`Object already exists for id : ${objectData.id}`)
+            return
         }
-
         const verifiedObject = validateObjectType(objectData);
 
         board.addObject(verifiedObject);
@@ -195,26 +203,26 @@ export class BoardService implements OnApplicationShutdown {
     async updateObjectInBoard(boardId: string, changes: Partial<BoardObjectDTO> & { id: string}) {
 
         if (!changes) {
-            throw new BadRequestException("No data in DTO @ updateBoardObjectState")
+            console.error("No data in DTO @ updateBoardObjectState")
+            return
         }
 
         const board = this.boards.get(boardId);
 
         if (!board) {
-            throw new NotFoundException(`Board not found with id: ${boardId}`)
+            console.error(`Board not found with id: ${boardId}`)
+            return
         }
 
         const existing = board.objects.get(changes.id);
 
         if (!existing) {
-            throw new NotFoundException(
-                `Object not found with id: ${changes.id}`
-            );
+            console.error(`Object not found with id: ${changes.id}`);
+            return
         }
         if (changes.type !== undefined && existing.type !== changes.type) {
-            throw new BadRequestException(
-                'Object type cannot be changed'
-            );
+            console.error('Object type cannot be changed');
+            return
         }
         //  Remove id from the object
         const { id, ...fields } = changes;
@@ -248,12 +256,14 @@ export class BoardService implements OnApplicationShutdown {
 
     async moveObjectToFront(boardId: string, objectId: string) {
         if (!objectId) {
-            throw new BadRequestException("No id provided @ moveObjectToFront")
+            console.error("No id provided @ moveObjectToFront")
+            return
         }
         const board = this.boards.get(boardId);
         
         if (!board) {
-            throw new NotFoundException("SERVICE:Board not found with id: " + boardId)
+            console.error("SERVICE:Board not found with id: " + boardId)
+            return
         }
 
         board.moveObjectToFrontInObjects(objectId);
@@ -272,14 +282,16 @@ export class BoardService implements OnApplicationShutdown {
         );
     }
 
-    async deleteObjectInBoard(boardId: string, objectId: string) : Promise<boolean> {
+    async deleteObjectInBoard(boardId: string, objectId: string) : Promise<boolean | null> {
         if (!objectId) {
-            throw new BadRequestException("No id provided @ removeObjectFromBoard")
+            console.error("No id provided @ removeObjectFromBoard")
+            return null;
         }
         const board = this.boards.get(boardId);
         
         if (!board) {
-            throw new NotFoundException("SERVICE:Board not found with id: " + boardId)
+            console.error("SERVICE:Board not found with id: " + boardId)
+            return null;
         }
 
         board.removeObject(objectId);
@@ -308,7 +320,7 @@ export class BoardService implements OnApplicationShutdown {
         return this.boards.has(id);
     }
 
-    async getBoardFromDatabase(id: string): Promise<BoardManager> {
+    async getBoardFromDatabase(id: string): Promise<BoardManager | undefined> {
         try {
             const retrievedBoard = await this.boardRepository.findByCustomId(id);
             if(retrievedBoard !== null) {
@@ -318,10 +330,12 @@ export class BoardService implements OnApplicationShutdown {
 
                 return manager;
             } else {
-                throw new NotFoundException("Board not found within database with id: " + id + "(GET)")
+                console.error("Board not found within database with id: " + id + "(GET)")
+                return undefined;
             }
         } catch {
-            throw new InternalServerErrorException("Something went wrong while getting board with id: " + id + "(GET)")
+            console.error("Something went wrong while getting board with id: " + id + "(GET)")
+            return undefined;
         }
     }
 
@@ -329,7 +343,8 @@ export class BoardService implements OnApplicationShutdown {
         try {
             return await this.boardRepository.existsByCustomId(id);
         } catch {
-            throw new NotFoundException("Board not found within database with id: " + id + "(HAS)")
+            console.error("Board not found within database with id: " + id + "(HAS)")
+            return
         }
     }
 
@@ -339,7 +354,8 @@ export class BoardService implements OnApplicationShutdown {
             console.log(`${id} - board removed from server`);
             return true;
         } catch {
-            throw new NotFoundException("Board not found within database with id: " + id + "(DELETE)")
+            console.error("Board not found within database with id: " + id + "(DELETE)")
+            return
         }
     }
 
@@ -532,18 +548,18 @@ export class BoardService implements OnApplicationShutdown {
     }
 
     private getObjectChangeKey(change: ObjectChange): string {
-    switch (change.type) {
-        case 'create':
-            return `${change.boardId}:${change.object.id}:create`;
+        switch (change.type) {
+            case 'create':
+                return `${change.boardId}:${change.object.id}:create`;
 
-        case 'update':
-            return `${change.boardId}:${change.object.id}:update`;
+            case 'update':
+                return `${change.boardId}:${change.object.id}:update`;
 
-        case 'remove':
-            return `${change.boardId}:${change.objectId}:remove`;
+            case 'remove':
+                return `${change.boardId}:${change.objectId}:remove`;
 
-        case 'reorder':
-            return `${change.boardId}:${change.objectId}:reorder`;
+            case 'reorder':
+                return `${change.boardId}:${change.objectId}:reorder`;
+        }
     }
-}
 }

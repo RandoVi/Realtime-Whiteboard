@@ -4,24 +4,26 @@ import type { BoardObject } from "../types/Object";
 
 export type ObjectSelectionCommand = {
     type: "selection";
-    objectId?: string;
+    objectIds: string[];
 };
 
 export type ObjectPreviewCommand =
-  | {
-      type: "objectPreview";
-      previewType: "create";
-      boardObject: BoardObject;
+    | {
+        type: "objectPreview";
+        previewType: "create";
+        boardObject: BoardObject;
     }
-  | {
-      type: "objectPreview";
-      previewType: "update";
-      boardObjectId: string;
-      updates: Partial<BoardObject>;
+    | {
+        type: "objectPreview";
+        previewType: "update";
+        objects: {
+            boardObjectId: string;
+            updates: Partial<BoardObject>;
+        }[];
     }
-  | {
-      type: "objectPreview";
-      previewType: "clear";
+    | {
+        type: "objectPreview";
+        previewType: "clear";
     };
 export type LaserCommand =
     | {
@@ -43,7 +45,7 @@ export type CursorMovementCommand = {
 
 export type SelectionCommand = {
     type: "selection";
-    objectId: string | null;
+    objectIds: string[];
 };
 
 export type PresenceCommand =

@@ -45,13 +45,18 @@ export function updateRotation({
         return false
     }
 
+
     sendObjectPreview({
         presence,
-        objectId: boardObject.id,
-        updates: {
-            rotation: object.rotation,
-        },
-    })
+        objects: [
+            {
+                objectId: boardObject.id,
+                updates: {
+                    rotation: object.rotation,
+                },
+            },
+        ],
+    });
 
     requestRender()
 

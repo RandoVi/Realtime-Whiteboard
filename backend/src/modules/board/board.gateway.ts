@@ -2,7 +2,7 @@ import { WebSocketGateway, OnGatewayConnection, OnGatewayDisconnect, WebSocketSe
 
 import { BoardService } from "./service/BoardService";
 import { Server, Socket } from "socket.io";
-import { BadRequestException, InternalServerErrorException, Logger, NotFoundException, UseGuards } from "@nestjs/common";
+import { BadRequestException, Logger, UseGuards } from "@nestjs/common";
 import { BoardCommandDTO } from "./dto/BoardCommandDTO";
 import { BoardObjectPresenceDTO } from "../../models/boardObjectPresenceDTO";
 import { BoardObjectEditorDTO } from "../../models/boardObjectEditorDTO";
@@ -12,6 +12,7 @@ import { BoardObjectDTO } from "./dto/BoardObjectDTO";
 import { plainToInstance } from "class-transformer";
 import { WsRateLimitGuard } from "../../common/rate-limit/ws-rate-limit.guard";
 import { WsConnectionLimitService } from "../../common/rate-limit/ws-connection-limit-service";
+import { RateLimit } from "../../common/rate-limit/rate-limit.decorator";
 //import { RateLimit } from "../../common/rate-limit/rate-limit.decorator";
 
 
@@ -102,6 +103,7 @@ export class BoardGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
                     if (exists) {
                         console.log("SERVER: Board exists in database - fetching")
                         board = await this.boards.getBoardFromDatabase(data.id);
+                        if (!board) break;
                         // console.log("Board found with: " + board.id, board.ownerId, board. lastActivity, board.users.toJSON(), board.objects.toJSON())
                     } else {
                         console.log("SERVER: No board exists in db")
@@ -109,7 +111,6 @@ export class BoardGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
                     }
                 }
                 
-                    
                 if (!data.user) {
                     console.error('SERVER:  No "user" in socket(JOIN - BOARD)')
                     socket.emit("join-board-response", "No user data available (missing)")
@@ -118,10 +119,11 @@ export class BoardGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
                 const newUser = await this.boards.upsertUserInBoard(data.id, data.user.username);
 
                 if(!newUser) {
-                    throw new InternalServerErrorException("Failed to updateBoardUserState")
+                    console.error("Failed to updateBoardUserState")
+                    break;
                 }
                 const dto = new BoardStateDTO(newUser.userId, board!.id, board!.ownerId, board!.objects.getAll(), board!.users.getAll());
-                //console.log(dto);
+
                 socket.join(board.id);
                 socket.emit("board-state", dto);
                 socket.broadcast.to(board!.id).emit("user-joined-board", newUser)
@@ -235,6 +237,7 @@ export class BoardGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
                     BoardObjectDTO,
                     data.command.boardObject
                 );
+
                 await this.boards.createObjectInBoard(board.id, dto);
 
                 socket.broadcast.to(board!.id).emit("boardObjectCommand", data);
@@ -284,7 +287,8 @@ export class BoardGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
                 }
                 const board = this.boards.getBoardFromServer(data.boardId)
                 if (!board) {
-                    throw new NotFoundException("Board not found in server @ deleteBoardObject")
+                    console.error('SERVER:  No "board" in socket(HANDLE - OBJECT)')
+                    break;
                 }
                 this.boards.deleteObjectInBoard(board.id, data.command.boardObjectId);
 
@@ -303,7 +307,8 @@ export class BoardGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
                 }
                 const board = this.boards.getBoardFromServer(data.boardId)
                 if (!board) {
-                    throw new NotFoundException("Could not retrieve board from server @ bringBoardObjectToFront")
+                    console.error('SERVER:  No "board" in socket(FRONT - OBJECT)')
+                    break;
                 }
                 this.boards.moveObjectToFront(board.id, data.command.boardObjectId);
 
@@ -316,10 +321,10 @@ export class BoardGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
                 
         }
     }
-    // @RateLimit({
-    //     limit: 60,
-    //     windowMs: 1_000,
-    // })
+    @RateLimit({
+        limit: 60,
+        windowMs: 1_000,
+    })
     @SubscribeMessage("boardPresenceCommand")
     async handleSocketCommand(
         @ConnectedSocket() socket: Socket,
@@ -327,14 +332,14 @@ export class BoardGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
     ) {
         if (data) {
             if(!this.boards.hasBoardInServer(data.boardId)) {
-                    throw new NotFoundException ('No "board" in socket(BRING TO FRONT - OBJECT)')
+                console.error('SERVER:  No "board" in socket(PRESENCE - OBJECT)')
             }
             if(!data.command) {
-                throw new BadRequestException('No "command" in socket(BRING TO FRONT - OBJECT)')
+                console.error('SERVER:  No "command" in socket(PRESENCE - OBJECT)')
             }
             const board = this.boards.getBoardFromServer(data.boardId)
             if (!board) {
-                throw new NotFoundException("Could not retrieve board from server @ bringBoardObjectToFront")
+                console.error('SERVER:  Cannot retrieve "board" in socket(PRESENCE - OBJECT)')
             }
             if (data.command.type === "objectPreview") {
                 //if (data.command.)

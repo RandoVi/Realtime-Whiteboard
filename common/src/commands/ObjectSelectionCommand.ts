@@ -1,4 +1,4 @@
 export type ObjectSelectionCommand = {
     type: "selection";
-    objectId?: string;
+    objectIds: string[];
 };

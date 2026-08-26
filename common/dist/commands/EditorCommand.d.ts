@@ -16,5 +16,9 @@ export type BringBoardObjectToFrontCommand = {
     type: "bringBoardObjectToFront";
     boardObjectId: string;
 };
-export type EditorCommand = CreateObjectCommand | UpdateObjectCommand | DeleteObjectCommand | BringBoardObjectToFrontCommand;
+export type BringBoardObjectsToFrontCommand = {
+    type: "bringBoardObjectsToFront";
+    boardObjectIds: string[];
+};
+export type EditorCommand = CreateObjectCommand | UpdateObjectCommand | DeleteObjectCommand | BringBoardObjectToFrontCommand | BringBoardObjectsToFrontCommand;
 //# sourceMappingURL=EditorCommand.d.ts.map

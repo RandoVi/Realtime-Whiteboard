@@ -10,7 +10,7 @@ type Args = {
   }[];
 };
 
-export function sendObjectPreview({
+export function sendObjectsPreview({
   presence,
   objects,
 }: Args) {

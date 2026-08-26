@@ -21,8 +21,14 @@ export type BringBoardObjectToFrontCommand = {
     boardObjectId: string;
 };
 
+export type BringBoardObjectsToFrontCommand = {
+  type: "bringBoardObjectsToFront";
+  boardObjectIds: string[];
+};
+
 export type EditorCommand =
     | CreateObjectCommand
     | UpdateObjectCommand
     | DeleteObjectCommand
-    | BringBoardObjectToFrontCommand;
+    | BringBoardObjectToFrontCommand
+    | BringBoardObjectsToFrontCommand;

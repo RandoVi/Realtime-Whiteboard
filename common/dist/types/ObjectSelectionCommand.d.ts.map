@@ -1,1 +1,1 @@
-{"version":3,"file":"ObjectSelectionCommand.d.ts","sourceRoot":"","sources":["../../src/types/ObjectSelectionCommand.ts"],"names":[],"mappings":"AAAA,MAAM,MAAM,sBAAsB,GAAG;IACjC,IAAI,EAAE,WAAW,CAAC;IAClB,QAAQ,CAAC,EAAE,MAAM,CAAC;CACrB,CAAC"}
+{"version":3,"file":"ObjectSelectionCommand.d.ts","sourceRoot":"","sources":["../../src/types/ObjectSelectionCommand.ts"],"names":[],"mappings":"AAAA,MAAM,MAAM,gBAAgB,GAAG;IAC3B,IAAI,EAAE,WAAW,CAAC;IAClB,SAAS,EAAE,MAAM,EAAE,CAAC;CACvB,CAAC"}

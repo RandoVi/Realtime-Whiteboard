@@ -6,6 +6,7 @@ import { finishPan } from "../panning/finishPan"
 import type { CanvasInteractionContext } from "../CanvasInteractionContext"
 import { finishLaser } from "../laser/finishLaser"
 import { finishRotation } from "../rotation/finishRotation"
+import { finishSelection } from "../selection/finishSelection"
 
 type Args = {
   context: CanvasInteractionContext
@@ -19,6 +20,12 @@ export function handleMouseUp({
   const interaction = context.interactionRef.current
 
   switch (interaction.type) {
+
+    case "selecting":
+      finishSelection({
+        context,
+      });
+      break;
 
     case "drawing":
       finishDrawing({

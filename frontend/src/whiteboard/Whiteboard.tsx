@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 
 import { renderGrid } from "../rendering/renderGrid";
 import { renderBackground } from "../rendering/renderBackground";
-import { renderObjects } from "../rendering/renderObjects";
+import { renderObjects, type PreviewData } from "../rendering/renderObjects";
 import { renderSelection } from "../rendering/renderSelection";
 
 import { useWhiteboardInput } from "./hooks/useWhiteboardInput";
@@ -37,6 +37,7 @@ import type { BoardObject } from "@common/types";
 import "./Whiteboard.css";
 import { getObjectPropertiesForType } from "../objects/getObjectProperties";
 import { penProperties } from "../ui/penProperties";
+import { renderSelectionRectangle } from "../rendering/renderSelectionRectangle";
 
 
 function Whiteboard() {
@@ -110,6 +111,12 @@ function Whiteboard() {
   const [selectedObjectId, setSelectedObjectId] =
     useState<string | null>(null);
   const selectedObjectIdRef = useRef<string | null>(null)
+
+  const [, setSelectedObjectIds] =
+    useState<string[]>([]);
+
+  const selectedObjectIdsRef =
+    useRef<string[]>([]);
 
 
   const shapeProperties = useMemo(() => {
@@ -197,59 +204,102 @@ function Whiteboard() {
       requestRender();
     }
 
+    const interaction = interactionRef.current;
 
-    let selectedObject: BoardObject | undefined;
-
-    if (
-      interactionRef.current.type === "moving" ||
-      interactionRef.current.type === "resizing" ||
-      interactionRef.current.type === "rotating"
-    ) {
-      selectedObject = interactionRef.current.preview;
-    } else if (selectedObjectIdRef.current) {
-      selectedObject = getObjectById(
-        document.objectsRef.current,
-        selectedObjectIdRef.current
+    // Render the drag-selection rectangle exactly once.
+    if (interaction.type === "selecting") {
+      renderSelectionRectangle(
+        context,
+        interaction.start,
+        interaction.current,
+        camera,
       );
+    }
 
-      if (selectedObject) {
+    const selectedObjects =
+      selectedObjectIdsRef.current
+        .map(id =>
+          getObjectById(
+            document.objectsRef.current,
+            id,
+          )
+        )
+        .filter(
+          (object): object is BoardObject =>
+            object !== undefined
+        );
+
+    const currentUser = getCurrentUser();
+
+    if (currentUser) {
+      for (const object of selectedObjects) {
+        let renderedObject = object;
+
+        // REMOVE the old interaction.type === "selecting"
+        // renderSelectionRectangle block from here.
+
+        if (interaction.type === "moving") {
+          const preview = interaction.preview.find(
+            previewObject => previewObject.id === object.id
+          );
+
+          if (preview) {
+            renderedObject = preview;
+          }
+        }
+
+        if (
+          interaction.type === "rotating" &&
+          interaction.preview.id === object.id
+        ) {
+          renderedObject = interaction.preview;
+        }
+
+        if (interaction.type === "moving") {
+          const preview = interaction.preview.find(
+            previewObject => previewObject.id === object.id
+          );
+
+          if (preview) {
+            renderedObject = preview;
+          }
+        }
+
+        if (
+          interaction.type === "rotating" &&
+          interaction.preview.id === object.id
+        ) {
+          renderedObject = interaction.preview;
+        }
+
         for (const presence of remotePresence.current.values()) {
-          if (
-            presence.preview?.type === "update" &&
-            presence.preview.objectId === selectedObject.id
-          ) {
-            selectedObject = getRenderedObject(
-              selectedObject,
-              presence
-            );
+          const previewedObject = getRenderedObject(
+            object,
+            presence,
+          );
 
+          if (previewedObject !== object) {
+            renderedObject = previewedObject;
             break;
           }
         }
+
+        const isPrimarySelection =
+          object.id === selectedObjectIdRef.current;
+
+        renderSelection(
+          context,
+          renderedObject,
+          camera,
+          currentUser.color,
+          isPrimarySelection,
+        );
       }
     }
-    const currentUser = getCurrentUser();
 
-    if (selectedObject && currentUser) {
-      renderSelection(
-        context,
-        selectedObject,
-        camera,
-        currentUser.color,
-      )
-    }
     for (const [userId, presence] of remotePresence.current) {
 
-      if (!presence.selectedObjectId) {
-        continue;
-      }
-
-      const object = getObjectById(
-        document.objectsRef.current,
-        presence.selectedObjectId,
-      );
-
-      if (!object) {
+      if (presence.selectedObjectIds.length === 0) {
         continue;
       }
 
@@ -261,18 +311,30 @@ function Whiteboard() {
         continue;
       }
 
-      const renderedObject = getRenderedObject(
-        object,
-        presence,
-      );
+      for (const objectId of presence.selectedObjectIds) {
 
-      renderSelection(
-        context,
-        renderedObject,
-        camera,
-        user.color,
-        false,
-      );
+        const object = getObjectById(
+          document.objectsRef.current,
+          objectId,
+        );
+
+        if (!object) {
+          continue;
+        }
+
+        const renderedObject = getRenderedObject(
+          object,
+          presence,
+        );
+
+        renderSelection(
+          context,
+          renderedObject,
+          camera,
+          user.color,
+          false,
+        );
+      }
     }
   }
 
@@ -370,6 +432,10 @@ function Whiteboard() {
     editor,
     setSelectedObjectId,
     selectedObjectIdRef,
+
+    selectedObjectIdsRef,
+    setSelectedObjectIds,
+
     onStartInteraction: closeShapeSettings,
     objectStyle: shapeSettings,
     remotePresence: remotePresence.current,
@@ -512,22 +578,42 @@ function Whiteboard() {
             }
 
             if (command.previewType === "update") {
-              if (
-                command.boardObjectId === selectedObjectIdRef.current
-              ) {
-                selectedObjectIdRef.current = null;
-                setSelectedObjectId(null);
+              for (const objectPreview of command.objects) {
+                if (
+                  objectPreview.boardObjectId === selectedObjectIdRef.current
+                ) {
+                  selectedObjectIdRef.current = null;
+                  setSelectedObjectId(null);
+                }
+
+                const preview: PreviewData = {
+                  type: "update",
+                  objectId: objectPreview.boardObjectId,
+                  updates: objectPreview.updates,
+                };
+
+                const existingIndex = userPresence.previews.findIndex(
+                  existingPreview =>
+                    existingPreview.type === "update" &&
+                    existingPreview.objectId === objectPreview.boardObjectId
+                );
+
+                if (existingIndex === -1) {
+                  userPresence.previews.push(preview);
+                } else {
+                  userPresence.previews[existingIndex] = preview;
+                }
               }
 
-              userPresence.preview = {
-                type: "update",
-                objectId: command.boardObjectId,
-                updates: command.updates,
-              };
+              userPresence.preview =
+                userPresence.previews[
+                userPresence.previews.length - 1
+                ];
             }
 
             if (command.previewType === "clear") {
               userPresence.preview = undefined;
+              userPresence.previews = [];
             }
 
             remotePresence.current.set(
@@ -543,36 +629,64 @@ function Whiteboard() {
           case "selection": {
             const interaction = interactionRef.current;
 
-            if (
-              command.objectId !== null &&
-              command.objectId === selectedObjectIdRef.current
-            ) {
+            const remoteSelectedIds = command.objectIds;
 
-              selectedObjectIdRef.current = null;
-              setSelectedObjectId(null);
+            // If the remote user selected any of my currently selected objects,
+            // I need to give up those objects.
+            const conflictingIds =
+              remoteSelectedIds.filter(id =>
+                selectedObjectIdsRef.current.includes(id)
+              );
 
+            if (conflictingIds.length > 0) {
+
+              const nextSelectedIds =
+                selectedObjectIdsRef.current.filter(
+                  id => !remoteSelectedIds.includes(id)
+                );
+
+              selectedObjectIdsRef.current = nextSelectedIds;
+              setSelectedObjectIds(nextSelectedIds);
+
+              // Keep the primary selection valid.
               if (
-                interaction.type === "moving" &&
-                interaction.objectId === command.objectId
+                selectedObjectIdRef.current &&
+                remoteSelectedIds.includes(selectedObjectIdRef.current)
               ) {
-                interactionRef.current = {
-                  type: "idle",
-                };
+                const nextPrimaryId =
+                  nextSelectedIds[0] ?? null;
+
+                selectedObjectIdRef.current = nextPrimaryId;
+                setSelectedObjectId(nextPrimaryId);
+              }
+
+              // Stop interactions involving objects that were taken
+              // by the remote user.
+              if (interaction.type === "moving") {
+                const hasConflict = interaction.objectIds.some(
+                  id => remoteSelectedIds.includes(id)
+                );
+
+                if (hasConflict) {
+                  interactionRef.current = {
+                    type: "idle",
+                  };
+                }
               }
 
               if (
                 interaction.type === "resizing" &&
-                interaction.objectId === command.objectId
+                remoteSelectedIds.includes(interaction.objectId)
               ) {
                 interactionRef.current = {
                   type: "idle",
                 };
               }
 
-              // Tell everyone that I no longer own this selection.
+              // Tell everyone about our updated selection.
               presence.send({
                 type: "selection",
-                objectId: null,
+                objectIds: nextSelectedIds,
               });
             }
 
@@ -580,8 +694,7 @@ function Whiteboard() {
               remotePresence.current.get(userId)
               ?? createRemotePresence();
 
-            userPresence.selectedObjectId =
-              command.objectId;
+            userPresence.selectedObjectIds = remoteSelectedIds;
 
             remotePresence.current.set(
               userId,

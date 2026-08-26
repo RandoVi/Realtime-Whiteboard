@@ -2,17 +2,19 @@ import type { BoardObject } from "../types/Object";
 
 export type ObjectPreviewCommand =
   | {
-      type: "objectPreview";
-      previewType: "create";
-      boardObject: BoardObject;
-    }
+    type: "objectPreview";
+    previewType: "create";
+    boardObject: BoardObject;
+  }
   | {
-      type: "objectPreview";
-      previewType: "update";
+    type: "objectPreview";
+    previewType: "update";
+    objects: {
       boardObjectId: string;
       updates: Partial<BoardObject>;
-    }
+    }[];
+  }
   | {
-      type: "objectPreview";
-      previewType: "clear";
-    };
+    type: "objectPreview";
+    previewType: "clear";
+  };

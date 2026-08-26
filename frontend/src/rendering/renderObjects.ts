@@ -4,9 +4,9 @@ import type { BoardObject } from '@common/types'
 import type { Laser } from '@common/shapes/Laser'
 import { getObjectHandler } from '../objects/registry/getObjectHandler'
 import type { RemotePresence } from '../network/presence/RemotePresence';
-import { getRenderedObject } from '../objects/getRenderedObjects';
 
 import { renderLaser } from "../objects/laser/renderLaser";
+import { getRenderedObject } from "../objects/getRenderedObjects";
 
 
 export type PreviewData =
@@ -60,17 +60,31 @@ export function renderObjects(
       continue;
     }
 
-
     // LOCAL moving preview
+    if (interaction.type === "moving") {
+      const preview = interaction.preview.find(
+        preview => preview.id === object.id
+      );
+
+      if (preview) {
+        renderObject(
+          context,
+          preview,
+          camera,
+        );
+
+        continue;
+      }
+    }
+
+    // LOCAL resizing / rotating preview
     if (
       (
-        interaction.type === "moving" ||
         interaction.type === "resizing" ||
         interaction.type === "rotating"
       ) &&
       interaction.preview.id === object.id
     ) {
-
       renderObject(
         context,
         interaction.preview,
@@ -81,13 +95,16 @@ export function renderObjects(
     }
 
 
-    // REMOTE moving preview
+    // REMOTE moving preview, all objects currently being remotely previewed are hidden from the committed layer
     const isPreviewed = Array.from(
       remotePresence.values()
     ).some(
       presence =>
-        presence.preview?.type === "update" &&
-        presence.preview.objectId === object.id
+        presence.previews.some(
+          preview =>
+            preview.type === "update" &&
+            preview.objectId === object.id
+        )
     );
 
     if (isPreviewed) {
@@ -165,37 +182,44 @@ export function renderObjects(
       }
     }
 
-    const preview = presence.preview;
-
-    if (!preview) {
-      continue;
-    }
-
-    if (preview.type === "create") {
-
+    // REMOTE object creation preview
+    if (
+      presence.preview?.type === "create"
+    ) {
       renderObject(
         context,
-        preview.object,
-        camera
+        presence.preview.object,
+        camera,
       );
-
-      continue;
     }
 
+    // REMOTE object update previews
+    for (const preview of presence.previews) {
 
-    if (preview.type === "update") {
+      if (preview.type !== "update") {
+        continue;
+      }
 
       const object = objects.find(
         object => object.id === preview.objectId
       );
 
-      if (!object) continue;
+      if (!object) {
+        continue;
+      }
 
+      const renderedObject = getRenderedObject(
+        object,
+        {
+          ...presence,
+          preview,
+        },
+      );
 
       renderObject(
         context,
-        getRenderedObject(object, presence),
-        camera
+        renderedObject,
+        camera,
       );
     }
   }

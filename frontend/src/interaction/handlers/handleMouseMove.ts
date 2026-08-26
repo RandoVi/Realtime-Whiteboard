@@ -1,11 +1,12 @@
 import type { Point } from "@common/types";
 import { updateDrawing } from "../drawing/updateDrawing"
-import { updateMoving } from "../moving/updateMove"
+import { updateMoving } from "../moving/updateMoving"
 import { updatePan } from "../panning/updatePan"
 import { updateResize } from "../resizing/updateResize"
 import type { CanvasInteractionContext } from "../CanvasInteractionContext"
 import { updateLaser } from "../laser/updateLaser"
 import { updateRotation } from "../rotation/updateRotation";
+import { updateSelection } from "../selection/updateSelection";
 
 type Args = {
     world: Point;
@@ -26,6 +27,13 @@ export function handleMouseMove({
     const interaction = context.interactionRef.current;
 
     switch (interaction.type) {
+
+        case "selecting":
+            updateSelection({
+                world,
+                context,
+            });
+            break;
 
         case "resizing":
             updateResize({
@@ -65,7 +73,6 @@ export function handleMouseMove({
                 context,
             });
             break;
-
 
         case "panning":
             updatePan({
