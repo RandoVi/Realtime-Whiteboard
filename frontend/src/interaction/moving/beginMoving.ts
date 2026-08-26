@@ -49,12 +49,10 @@ export function beginMoving({
     selectObject(clickedObject.id);
   }
 
-  for (const objectId of objectIds) {
-    editor.execute({
-      type: "bringBoardObjectToFront",
-      boardObjectId: objectId,
-    });
-  }
+  editor.execute({
+    type: "bringBoardObjectsToFront",
+    boardObjectIds: objectIds,
+  });
 
   const original = objectIds
     .map(id =>

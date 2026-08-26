@@ -129,6 +129,7 @@ function Whiteboard() {
 
   //--------------------- RENDERER
   const render = () => {
+
     const canvas = canvasRef.current
     // console.log("render");
 

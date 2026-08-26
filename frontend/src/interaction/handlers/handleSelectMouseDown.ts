@@ -31,12 +31,13 @@ export function handleSelectMouseDown({
     getSelectedObject,
     selectObject,
     requestRender,
-    presence,
     selectedObjectIdRef,
     setSelectedObjectId,
     selectedObjectIdsRef,
     setSelectedObjectIds,
   } = context;
+
+  
 
   const selectedObject = getSelectedObject();
 
@@ -68,6 +69,7 @@ export function handleSelectMouseDown({
       context,
     })
   ) {
+    
     return true;
   }
 
@@ -94,7 +96,6 @@ export function handleSelectMouseDown({
     return true;
   }
 
-  // Multi-select
   // Multi-select
   if (multiSelect && clickedObject) {
     const selectedIds = selectedObjectIdsRef.current;
