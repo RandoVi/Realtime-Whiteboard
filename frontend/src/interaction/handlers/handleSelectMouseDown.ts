@@ -37,8 +37,6 @@ export function handleSelectMouseDown({
     setSelectedObjectIds,
   } = context;
 
-  
-
   const selectedObject = getSelectedObject();
 
   // Check if the user is trying to rotate the selected object
@@ -69,7 +67,6 @@ export function handleSelectMouseDown({
       context,
     })
   ) {
-    
     return true;
   }
 
@@ -96,6 +93,7 @@ export function handleSelectMouseDown({
     return true;
   }
 
+  // Multi-select
   // Multi-select
   if (multiSelect && clickedObject) {
     const selectedIds = selectedObjectIdsRef.current;

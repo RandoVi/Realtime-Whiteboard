@@ -37,8 +37,6 @@ export function renderObjects(
   }[];
 } {
 
-
-  
   let hasAnimatedObjects = false;
 
   const finishedObjects: BoardObject[] = [];
@@ -123,6 +121,12 @@ export function renderObjects(
 
 
     // NORMAL committed object
+    renderObject(
+      context,
+      object,
+      camera
+    );
+
 
     const handler = getObjectHandler(object);
 
@@ -232,7 +236,6 @@ function renderObject(
   object: BoardObject,
   camera: Camera,
 ) {
-  
   getObjectHandler(object)
     .render?.(
       context,
