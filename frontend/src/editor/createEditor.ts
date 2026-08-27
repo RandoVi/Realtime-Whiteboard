@@ -426,8 +426,23 @@ export function createEditor({
     execute,
     undo,
     redo,
-    canUndo: () => history.canUndo(),
+    //TODO: Move this logic out of here
+    canUndo: () => {
+      const currentUser = getCurrentUser();
+
+      if (!currentUser) {
+        return false;
+      }
+
+      return history.findUndoCandidate(
+        entry =>
+          entry.userId === currentUser.userId &&
+          canUndoEntry(entry)
+      ) !== undefined;
+    },
+
     canRedo: () => history.canRedo(),
+
     resetHistory,
     getSelectedObject,
     deleteSelectedObject,
