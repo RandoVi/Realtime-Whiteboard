@@ -249,24 +249,8 @@ function Whiteboard() {
         }
 
         if (
-          interaction.type === "rotating" &&
-          interaction.preview.id === object.id
-        ) {
-          renderedObject = interaction.preview;
-        }
-
-        if (interaction.type === "moving") {
-          const preview = interaction.preview.find(
-            previewObject => previewObject.id === object.id
-          );
-
-          if (preview) {
-            renderedObject = preview;
-          }
-        }
-
-        if (
-          interaction.type === "rotating" &&
+          (interaction.type === "resizing" ||
+            interaction.type === "rotating") &&
           interaction.preview.id === object.id
         ) {
           renderedObject = interaction.preview;

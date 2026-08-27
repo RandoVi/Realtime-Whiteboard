@@ -1,23 +1,31 @@
 import type { Point } from "@common/types";
 import type { Circle } from "@common/shapes";
-import { inverseRotatePoint } from "../../interaction/helpers/rotatePoint";
 
 export function hitTestCircle(
     point: Point,
     circle: Circle
 ): boolean {
+    const dx = point.x - circle.x;
+    const dy = point.y - circle.y;
 
-    const localPoint = inverseRotatePoint(
+    const distanceSquared =
+        dx * dx + dy * dy;
+
+    const hitRadius =
+        circle.radius + circle.strokeWidth / 2;
+
+    const hit = distanceSquared <= hitRadius * hitRadius;
+
+    console.log("CIRCLE HIT TEST", {
         point,
-        {
+        center: {
             x: circle.x,
             y: circle.y,
         },
-        circle.rotation,
-    )
+        radius: hitRadius,
+        distanceSquared,
+        hit,
+    });
 
-    const dx = localPoint.x - circle.x
-    const dy = localPoint.y - circle.y
-
-    return Math.sqrt(dx * dx + dy * dy) <= circle.radius
+    return hit;
 }

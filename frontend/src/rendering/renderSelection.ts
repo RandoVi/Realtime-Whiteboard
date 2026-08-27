@@ -290,7 +290,7 @@ function renderSelectionBox(
     context.translate(centerX, centerY)
     context.rotate(bounds.rotation ?? 0)
 
-    context.globalAlpha = 0.5
+    context.globalAlpha = 0.8
     context.strokeStyle = color
     context.lineWidth = 4
 
@@ -305,87 +305,3 @@ function renderSelectionBox(
 
     context.restore()
 }
-
-// function renderRotationHandle(
-//     context: CanvasRenderingContext2D,
-//     rotationHandle: RotationHandle,
-//     color: string,
-// ) {
-//     context.save()
-
-//     context.fillStyle = "white"
-//     context.strokeStyle = "black"
-//     context.lineWidth = 2
-
-//     context.beginPath()
-
-//     context.arc(
-//         rotationHandle.x,
-//         rotationHandle.y,
-//         10,
-//         0,
-//         Math.PI * 2,
-//     )
-
-//     context.fill()
-//     context.stroke()
-
-//     context.fillStyle = color
-//     context.strokeStyle = color
-//     context.lineWidth = 2
-//     context.lineCap = "round"
-//     context.lineJoin = "round"
-
-//     context.save()
-
-//     context.translate(
-//         rotationHandle.x,
-//         rotationHandle.y,
-//     )
-
-//     const radius = 5
-
-//     context.beginPath()
-
-//     context.arc(
-//         0,
-//         0,
-//         radius,
-//         -Math.PI * 0.75,
-//         Math.PI * 0.9,
-//     )
-
-//     context.stroke()
-
-//     const arrowAngle = Math.PI * 0.9
-
-//     const tipX =
-//         Math.cos(arrowAngle) * radius
-
-//     const tipY =
-//         Math.sin(arrowAngle) * radius
-
-//     context.beginPath()
-
-//     context.moveTo(tipX, tipY)
-
-//     context.lineTo(
-//         tipX -
-//         Math.cos(arrowAngle - Math.PI / 4) * 3,
-//         tipY -
-//         Math.sin(arrowAngle - Math.PI / 4) * 3,
-//     )
-
-//     context.lineTo(
-//         tipX -
-//         Math.cos(arrowAngle + Math.PI / 4) * 3,
-//         tipY -
-//         Math.sin(arrowAngle + Math.PI / 4) * 3,
-//     )
-
-//     context.closePath()
-//     context.fill()
-
-//     context.restore()
-//     context.restore()
-// }

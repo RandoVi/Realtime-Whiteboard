@@ -1,112 +1,124 @@
-import type { Camera } from "../../camera/Camera"
-import type { Arrow } from "@common/shapes"
+import type { Camera } from "../../camera/Camera";
+import type { Arrow } from "@common/shapes";
 
 export function renderArrow(
-  context: CanvasRenderingContext2D,
-  arrow: Arrow,
-  camera: Camera
+    context: CanvasRenderingContext2D,
+    arrow: Arrow,
+    camera: Camera,
 ) {
-  let { x, y, width, height } = arrow
+    let { x, y, width, height } = arrow;
 
-  if (width < 0) {
-    x += width
-    width = Math.abs(width)
-  }
+    if (width < 0) {
+        x += width;
+        width = Math.abs(width);
+    }
 
-  if (height < 0) {
-    y += height
-    height = Math.abs(height)
-  }
+    if (height < 0) {
+        y += height;
+        height = Math.abs(height);
+    }
 
-  const left =
-    x * camera.scale + camera.offsetX
+    const strokePadding = arrow.strokeWidth / 2;
 
-  const top =
-    y * camera.scale + camera.offsetY
+    const innerX = x + strokePadding;
+    const innerY = y + strokePadding;
 
-  const screenWidth =
-    width * camera.scale
+    const innerWidth = Math.max(
+        0,
+        width - arrow.strokeWidth,
+    );
 
-  const screenHeight =
-    height * camera.scale
+    const innerHeight = Math.max(
+        0,
+        height - arrow.strokeWidth,
+    );
 
-  const centerX =
-    left + screenWidth / 2
+    const left =
+        innerX * camera.scale + camera.offsetX;
 
-  const centerY =
-    top + screenHeight / 2
+    const top =
+        innerY * camera.scale + camera.offsetY;
 
-  const headWidth =
-    screenWidth * 0.35
+    const screenWidth =
+        innerWidth * camera.scale;
 
-  const shaftHeight =
-    screenHeight * 0.35
+    const screenHeight =
+        innerHeight * camera.scale;
 
-  context.save()
+    const centerX =
+        left + screenWidth / 2;
 
-  context.translate(centerX, centerY)
-  context.rotate(arrow.rotation)
+    const centerY =
+        top + screenHeight / 2;
 
-  const localLeft =
-    -screenWidth / 2
+    const headWidth =
+        screenWidth * 0.35;
 
-  const localTop =
-    -screenHeight / 2
+    const shaftHeight =
+        screenHeight * 0.35;
 
-  context.fillStyle = arrow.fill
-  context.strokeStyle = arrow.stroke
-  context.lineWidth = 2
+    context.save();
 
-  context.beginPath()
+    context.translate(centerX, centerY);
+    context.rotate(arrow.rotation);
 
-  context.moveTo(
-    localLeft,
-    0
-  )
+    const localLeft =
+        -screenWidth / 2;
 
-  // Top of arrow head
-  context.lineTo(
-    localLeft + headWidth,
-    localTop
-  )
+    const localTop =
+        -screenHeight / 2;
 
-  context.lineTo(
-    localLeft + headWidth,
-    -shaftHeight / 2
-  )
+    context.fillStyle = arrow.fill;
+    context.strokeStyle = arrow.stroke;
+    context.lineWidth = arrow.strokeWidth * camera.scale;
+    context.lineJoin = "miter";
 
-  // Top of shaft
-  context.lineTo(
-    localLeft + screenWidth,
-    -shaftHeight / 2
-  )
+    context.beginPath();
 
-  // Bottom of shaft
-  context.lineTo(
-    localLeft + screenWidth,
-    shaftHeight / 2
-  )
+    context.moveTo(
+        localLeft,
+        0,
+    );
 
-  context.lineTo(
-    localLeft + headWidth,
-    shaftHeight / 2
-  )
+    context.lineTo(
+        localLeft + headWidth,
+        localTop,
+    );
 
-  // Bottom of arrow head
-  context.lineTo(
-    localLeft + headWidth,
-    localTop + screenHeight
-  )
+    context.lineTo(
+        localLeft + headWidth,
+        -shaftHeight / 2,
+    );
 
-  context.lineTo(
-    localLeft,
-    0
-  )
+    context.lineTo(
+        localLeft + screenWidth,
+        -shaftHeight / 2,
+    );
 
-  context.closePath()
+    context.lineTo(
+        localLeft + screenWidth,
+        shaftHeight / 2,
+    );
 
-  context.fill()
-  context.stroke()
+    context.lineTo(
+        localLeft + headWidth,
+        shaftHeight / 2,
+    );
 
-  context.restore()
+    context.lineTo(
+        localLeft + headWidth,
+        localTop + screenHeight,
+    );
+
+    context.lineTo(
+        localLeft,
+        0,
+    );
+
+    context.closePath();
+
+    context.fill();
+    context.stroke();
+
+    context.restore();
 }

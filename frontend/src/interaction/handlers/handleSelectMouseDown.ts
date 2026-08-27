@@ -94,12 +94,14 @@ export function handleSelectMouseDown({
   }
 
   // Multi-select
-  // Multi-select
   if (multiSelect && clickedObject) {
     const selectedIds = selectedObjectIdsRef.current;
 
+    let nextSelectedIds: string[];
+
     if (selectedIds.includes(clickedObject.id)) {
-      const nextSelectedIds = selectedIds.filter(
+      // Remove from selection
+      nextSelectedIds = selectedIds.filter(
         id => id !== clickedObject.id
       );
 
@@ -107,15 +109,15 @@ export function handleSelectMouseDown({
       setSelectedObjectIds(nextSelectedIds);
 
       if (selectedObjectIdRef.current === clickedObject.id) {
-        selectedObjectIdRef.current =
-          nextSelectedIds[0] ?? null;
+        const nextPrimaryId =
+          nextSelectedIds[nextSelectedIds.length - 1] ?? null;
 
-        setSelectedObjectId(
-          nextSelectedIds[0] ?? null
-        );
+        selectedObjectIdRef.current = nextPrimaryId;
+        setSelectedObjectId(nextPrimaryId);
       }
     } else {
-      const nextSelectedIds = [
+      // Add to selection
+      nextSelectedIds = [
         ...selectedIds,
         clickedObject.id,
       ];
@@ -127,8 +129,14 @@ export function handleSelectMouseDown({
       setSelectedObjectId(clickedObject.id);
     }
 
+    // Tell remote users about the updated selection.
+    context.presence.send({
+      type: "selection",
+      objectIds: nextSelectedIds,
+    });
+
     requestRender();
-    return;
+    return true;
   }
 
   // Existing single-selection behavior
