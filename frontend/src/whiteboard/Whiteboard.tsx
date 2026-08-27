@@ -987,7 +987,10 @@ function Whiteboard() {
         />
       )}
 
-      <ToolShortcuts editor={editor} />
+      <ToolShortcuts
+        editor={editor}
+        tool={tool}
+      />
 
       <BottomToolbar
         tool={tool}

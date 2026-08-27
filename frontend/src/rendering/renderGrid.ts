@@ -34,13 +34,13 @@ export function renderGrid(
     for (let y = startY; y <= endY; y += GRID_SPACING) {
       const screenY = y * camera.scale + camera.offsetY;
 
-      const crossSize = CROSS_SIZE * camera.scale;
+      const cameraCrossSize = CROSS_SIZE * camera.scale; 
 
-      ctx.moveTo(screenX - crossSize, screenY);
-      ctx.lineTo(screenX + crossSize, screenY);
+      ctx.moveTo(screenX - cameraCrossSize, screenY);
+      ctx.lineTo(screenX + cameraCrossSize, screenY);
 
-      ctx.moveTo(screenX, screenY - crossSize);
-      ctx.lineTo(screenX, screenY + crossSize);
+      ctx.moveTo(screenX, screenY - cameraCrossSize);
+      ctx.lineTo(screenX, screenY + cameraCrossSize);
     }
   }
 
