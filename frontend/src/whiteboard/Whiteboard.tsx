@@ -38,6 +38,7 @@ import "./Whiteboard.css";
 import { getObjectPropertiesForType } from "../objects/getObjectProperties";
 import { penProperties } from "../ui/penProperties";
 import { renderSelectionRectangle } from "../rendering/renderSelectionRectangle";
+import { ToolShortcuts } from "../ui/ToolShortcuts";
 
 
 function Whiteboard() {
@@ -985,6 +986,8 @@ function Whiteboard() {
           }}
         />
       )}
+
+      <ToolShortcuts editor={editor} />
 
       <BottomToolbar
         tool={tool}

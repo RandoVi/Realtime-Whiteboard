@@ -1,9 +1,6 @@
 import type { Camera } from "../camera/Camera"
 import type { BoardObject } from '@common/types'
-import {
-    HANDLE_SIZE,
-    type ResizeHandle,
-} from "../types/selection"
+import { HANDLE_SIZE, type ResizeHandle } from "../types/selection"
 import { getResizeHandles } from '../interaction/selection/getResizeHandles'
 import { getSelectionBounds } from "../interaction/selection/getSelectionBounds"
 import type { SelectionBounds } from '../interaction/selection/getSelectionBounds'
@@ -181,90 +178,6 @@ function renderObjectSelection(
 
     context.restore()
 }
-
-// function renderMultiObjectSelection(
-//     context: CanvasRenderingContext2D,
-//     objects: BoardObject[],
-//     camera: Camera,
-//     color: string,
-//     showHandles: boolean,
-// ) {
-//     const bounds = getMultiSelectionBounds(objects)
-
-//     if (!bounds) {
-//         return
-//     }
-
-//     renderSelectionBox(
-//         context,
-//         bounds,
-//         camera,
-//         color,
-//     )
-
-//     if (!showHandles) {
-//         return
-//     }
-
-//     renderMultiResizeHandles(
-//         context,
-//         bounds,
-//         camera,
-//         color,
-//     )
-
-//     const rotationHandle =
-//         getRotationHandle(bounds, camera)
-
-//     renderRotationHandle(
-//         context,
-//         rotationHandle,
-//         color,
-//     )
-// }
-
-// function renderMultiResizeHandles(
-//     context: CanvasRenderingContext2D,
-//     bounds: MultiSelectionBounds,
-//     camera: Camera,
-//     color: string,
-// ) {
-//     const handles = getResizeHandles(
-//         bounds,
-//         camera,
-//         [
-//             "nw",
-//             "ne",
-//             "sw",
-//             "se",
-//         ],
-//     );
-
-//     context.fillStyle = "white";
-//     context.strokeStyle = color;
-//     context.lineWidth = 2;
-
-//     for (const handle of handles) {
-//         context.save();
-
-//         context.translate(handle.x, handle.y);
-
-//         context.beginPath();
-
-//         context.rect(
-//             -HANDLE_SIZE / 2,
-//             -HANDLE_SIZE / 2,
-//             HANDLE_SIZE,
-//             HANDLE_SIZE,
-//         );
-
-//         context.fill();
-//         context.stroke();
-
-//         context.restore();
-//     }
-// }
-
 function renderSelectionBox(
     context: CanvasRenderingContext2D,
     bounds: SelectionBounds | MultiSelectionBounds,

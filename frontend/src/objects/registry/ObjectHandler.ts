@@ -51,7 +51,8 @@ export interface ObjectHandler<T extends BoardObject = BoardObject> {
     updatePreview?: (
         object: T,
         start: Point,
-        current: Point
+        current: Point,
+        constrain: boolean
     ) => void
 
     getBounds?: (
