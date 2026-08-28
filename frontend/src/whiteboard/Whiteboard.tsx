@@ -38,7 +38,7 @@ import "./Whiteboard.css";
 import { getObjectPropertiesForType } from "../objects/getObjectProperties";
 import { penProperties } from "../ui/penProperties";
 import { renderSelectionRectangle } from "../rendering/renderSelectionRectangle";
-import { ToolShortcuts } from "../ui/ToolShortcuts";
+import { ToolShortcuts } from "../ui/toolShortcuts/ToolShortcuts";
 
 
 function Whiteboard() {
@@ -415,6 +415,7 @@ function Whiteboard() {
     tool,
     presence,
     editor,
+    setTool,
     setSelectedObjectId,
     selectedObjectIdRef,
 
@@ -997,6 +998,8 @@ function Whiteboard() {
         setTool={setTool}
         onShapeClick={openShapeMenu}
         onDrawingClick={openDrawingMenu}
+        showDrawingMenu={showDrawingMenu}
+        showShapeMenu={showShapeMenu}
         showShortcuts={
           !showDrawingMenu &&
           !showShapeMenu

@@ -1,22 +1,20 @@
-.tool-shortcuts {
+.toolShortcuts {
   position: fixed;
   left: 20px;
   bottom: 20px;
-
   display: flex;
   align-items: center;
   gap: 14px;
-
   pointer-events: none;
 }
 
-.tool-shortcut {
+.toolShortcut {
   display: flex;
   align-items: center;
   gap: 5px;
 }
 
-.tool-shortcut-key {
+.toolShortcutKey {
   min-width: 22px;
   height: 22px;
   padding: 0 5px;
@@ -27,7 +25,6 @@
 
   border: 1px solid #aaa;
   border-radius: 4px;
-
   background: #fff;
 
   font-size: 10px;
@@ -37,21 +34,20 @@
   box-sizing: border-box;
 }
 
-.tool-shortcut-name {
+.toolShortcutName {
   font-size: 10px;
   color: #555;
   white-space: nowrap;
 }
 
-.history-buttons {
+.historyButtons {
   display: flex;
   align-items: center;
   gap: 4px;
-
   margin-left: 4px;
 }
 
-.history-button {
+.historyButton {
   width: 24px;
   height: 24px;
 
@@ -63,7 +59,6 @@
 
   border: 1px solid #aaa;
   border-radius: 4px;
-
   background: #fff;
 
   font-size: 15px;
@@ -74,11 +69,11 @@
   pointer-events: auto;
 }
 
-.history-button:hover:not(:disabled) {
+.historyButton:hover:not(:disabled) {
   background: #f0f0f0;
 }
 
-.history-button:disabled {
+.historyButton:disabled {
   opacity: 0.35;
   cursor: default;
 }

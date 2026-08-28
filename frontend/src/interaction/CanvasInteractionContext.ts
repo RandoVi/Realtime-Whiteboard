@@ -8,6 +8,7 @@ import type { Presence } from "../network/presence/Presence";
 import type { BoardDocument } from "../document/Document";
 import type { ObjectStyle } from "../objects/ObjectStyle";
 import type { RemotePresence } from "../network/presence/RemotePresence";
+import type { Tool } from "../types/Tool";
 
 export type TextEditorRef = {
     update: () => void;
@@ -30,6 +31,8 @@ export interface CanvasInteractionContext {
     presence: Presence;
 
     requestRender: () => void;
+
+    setTool: (tool: Tool) => void;
 
     getSelectedObject: () => BoardObject | undefined;
 

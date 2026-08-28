@@ -1,5 +1,5 @@
-import type { Tool } from '../types/Tool';
-import './ToolShortcuts.css'
+import type { Tool } from '../../types/Tool';
+import styles from './ToolShortcuts.module.css';
 
 type ToolShortcutsProps = {
     editor: {
@@ -13,11 +13,11 @@ type ToolShortcutsProps = {
 
 export function ToolShortcuts({ editor, tool }: ToolShortcutsProps) {
     return (
-        <div className="tool-shortcuts">
-            <div className="history-buttons">
+        <div className={styles.toolShortcuts}>
+            <div className={styles.historyButtons}>
                 <button
                     type="button"
-                    className="history-button"
+                    className={styles.historyButton}
                     onClick={() => editor.undo()}
                     disabled={!editor.canUndo()}
                     title="Undo"
@@ -27,7 +27,7 @@ export function ToolShortcuts({ editor, tool }: ToolShortcutsProps) {
 
                 <button
                     type="button"
-                    className="history-button"
+                    className={styles.historyButton}
                     onClick={() => editor.redo()}
                     disabled={!editor.canRedo()}
                     title="Redo"
@@ -36,22 +36,26 @@ export function ToolShortcuts({ editor, tool }: ToolShortcutsProps) {
                 </button>
             </div>
 
-            <div className="tool-shortcut">
-                <div className="tool-shortcut-key">M</div>
-                <div className="tool-shortcut-name">Board Info</div>
+            <div className={styles.toolShortcut}>
+                <div className={styles.toolShortcutKey}>M</div>
+                <div className={styles.toolShortcutName}>Board Info</div>
             </div>
 
             {tool === "stroke" && (
-                <div className="tool-shortcut">
-                    <div className="tool-shortcut-key">CTRL</div>
-                    <div className="tool-shortcut-name">Straight Line</div>
+                <div className={styles.toolShortcut}>
+                    <div className={styles.toolShortcutKey}>CTRL</div>
+                    <div className={styles.toolShortcutName}>
+                        Straight Line
+                    </div>
                 </div>
             )}
 
             {tool === "rectangle" && (
-                <div className="tool-shortcut">
-                    <div className="tool-shortcut-key">CTRL</div>
-                    <div className="tool-shortcut-name">Fixed Size</div>
+                <div className={styles.toolShortcut}>
+                    <div className={styles.toolShortcutKey}>CTRL</div>
+                    <div className={styles.toolShortcutName}>
+                        Fixed Size
+                    </div>
                 </div>
             )}
         </div>

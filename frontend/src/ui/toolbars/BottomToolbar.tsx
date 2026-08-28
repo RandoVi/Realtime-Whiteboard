@@ -12,19 +12,29 @@ type Props = {
   onShapeClick?: () => void
   onDrawingClick?: () => void
   showShortcuts?: boolean
+  showDrawingMenu?: boolean
+  showShapeMenu?: boolean
 }
 
 export function BottomToolbar({
+  tool,
   setTool,
   onShapeClick,
   onDrawingClick,
   showShortcuts = true,
+  showDrawingMenu = false,
+  showShapeMenu = false,
 }: Props) {
   return (
     <div className="bottom-toolbar">
 
       <button
-        className="tool-button"
+        className={`tool-button ${!showDrawingMenu &&
+            !showShapeMenu &&
+            tool === "pan"
+            ? "active"
+            : ""
+          }`}
         onClick={() => setTool("pan")}
       >
         <MoveIcon color="none" />
@@ -35,7 +45,12 @@ export function BottomToolbar({
       </button>
 
       <button
-        className="tool-button"
+        className={`tool-button ${!showDrawingMenu &&
+            !showShapeMenu &&
+            tool === "select"
+            ? "active"
+            : ""
+          }`}
         onClick={() => setTool("select")}
       >
         <SelectorIcon color="purple" />
@@ -46,7 +61,11 @@ export function BottomToolbar({
       </button>
 
       <button
-        className="tool-button"
+        className={`tool-button ${showDrawingMenu ||
+            (!showShapeMenu && isDrawingTool(tool))
+            ? "active"
+            : ""
+          }`}
         onClick={onDrawingClick}
       >
         <PencilIcon color="purple" />
@@ -57,7 +76,11 @@ export function BottomToolbar({
       </button>
 
       <button
-        className="tool-button"
+        className={`tool-button ${showShapeMenu ||
+            (!showDrawingMenu && isShapeTool(tool))
+            ? "active"
+            : ""
+          }`}
         onClick={onShapeClick}
       >
         <ShapesIcon color="none" />
@@ -68,5 +91,20 @@ export function BottomToolbar({
       </button>
 
     </div>
+  )
+}
+
+function isDrawingTool(tool: Tool) {
+  return tool === "stroke" || tool === "laser";
+}
+
+function isShapeTool(tool: Tool) {
+  return (
+    tool === "rectangle" ||
+    tool === "triangle" ||
+    tool === "circle" ||
+    tool === "arrow" ||
+    tool === "textbox" ||
+    tool === "text"
   );
 }

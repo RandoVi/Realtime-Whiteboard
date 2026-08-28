@@ -29,6 +29,7 @@ export type UseWhiteboardInputProps = {
   requestRender: () => void
   document: BoardDocument
   tool: Tool
+  setTool: (tool: Tool) => void
   editor: Editor
   presence: any
   setSelectedObjectId: React.Dispatch<
@@ -51,6 +52,7 @@ export function useWhiteboardInput({
   requestRender,
   document,
   tool,
+  setTool,
   editor,
   presence,
 
@@ -118,6 +120,7 @@ export function useWhiteboardInput({
     editor,
     presence,
     requestRender,
+    setTool,
     getSelectedObject: editor.getSelectedObject,
     selectObject,
 
