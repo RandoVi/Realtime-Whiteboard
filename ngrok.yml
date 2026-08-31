@@ -8,3 +8,9 @@ tunnels:
     addr: 3000
 
 # ngrok start --all
+
+# Then configure vite.config.ts to have
+# server: {
+#    allowedHosts: ['<ngrok frontend address> for frontend'],
+#  },
+# and use the ngrok tunneled backend in SocketClient.ts

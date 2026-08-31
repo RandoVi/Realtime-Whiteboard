@@ -8,6 +8,8 @@ export type ResizeHandlePosition = {
     y: number;
 };
 
+const HANDLE_OFFSET = 4;
+
 export function getResizeHandles(
     bounds: SelectionBounds,
     camera: Camera,
@@ -63,17 +65,39 @@ export function getResizeHandles(
         ResizeHandle,
         { x: number; y: number }
     > = {
-        nw: rotate(-halfWidth, -halfHeight),
-        ne: rotate(halfWidth, -halfHeight),
-        sw: rotate(-halfWidth, halfHeight),
-        se: rotate(halfWidth, halfHeight),
+        nw: rotate(
+            -halfWidth - HANDLE_OFFSET,
+            -halfHeight - HANDLE_OFFSET,
+        ),
 
-        w: rotate(-halfWidth, 0),
-        e: rotate(halfWidth, 0),
-    }
+        ne: rotate(
+            halfWidth + HANDLE_OFFSET,
+            -halfHeight - HANDLE_OFFSET,
+        ),
+
+        sw: rotate(
+            -halfWidth - HANDLE_OFFSET,
+            halfHeight + HANDLE_OFFSET,
+        ),
+
+        se: rotate(
+            halfWidth + HANDLE_OFFSET,
+            halfHeight + HANDLE_OFFSET,
+        ),
+
+        w: rotate(
+            -halfWidth - HANDLE_OFFSET,
+            0,
+        ),
+
+        e: rotate(
+            halfWidth + HANDLE_OFFSET,
+            0,
+        ),
+    };
 
     return handleTypes.map(type => ({
         type,
         ...positions[type],
-    }))
+    }));
 }

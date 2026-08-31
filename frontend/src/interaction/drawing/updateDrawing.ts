@@ -14,54 +14,27 @@ export function updateDrawing({
   constrain,
 }: Args): boolean {
   const { interactionRef, presence, requestRender } = context;
+
   if (interactionRef.current.type !== "drawing") {
-    return false
+    return false;
   }
 
-  const interaction = interactionRef.current
+  const interaction = interactionRef.current;
 
-  let current = world
-
-  if (constrain) {
-    current = getConstrainedPoint(
-      interaction.start,
-      world,
-    )
-  }
-
-  // Update the preview object based on the current mouse position
   updatePreviewObject(
     interaction.preview,
     interaction.start,
-    current,
-  )
-  // Send the updated preview object to other clients
+    world,
+    constrain,
+  );
+
   presence.send({
     type: "objectPreview",
     previewType: "create",
     boardObject: interaction.preview,
-  })
+  });
 
-  requestRender()
+  requestRender();
 
-  return true
-}
-
-function getConstrainedPoint(
-  start: Point,
-  current: Point,
-): Point {
-
-  const dx = current.x - start.x
-  const dy = current.y - start.y
-
-  const size = Math.max(
-    Math.abs(dx),
-    Math.abs(dy),
-  )
-
-  return {
-    x: start.x + Math.sign(dx) * size,
-    y: start.y + Math.sign(dy) * size,
-  }
+  return true;
 }

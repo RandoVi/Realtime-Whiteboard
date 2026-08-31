@@ -1,6 +1,7 @@
 import type { SelectionBounds } from "../../interaction/selection/getSelectionBounds";
 import type { Point } from "@common/types";
 import type { Stroke } from "@common/shapes";
+
 export function getStrokeBounds(
   stroke: Stroke
 ): SelectionBounds {
@@ -32,6 +33,13 @@ export function getStrokeBounds(
     top = Math.min(top, point.y);
     bottom = Math.max(bottom, point.y);
   }
+
+  const padding = stroke.strokeWidth / 2;
+
+  left -= padding;
+  right += padding;
+  top -= padding;
+  bottom += padding;
 
   const width = right - left;
   const height = bottom - top;

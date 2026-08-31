@@ -38,6 +38,7 @@ import "./Whiteboard.css";
 import { getObjectPropertiesForType } from "../objects/getObjectProperties";
 import { penProperties } from "../ui/penProperties";
 import { renderSelectionRectangle } from "../rendering/renderSelectionRectangle";
+import { ToolShortcuts } from "../ui/toolShortcuts/ToolShortcuts";
 
 
 function Whiteboard() {
@@ -249,24 +250,8 @@ function Whiteboard() {
         }
 
         if (
-          interaction.type === "rotating" &&
-          interaction.preview.id === object.id
-        ) {
-          renderedObject = interaction.preview;
-        }
-
-        if (interaction.type === "moving") {
-          const preview = interaction.preview.find(
-            previewObject => previewObject.id === object.id
-          );
-
-          if (preview) {
-            renderedObject = preview;
-          }
-        }
-
-        if (
-          interaction.type === "rotating" &&
+          (interaction.type === "resizing" ||
+            interaction.type === "rotating") &&
           interaction.preview.id === object.id
         ) {
           renderedObject = interaction.preview;
@@ -430,6 +415,7 @@ function Whiteboard() {
     tool,
     presence,
     editor,
+    setTool,
     setSelectedObjectId,
     selectedObjectIdRef,
 
@@ -1002,11 +988,18 @@ function Whiteboard() {
         />
       )}
 
+      <ToolShortcuts
+        editor={editor}
+        tool={tool}
+      />
+
       <BottomToolbar
         tool={tool}
         setTool={setTool}
         onShapeClick={openShapeMenu}
         onDrawingClick={openDrawingMenu}
+        showDrawingMenu={showDrawingMenu}
+        showShapeMenu={showShapeMenu}
         showShortcuts={
           !showDrawingMenu &&
           !showShapeMenu

@@ -17,6 +17,7 @@ import type { RemotePresence } from '../../network/presence/RemotePresence'
 import type { ObjectStyle } from '../../objects/ObjectStyle'
 import type { Tool } from '../../types/Tool'
 import type { BoardDocument } from '../../document/Document'
+import { updateInteractionAtCurrentPointer } from '../../interaction/helpers/updateInteractionAtCurrentPointer'
 
 export type UseWhiteboardInputProps = {
   cameraRef: RefObject<Camera>
@@ -28,6 +29,7 @@ export type UseWhiteboardInputProps = {
   requestRender: () => void
   document: BoardDocument
   tool: Tool
+  setTool: (tool: Tool) => void
   editor: Editor
   presence: any
   setSelectedObjectId: React.Dispatch<
@@ -50,6 +52,7 @@ export function useWhiteboardInput({
   requestRender,
   document,
   tool,
+  setTool,
   editor,
   presence,
 
@@ -95,6 +98,17 @@ export function useWhiteboardInput({
     });
   };
 
+
+
+  const updateInteraction = (constrain: boolean) => {
+    updateInteractionAtCurrentPointer({
+      pointer: mouseScreenRef.current,
+      camera: cameraRef.current,
+      context: contextRef.current!,
+      constrain,
+    });
+  };
+
   const contextRef = useRef<CanvasInteractionContext | null>(null);
 
   contextRef.current = {
@@ -106,6 +120,7 @@ export function useWhiteboardInput({
     editor,
     presence,
     requestRender,
+    setTool,
     getSelectedObject: editor.getSelectedObject,
     selectObject,
 
@@ -130,7 +145,15 @@ export function useWhiteboardInput({
       setShowCoordinates,
       getSelectedObjectId: () => selectedObjectIdRef.current,
       editor,
-    })
+      updateInteractionAtCurrentPointer: updateInteraction,
+    });
+
+    const handleKeyUp = (event: KeyboardEvent) => {
+      if (event.key === "Control") {
+        updateInteraction(false);
+      }
+    };
+
 
     const handleWheel = (event: WheelEvent) => {
 
@@ -237,10 +260,13 @@ export function useWhiteboardInput({
       });
     };
 
+
+
     // Add event listeners for mouse and keyboard events
     window.addEventListener('mousemove', handleMouseMove)
     window.addEventListener('mouseup', handleMouseUpEvent)
-    window.addEventListener('keydown', keyDownHandler)
+    window.addEventListener("keydown", keyDownHandler);
+    window.addEventListener("keyup", handleKeyUp);
 
     // const parent is used because of textbox that is not inside the canvas while editing. Maybe improve later.
     const parent = canvas.parentElement;
@@ -259,7 +285,8 @@ export function useWhiteboardInput({
     return () => {
       window.removeEventListener('mousemove', handleMouseMove)
       window.removeEventListener('mouseup', handleMouseUpEvent)
-      window.removeEventListener('keydown', keyDownHandler)
+      window.removeEventListener("keydown", keyDownHandler);
+      window.removeEventListener("keyup", handleKeyUp);
 
       parent?.removeEventListener("wheel", handleWheel, { capture: true });
       canvas.removeEventListener('mousedown', handleMouseDown)

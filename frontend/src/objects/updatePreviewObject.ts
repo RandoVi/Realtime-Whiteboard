@@ -6,11 +6,13 @@ export function updatePreviewObject(
   object: BoardObject,
   start: Point,
   current: Point,
+  constrain: boolean
 ) {
     getObjectHandler(object)
       .updatePreview?.(
         object,
         start,
         current,
+        constrain,
       )
 }

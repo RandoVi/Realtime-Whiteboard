@@ -2,6 +2,7 @@ import { CircleIcon } from "./icons/CircleIcon";
 import { LeftArrowIcon } from "./icons/LeftArrowIcon";
 import { RectangleIcon } from "./icons/RectangleIcon";
 import { StickyNoteIcon } from "./icons/StickyNoteIcon";
+import { TextIcon } from "./icons/TextIcon";
 import { TriangleIcon } from "./icons/TriangleIcon";
 import { ShortcutHint } from "./ShortcutHint";
 
@@ -70,7 +71,7 @@ export function ShapeMenu({
         className="tool-button"
         onClick={() => onSelectShape("text")}
       >
-        <StickyNoteIcon />
+        <TextIcon />
         {showShortcuts && <ShortcutHint shortcut="5" />}
       </button>
 

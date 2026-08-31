@@ -2,7 +2,7 @@ import { WebSocketGateway, OnGatewayConnection, OnGatewayDisconnect, WebSocketSe
 
 import { BoardService } from "./service/BoardService";
 import { Server, Socket } from "socket.io";
-import { Logger, UseGuards } from "@nestjs/common";
+import { Logger, UseFilters, UseGuards } from "@nestjs/common";
 import { BoardCommandDTO } from "./dto/BoardCommandDTO";
 import { BoardObjectPresenceDTO } from "../../models/boardObjectPresenceDTO";
 import { BoardObjectEditorDTO } from "../../models/boardObjectEditorDTO";
@@ -14,6 +14,7 @@ import { WsRateLimitGuard } from "../../lib/rate-limit/ws-rate-limit.guard";
 import { WsConnectionLimitService } from "../../lib/rate-limit/ws-connection-limit-service";
 //import { RateLimit } from "../../lib/rate-limit/rate-limit.decorator";
 import { appError, AppErrorCode } from "../../lib/errors/app.exception";
+import { GlobalWsExceptionFilter } from "../../lib/errors/GlobalWsSocketExceptionFilter";
 
 
 @WebSocketGateway({
@@ -23,6 +24,7 @@ import { appError, AppErrorCode } from "../../lib/errors/app.exception";
         credentials: true,
     },
 })
+@UseFilters(GlobalWsExceptionFilter)
 @UseGuards(WsRateLimitGuard)
 export class BoardGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect{
 

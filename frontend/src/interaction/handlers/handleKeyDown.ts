@@ -4,6 +4,7 @@ type Args = {
   setShowCoordinates: React.Dispatch<React.SetStateAction<boolean>>
   getSelectedObjectId: () => string | null
   editor: Editor
+  updateInteractionAtCurrentPointer: (constrain: boolean) => void;
 }
 // Handles key down events for the whiteboard application, including toggling 
 // coordinate display and deleting selected objects
@@ -11,23 +12,30 @@ export function handleKeyDown({
   setShowCoordinates,
   getSelectedObjectId,
   editor,
+  updateInteractionAtCurrentPointer,
 }: Args) {
   return (event: KeyboardEvent) => {
+    // Ctrl pressed
+    if (event.key === "Control" && !event.repeat) {
+      updateInteractionAtCurrentPointer(true);
+      return;
+    }
+
     // Undo
     if (
       event.ctrlKey &&
       event.key.toLowerCase() === "z" &&
       !event.repeat
     ) {
-      event.preventDefault()
+      event.preventDefault();
 
       if (event.shiftKey) {
-        editor.redo()
+        editor.redo();
       } else {
-        editor.undo()
+        editor.undo();
       }
 
-      return
+      return;
     }
 
     // Redo
@@ -36,11 +44,11 @@ export function handleKeyDown({
       event.key.toLowerCase() === "y" &&
       !event.repeat
     ) {
-      event.preventDefault()
+      event.preventDefault();
 
-      editor.redo()
+      editor.redo();
 
-      return
+      return;
     }
 
     // Toggle coordinates
@@ -48,8 +56,8 @@ export function handleKeyDown({
       event.key.toLowerCase() === "m" &&
       !event.repeat
     ) {
-      setShowCoordinates((value) => !value)
-      return
+      setShowCoordinates((value) => !value);
+      return;
     }
 
     // Delete selected object
@@ -57,17 +65,16 @@ export function handleKeyDown({
       event.key === "Delete" ||
       event.key === "Backspace"
     ) {
-
-      const boardObjectId = getSelectedObjectId()
+      const boardObjectId = getSelectedObjectId();
 
       if (!boardObjectId) {
-        return
+        return;
       }
 
       editor.execute({
         type: "deleteBoardObject",
         boardObjectId,
-      })
+      });
     }
-  }
+  };
 }

@@ -1,21 +1,24 @@
 import type { Point } from "@common/types";
 import type { Stroke } from "@common/shapes";
+
 const HIT_TOLERANCE = 6;
 
 export function hitTestStroke(
   point: Point,
   stroke: Stroke,
 ): boolean {
-
   if (stroke.points.length === 0) {
     return false;
   }
+
+  const hitDistance =
+    stroke.strokeWidth / 2 + HIT_TOLERANCE;
 
   if (stroke.points.length === 1) {
     return distanceToPoint(
       point,
       stroke.points[0],
-    ) <= HIT_TOLERANCE;
+    ) <= hitDistance;
   }
 
   for (let i = 0; i < stroke.points.length - 1; i++) {
@@ -27,7 +30,7 @@ export function hitTestStroke(
         point,
         start,
         end,
-      ) <= HIT_TOLERANCE
+      ) <= hitDistance
     ) {
       return true;
     }

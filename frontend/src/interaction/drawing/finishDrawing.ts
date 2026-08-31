@@ -9,7 +9,7 @@ type Args = {
 export function finishDrawing({
   context
 }: Args): boolean {
-  const { interactionRef, editor, selectObject, presence } = context
+  const { interactionRef, editor, selectObject, presence, setTool } = context
   if (interactionRef.current.type !== "drawing") {
     return false
   }
@@ -32,6 +32,8 @@ export function finishDrawing({
   interactionRef.current = {
     type: "idle",
   };
+
+  setTool("select");
 
   return true
 }
