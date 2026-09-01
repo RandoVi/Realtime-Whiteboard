@@ -2,15 +2,13 @@ import type { ObjectProperty } from "../objects/properties/ObjectProperty";
 import { PropertyInput } from "./objectPanel/PropertyInput";
 import { PropertyRow } from "./objectPanel/PropertyRow";
 
-// import "./ShapeSettings.css";
-
 type Props = {
     properties: ObjectProperty[];
     values: Record<string, unknown>;
     onChange: (key: string, value: unknown) => void;
 };
 
-export function ShapeSettings({
+export function ObjectSettings({
     properties,
     values,
     onChange,
@@ -24,7 +22,7 @@ export function ShapeSettings({
     }
 
     return (
-        <div className="shape-settings">
+        <div className="object-settings">
             {appearanceProperties.map(property => (
                 <PropertyRow
                     key={property.key}

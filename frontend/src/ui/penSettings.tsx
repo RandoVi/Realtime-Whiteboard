@@ -14,7 +14,7 @@ export function PenSettings({
     onChange,
 }: PenSettingsProps) {
     return (
-        <div className="shape-settings">
+        <div className="object-settings">
             {properties.map(property => (
                 <PropertyRow
                     key={property.key}

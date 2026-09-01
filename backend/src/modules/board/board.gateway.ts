@@ -228,7 +228,7 @@ export class BoardGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
             case "bringBoardObjectsToFront": {
                 const board = this.boards.getBoardFromServer(data.boardId)
 
-                for (const objectId in data.command.boardObjectIds) {
+                for (const objectId of data.command.boardObjectIds) {
                     this.boards.moveObjectToFront(board.id, objectId);
                 }
 

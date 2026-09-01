@@ -15,15 +15,13 @@ import { DEFAULT_FILL, DEFAULT_STROKE_COLOR, DEFAULT_STROKE_WIDTH } from "../obj
 
 import { SocketCollaboration } from "../network/collaboration/SocketCollaboration";
 import { SocketPresence } from "../network/presence/SocketPresence";
-import { createRemotePresence } from "../network/presence/createRemotePresence";
-import { getCurrentUser, setCurrentUser } from "../network/currentUser";
-import { setBoardId as setNetworkBoardId } from "../network/board";
+import { getCurrentUser } from "../network/currentUser";
 
 import { BottomToolbar } from "../ui/toolbars/BottomToolbar";
 import { ObjectInspector } from "../ui/objectPanel/ObjectInspector";
 import { BoardLobbyModal, type LobbyState } from "../ui/lobby/BoardLobbyModal";
 import { ShapeMenu } from "../ui/ShapeMenu";
-import { ShapeSettings } from "../ui/ShapeSettings";
+import { ObjectSettings } from "../ui/ObjectSettings";
 import { DrawingMenu } from "../ui/DrawingMenu";
 import { RemoteCursors } from "../ui/cursors/RemoteCursors";
 
@@ -39,6 +37,24 @@ import { getObjectPropertiesForType } from "../objects/getObjectProperties";
 import { penProperties } from "../ui/penProperties";
 import { renderSelectionRectangle } from "../rendering/renderSelectionRectangle";
 import { ToolShortcuts } from "../ui/toolShortcuts/ToolShortcuts";
+import { initializeBoard } from "./initializeBoard";
+import { getOrCreateRemotePresence } from "../network/presence/getOrCreateRemotePresence";
+import { getUserById } from "../network/presence/getUserById";
+import { removeFinishedLasers } from "../rendering/removeFinishedLasers";
+
+const SHAPE_MENU_TOOLS = [
+  "rectangle",
+  "triangle",
+  "circle",
+  "arrow",
+  "textbox",
+  "text",
+] as const;
+
+const DRAWING_MENU_TOOLS: Tool[] = [
+  "stroke",
+  "laser",
+];
 
 
 function Whiteboard() {
@@ -71,14 +87,14 @@ function Whiteboard() {
   const [showDrawingMenu, setShowDrawingMenu] = useState(false);
   const [showShapeMenu, setShowShapeMenu] = useState(false);
   const [showShapeSettings, setShowShapeSettings] = useState(false);
-  const [shapeSettings, setShapeSettings] = useState({
+  const [objectSettings, setObjectSettings] = useState({
     fill: DEFAULT_FILL,
     stroke: DEFAULT_STROKE_COLOR,
     strokeWidth: DEFAULT_STROKE_WIDTH,
     background: "#FEF3C7",
   });
 
-  const [shapeType, setShapeType] =
+  const [objectType, setObjectType] =
     useState<BoardObject["type"] | null>(null);
 
   const [, setDocumentRevision] = useState(0)
@@ -108,6 +124,24 @@ function Whiteboard() {
     setShowDrawingMenu(false);
   };
 
+  const selectDrawingTool = (tool: Tool) => {
+    setTool(tool);
+    setShowDrawingMenu(false);
+    setShowShapeSettings(tool === "stroke");
+  };
+
+  const handleObjectSettingChange = (
+    key: string,
+    value: unknown,
+  ) => {
+    setObjectSettings(prev => ({
+      ...prev,
+      [key]: value,
+    }));
+  };
+
+
+
   const [tool, setTool] = useState<Tool>('pan')
   const [selectedObjectId, setSelectedObjectId] =
     useState<string | null>(null);
@@ -120,14 +154,20 @@ function Whiteboard() {
     useRef<string[]>([]);
 
 
-  const shapeProperties = useMemo(() => {
-    if (!shapeType) {
+  const objectProperties = useMemo(() => {
+    if (!objectType) {
       return [];
     }
 
-    return getObjectPropertiesForType(shapeType);
-  }, [shapeType]);
+    return getObjectPropertiesForType(objectType);
+  }, [objectType]);
 
+  const activeObjectProperties =
+    tool === "stroke"
+      ? penProperties
+      : objectType
+        ? objectProperties
+        : null;
   //--------------------- RENDERER
   const render = () => {
     const canvas = canvasRef.current
@@ -171,35 +211,13 @@ function Whiteboard() {
         boardObjectId: object.id,
       });
     }
-    // Remove finished lasers from local and remote presence
-    for (const laser of finishedLocalLasers) {
 
-      const index = localLasers.current.findIndex(
-        item => item.id === laser.id
-      );
-
-      if (index !== -1) {
-        localLasers.current.splice(index, 1);
-      }
-    }
-    // Remove finished lasers from remote presence
-    for (const { userId, laser } of finishedRemoteLasers) {
-
-      const presence =
-        remotePresence.current.get(userId);
-
-      if (!presence) {
-        continue;
-      }
-
-      const index = presence.lasers.findIndex(
-        item => item.id === laser.id
-      );
-
-      if (index !== -1) {
-        presence.lasers.splice(index, 1);
-      }
-    }
+    removeFinishedLasers(
+      localLasers.current,
+      remotePresence.current,
+      finishedLocalLasers,
+      finishedRemoteLasers,
+    );
 
     if (hasAnimatedObjects) {
       requestRender();
@@ -288,8 +306,9 @@ function Whiteboard() {
         continue;
       }
 
-      const user = document.usersRef.current.find(
-        user => user.userId === userId
+      const user = getUserById(
+        document.usersRef.current,
+        userId,
       );
 
       if (!user) {
@@ -423,7 +442,7 @@ function Whiteboard() {
     setSelectedObjectIds,
 
     onStartInteraction: closeShapeSettings,
-    objectStyle: shapeSettings,
+    objectStyle: objectSettings,
     remotePresence: remotePresence.current,
     localLasers: localLasers.current,
   })
@@ -490,28 +509,15 @@ function Whiteboard() {
     collaboration.createBoard(
       name,
       (boardState) => {
-        setBoardId(boardState.boardId);
-        setNetworkBoardId(boardState.boardId);
-
-        document.load(
-          boardState.objects,
-          boardState.users,
-        );
-
-        editor.resetHistory();
-
-        const currentUser = boardState.users.find(
-          user => user.userId === boardState.userId
-        );
-
-        if (!currentUser) {
-          throw new Error("Current user not found.");
-        }
-
-        setCurrentUser(currentUser);
-
-        requestRender();
-        setLobbyState("created");
+        initializeBoard({
+          boardState,
+          document,
+          editor,
+          setBoardId,
+          setLobbyState,
+          nextLobbyState: "created",
+          requestRender,
+        });
       }
     );
   };
@@ -530,20 +536,12 @@ function Whiteboard() {
         switch (command.type) {
 
           case "cursorMovement": {
-            // console.log("Received cursor movement", {
-            //   userId,
-            //   point: command.point,
-            // });
-            const userPresence =
-              remotePresence.current.get(userId)
-              ?? createRemotePresence();
+            const userPresence = getOrCreateRemotePresence(
+              remotePresence.current,
+              userId,
+            );
 
             userPresence.cursor = command.point;
-
-            remotePresence.current.set(
-              userId,
-              userPresence,
-            );
 
             setCursorRevision(prev => prev + 1);
 
@@ -552,9 +550,10 @@ function Whiteboard() {
 
           case "objectPreview": {
 
-            const userPresence =
-              remotePresence.current.get(userId)
-              ?? createRemotePresence();
+            const userPresence = getOrCreateRemotePresence(
+              remotePresence.current,
+              userId,
+            );
 
             if (command.previewType === "create") {
               userPresence.preview = {
@@ -601,11 +600,6 @@ function Whiteboard() {
               userPresence.preview = undefined;
               userPresence.previews = [];
             }
-
-            remotePresence.current.set(
-              userId,
-              userPresence,
-            );
 
             requestRender();
 
@@ -676,16 +670,12 @@ function Whiteboard() {
               });
             }
 
-            const userPresence =
-              remotePresence.current.get(userId)
-              ?? createRemotePresence();
+            const userPresence = getOrCreateRemotePresence(
+              remotePresence.current,
+              userId,
+            );
 
             userPresence.selectedObjectIds = remoteSelectedIds;
-
-            remotePresence.current.set(
-              userId,
-              userPresence,
-            );
 
             requestRender();
 
@@ -694,9 +684,10 @@ function Whiteboard() {
 
           case "laser": {
 
-            const userPresence =
-              remotePresence.current.get(userId)
-              ?? createRemotePresence();
+            const userPresence = getOrCreateRemotePresence(
+              remotePresence.current,
+              userId,
+            );
 
             if (command.laserType === "create") {
 
@@ -707,23 +698,9 @@ function Whiteboard() {
 
             if (command.laserType === "point") {
 
-              // console.log("RECEIVED LASER POINT", {
-              //   userId,
-              //   laserId: command.laserId,
-              //   point: command.point,
-              // });
-
               const laser = userPresence.lasers.find(
                 laser => laser.id === command.laserId
               );
-
-              if (!laser) {
-                // console.log("LASER NOT FOUND FOR POINT", {
-                //   laserId: command.laserId,
-                //   lasers: userPresence.lasers,
-                // });
-                break;
-              }
 
               if (!laser) {
                 break;
@@ -734,11 +711,6 @@ function Whiteboard() {
                 createdAt: performance.now(),
               });
             }
-
-            remotePresence.current.set(
-              userId,
-              userPresence,
-            );
 
             requestRender();
 
@@ -752,39 +724,27 @@ function Whiteboard() {
 
   const handleJoin = () => {
     const name = username.trim();
+    const id = boardId.trim();
 
-    if (!name || !boardId.trim()) {
+    if (!name || !id) {
       return;
     }
 
     setLobbyState("joining");
 
     collaboration.joinBoard(
-      boardId.trim(),
+      id,
       name,
       (boardState) => {
-        setBoardId(boardState.boardId);
-        setNetworkBoardId(boardState.boardId);
-
-        document.load(
-          boardState.objects,
-          boardState.users,
-        );
-
-        editor.resetHistory();
-
-        const currentUser = boardState.users.find(
-          user => user.userId === boardState.userId
-        );
-
-        if (!currentUser) {
-          throw new Error("Current user not found.");
-        }
-
-        setCurrentUser(currentUser);
-
-        requestRender();
-        setLobbyState("connected");
+        initializeBoard({
+          boardState,
+          document,
+          editor,
+          setBoardId,
+          setLobbyState,
+          nextLobbyState: "connected",
+          requestRender,
+        });
       }
     );
   };
@@ -794,6 +754,8 @@ function Whiteboard() {
 
     // collaboration.startBoard(boardId);
   };
+
+
 
   useEffect(() => {
     const handleShortcut = (event: KeyboardEvent) => {
@@ -824,23 +786,14 @@ function Whiteboard() {
       // -------------------------
 
       if (showShapeMenu) {
-        const shapes = [
-          "rectangle",
-          "triangle",
-          "circle",
-          "arrow",
-          "textbox",
-          "text",
-        ] as const;
-
-        const shape = shapes[index];
+        const shape = SHAPE_MENU_TOOLS[index];
 
         if (!shape) {
           return;
         }
 
         setTool(shape);
-        setShapeType(shape);
+        setObjectType(shape);
         setShowShapeMenu(false);
         setShowShapeSettings(true);
 
@@ -852,24 +805,15 @@ function Whiteboard() {
       // -------------------------
 
       if (showDrawingMenu) {
-        const drawingTools: Tool[] = [
-          "stroke",
-          "laser",
-        ];
-
-        const drawingTool = drawingTools[index];
+        const drawingTool = DRAWING_MENU_TOOLS[index];
 
         if (!drawingTool) {
           return;
         }
 
-        setTool(drawingTool);
-        setShowDrawingMenu(false);
-        setShowShapeSettings(false);
-
+        selectDrawingTool(drawingTool);
         return;
       }
-
       // -------------------------
       // Bottom toolbar
       // -------------------------
@@ -936,16 +880,7 @@ function Whiteboard() {
 
       {showDrawingMenu && (
         <DrawingMenu
-          onSelectTool={(tool) => {
-            setTool(tool);
-            setShowDrawingMenu(false);
-
-            if (tool === "stroke") {
-              setShowShapeSettings(true);
-            } else {
-              setShowShapeSettings(false);
-            }
-          }}
+          onSelectTool={selectDrawingTool}
           showShortcuts={true}
         />
       )}
@@ -954,7 +889,7 @@ function Whiteboard() {
         <ShapeMenu
           onSelectShape={(tool) => {
             setTool(tool);
-            setShapeType(tool);
+            setObjectType(tool);
             setShowShapeMenu(false);
             setShowShapeSettings(true);
           }}
@@ -962,29 +897,11 @@ function Whiteboard() {
         />
       )}
 
-      {showShapeSettings && tool === "stroke" && (
-        <ShapeSettings
-          properties={penProperties}
-          values={shapeSettings}
-          onChange={(key, value) => {
-            setShapeSettings(prev => ({
-              ...prev,
-              [key]: value,
-            }));
-          }}
-        />
-      )}
-
-      {showShapeSettings && shapeType && tool !== "stroke" && (
-        <ShapeSettings
-          properties={shapeProperties}
-          values={shapeSettings}
-          onChange={(key, value) => {
-            setShapeSettings(prev => ({
-              ...prev,
-              [key]: value,
-            }));
-          }}
+      {showShapeSettings && activeObjectProperties && (
+        <ObjectSettings
+          properties={activeObjectProperties}
+          values={objectSettings}
+          onChange={handleObjectSettingChange}
         />
       )}
 
