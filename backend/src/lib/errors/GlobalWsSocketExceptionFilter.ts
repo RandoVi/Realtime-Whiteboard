@@ -2,7 +2,7 @@ import { Catch, ArgumentsHost } from "@nestjs/common";
 import { BaseWsExceptionFilter, WsException } from "@nestjs/websockets";
 import { AppException, ErrorSeverity } from "./app.exception";
 
-@Catch()
+@Catch(AppException)
 export class GlobalWsExceptionFilter
     extends BaseWsExceptionFilter
     {
