@@ -223,6 +223,16 @@ export class BoardGateway implements OnGatewayInit, OnGatewayConnection, OnGatew
                 socket.broadcast.to(board.id).emit("boardObjectCommand", data);
                 break
             }
+            case "bringBoardObjectsToFront": {
+                const board = this.boards.getBoardFromServer(data.boardId)
+
+                for (const objectId in data.command.boardObjectIds) {
+                    this.boards.moveObjectToFront(board.id, objectId);
+                }
+
+                socket.broadcast.to(board.id).emit("boardObjectCommand", data);
+                break
+            }
             default: {
                 this.logger.log("Unknown command for boardObjectCommand")
             }
