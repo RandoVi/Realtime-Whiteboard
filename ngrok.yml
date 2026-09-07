@@ -11,6 +11,6 @@ tunnels:
 
 # Then configure vite.config.ts to have
 # server: {
-#    allowedHosts: ['<ngrok frontend address> for frontend'],
+#    allowedHosts: ['<ngrok frontend address> for frontend without full URL, only hostname (without https://)'],
 #  },
 # and use the ngrok tunneled backend in SocketClient.ts
