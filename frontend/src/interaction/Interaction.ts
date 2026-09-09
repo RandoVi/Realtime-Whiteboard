@@ -1,6 +1,4 @@
-import type { Point } from '../types/Types'
-import type { Shape } from '../types/Shape'
-import type { Rectangle } from '../shapes/Rectangle'
+import type { Point, BoardObject, RotatableObject } from "@common/types"
 import type { ResizeHandle } from '../types/selection'
 
 export type Interaction =
@@ -8,27 +6,58 @@ export type Interaction =
     | { type: 'idle' }
 
     | {
-        type: 'drawingShape'
+        type: 'selecting'
         start: Point
-        preview: Shape
+        current: Point
     }
 
     | {
-        type: 'movingShape'
+        type: 'drawing'
         start: Point
-        original: Shape
-        shapeId: string
+        preview: BoardObject
+    }
+
+    | {
+        type: 'moving'
+        start: Point
+        original: BoardObject[]
+        preview: BoardObject[]
+        objectIds: string[]
         moved: boolean
     }
 
     | {
-        type: 'resizingShape'
-        shapeId: string
-        original: Rectangle
+        type: 'groupMoving'
+        start: Point
+        originals: BoardObject[]
+        previews: BoardObject[]
+        moved: boolean
+    }
+
+    | {
+        type: 'resizing'
+        objectId: string
+        original: BoardObject
+        preview: BoardObject
         handle: ResizeHandle
+        offset: Point
+    }
+    | {
+        type: 'rotating'
+        objectId: string
+        original: RotatableObject
+        preview: RotatableObject
     }
 
     | {
         type: 'panning'
         start: Point
+    }
+    | {
+        type: 'laser'
+        laserId: string
+    }
+    | {
+        type: 'textEditing'
+        objectId: string
     }

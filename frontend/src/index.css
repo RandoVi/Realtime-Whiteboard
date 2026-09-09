@@ -17,14 +17,14 @@
 }
 
 html {
-  color-scheme: dark light;
-  /* Default dark */
+  color-scheme: light;
   hanging-punctuation: first last;
-  /* Not supported in Chrome */
 }
 
 body {
   min-height: 100vh;
+    color: #111827;
+  background: white;
 }
 
 /* Media responsive */

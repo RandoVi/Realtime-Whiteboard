@@ -1,9 +1,11 @@
 services:
   backend:
     build:
-      context: ./backend
+      context: . # 1. Set build context to repo root
+      dockerfile: backend/Dockerfile
     environment:
       MONGO_URI: mongodb://mongo:27017/realtime-whiteboard
+      CHOKIDAR_USEPOLLING: "true"
     container_name: whiteboard-api
 
     ports:
@@ -12,8 +14,34 @@ services:
       - ./backend/.env
     depends_on:
       - mongo
+    volumes:
+      - ./:/app # Mounts backend code to /app
+      - /app/node_modules
 
-    command: node dist/main.js
+    command: sh -c "npm run build --workspace=@whiteboard/common && npm run start-dev --workspace=backend"
+
+  frontend:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+    container_name: whiteboard-frontend
+
+    working_dir: /app/frontend
+
+    ports:
+      - "5173:5173"
+
+    volumes:
+      - ./:/app
+      - /app/node_modules
+
+    environment:
+      CHOKIDAR_USEPOLLING: "true"
+
+    depends_on:
+      - backend
+
+    command: npm run dev -- --host 0.0.0.0
 
   mongo:
     image: mongo:8

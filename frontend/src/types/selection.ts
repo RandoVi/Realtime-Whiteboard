@@ -5,3 +5,5 @@ export type ResizeHandle =
     | 'ne'
     | 'sw'
     | 'se'
+    | "w"
+    | "e";

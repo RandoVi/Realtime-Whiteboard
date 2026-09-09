@@ -1,0 +1,272 @@
+.drawing-menu {
+  position: fixed;
+  left: 50%;
+  bottom: 80px;
+  transform: translateX(-50%);
+
+  width: auto;
+  height: 52px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+
+  padding: 4px 8px;
+
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(18px);
+
+  border: 1px solid #ddd;
+  border-radius: 14px;
+
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+
+  z-index: 10;
+}
+
+.object-settings {
+  position: fixed;
+
+  left: 50%;
+  bottom: 80px;
+
+  transform: translateX(-50%);
+
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  padding: 8px 12px;
+
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(18px);
+
+  border: 1px solid #ddd;
+  border-radius: 14px;
+
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+
+  z-index: 10;
+}
+
+.shape-color {
+  position: relative;
+
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  height: 40px;
+  padding: 0 8px;
+
+  border-radius: 8px;
+
+  cursor: pointer;
+}
+
+.shape-color:hover {
+  background: rgba(0, 0, 0, 0.06);
+}
+
+.shape-color-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: #444;
+}
+
+.shape-color-preview {
+  width: 22px;
+  height: 22px;
+
+  border: 1px solid #bbb;
+  border-radius: 5px;
+
+  box-sizing: border-box;
+}
+
+.shape-color-value {
+  font-size: 11px;
+  font-family: monospace;
+  color: #777;
+}
+
+.shape-color input[type="color"] {
+  position: absolute;
+
+  inset: 0;
+
+  width: 100%;
+  height: 100%;
+
+  opacity: 0;
+  cursor: pointer;
+}
+
+/* Shape Menu */
+.shape-menu {
+  position: fixed;
+  left: 50%;
+  bottom: 80px;
+  transform: translateX(-50%);
+
+  width: auto;
+  height: 52px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+
+  padding: 4px 8px;
+
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(18px);
+
+  border: 1px solid #ddd;
+  border-radius: 14px;
+
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+
+  z-index: 10;
+}
+
+/* Bottom Toolbar */
+.bottom-toolbar {
+  position: fixed;
+  left: 50%;
+  bottom: 24px;
+  transform: translateX(-50%);
+
+  width: auto;
+  height: 52px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+
+  padding: 4px 8px;
+
+  background: rgba(255, 255, 255, 0.358);
+  border: 1px solid #ddd;
+  border-radius: 14px;
+
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+.object-panel {
+  position: fixed;
+
+  left: 24px;
+  top: 50%;
+  transform: translateY(-50%);
+
+  width: 260px;
+  max-height: calc(100vh - 80px);
+
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+
+  padding: 18px;
+
+  overflow-y: auto;
+
+  background: rgba(255,255,255,.75);
+  backdrop-filter: blur(18px);
+
+  border: 1px solid #ddd;
+  border-radius: 18px;
+
+  box-shadow: 0 10px 30px rgba(0,0,0,.12);
+}
+
+.panel-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.panel-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #666;
+}
+
+.action-button {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  padding: 10px 12px;
+
+  border: none;
+  border-radius: 10px;
+
+  background: transparent;
+  cursor: pointer;
+
+  transition: .2s;
+}
+
+.action-button:hover {
+  background: rgba(0,0,0,.06);
+}
+
+.action-button.danger:hover {
+  background: rgba(255,0,0,.12);
+  color: #d00000;
+}
+
+.tool-button {
+  position: relative;
+
+  width: 44px;
+  min-width: 44px;
+  height: 44px;
+  flex: 0 0 44px;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  padding: 0;
+
+  background-color: transparent;
+  border: none;
+  border-radius: 8px;
+
+  cursor: pointer;
+
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.tool-button:hover {
+  background-color: rgba(59, 59, 59, 0.215);
+}
+
+.tool-button.active {
+  background-color: rgba(59, 59, 59, 0.14);
+  box-shadow: inset 0 0 0 1px rgba(59, 59, 59, 0.12);
+}
+
+.tool-button.active:hover {
+  background-color: rgba(59, 59, 59, 0.18);
+}
+
+.shortcut-hint {
+  position: absolute;
+  right: 4px;
+  bottom: 3px;
+
+  font-size: 9px;
+  line-height: 1;
+
+  opacity: 0.75;
+
+  pointer-events: none;
+}
+

@@ -1,3 +1,4 @@
 export const SOCKET_EVENTS = {
-    COMMAND: "ping",
+    COMMAND: "boardObjectCommand",
+    BOARD_COMMAND: "boardCommand",
 } as const;

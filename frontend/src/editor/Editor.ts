@@ -1,8 +1,9 @@
-import type { Shape } from "../types/Shape";
-import type { EditorCommand } from "./EditorCommand";
+import type { BoardObject } from "@common/types";
+import type { EditorCommand } from "@common/commands";
 
 export type ExecuteOptions = {
   broadcast?: boolean;
+  recordHistory?: boolean;
 };
 
 export interface Editor {
@@ -12,14 +13,22 @@ export interface Editor {
     options?: ExecuteOptions
   ): void;
 
-  bind<K extends keyof Shape>(
-    property: K,
-    transform?: (value: string) => Shape[K]
-  ): (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => void;
+  getSelectedObject(): BoardObject | undefined;
+  bindProperty(
+    property: string
+  ): (value: unknown) => void;
 
-  deleteSelectedShape(): void;
+  deleteSelectedObject(): void;
 
-  duplicateSelectedShape(): void;
+  duplicateSelectedObject(): void;
+
+  undo(): void;
+
+  redo(): void;
+
+  canUndo(): boolean;
+
+  canRedo(): boolean;
+
+  resetHistory(): void;
 }

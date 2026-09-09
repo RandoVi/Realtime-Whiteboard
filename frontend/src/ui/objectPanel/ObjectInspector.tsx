@@ -1,49 +1,62 @@
 import type { Editor } from "../../editor/Editor";
-import type { Shape } from "../../types/Shape";
-import { PropertyRow } from "./PropertyRow";
+import type { BoardObject } from "@common/types";
 import "./ObjectInspector.css";
 import { ActionsSection } from "./ActionsSection";
-import { AppearanceSection } from "./AppearanceSection";
-import { TransformSection } from "./TransformSection";
+import { PropertySection } from "./PropertySection";
 
 type Props = {
-    shape?: Shape;
-    editor: Editor;
+  object?: BoardObject;
+  editor: Editor;
 };
 
 export function ObjectInspector({
-    shape,
-    editor,
+  object,
+  editor,
 }: Props) {
-    if (!shape) {
-        return null;
-    }
+  if (!object) {
+    return null;
+  }
 
-    return (
-        <aside className="object-inspector">
+  return (
+    <aside className="object-inspector">
 
-            <header className="inspector-header">
+      <header className="inspector-header">
+        <div>
+          <h3>Object</h3>
+          <span>{object.type}</span>
+        </div>
+      </header>
 
-                <h3>Selected</h3>
+      <PropertySection
+        title="Transform"
+        section="transform"
+        object={object}
+        editor={editor}
+      />
 
-                <span>{shape.type}</span>
+      <PropertySection
+        title="Appearance"
+        section="appearance"
+        object={object}
+        editor={editor}
+      />
 
-            </header>
+      <PropertySection
+        title="Content"
+        section="content"
+        object={object}
+        editor={editor}
+      />
 
-            <TransformSection
-                shape={shape}
-                editor={editor}
-            />
+      <PropertySection
+        title="Text"
+        section="text"
+        object={object}
+        editor={editor}
+      />
 
-            <AppearanceSection
-                shape={shape}
-                editor={editor}
-            />
+      <ActionsSection editor={editor} />
 
-            <ActionsSection
-                editor={editor}
-            />
-
-        </aside>
-    );
+    </aside>
+  );
 }

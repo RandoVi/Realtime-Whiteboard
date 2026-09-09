@@ -1,0 +1,54 @@
+import type { MutableRefObject } from "react";
+import type { Camera } from "../camera/Camera";
+import type { Interaction } from "./Interaction";
+import type { Editor } from "../editor/Editor";
+import type { Laser } from "@common/shapes/Laser";
+import type { BoardObject } from "@common/types";
+import type { Presence } from "../network/presence/Presence";
+import type { BoardDocument } from "../document/Document";
+import type { ObjectStyle } from "../objects/ObjectStyle";
+import type { RemotePresence } from "../network/presence/RemotePresence";
+import type { Tool } from "../types/Tool";
+
+export type TextEditorRef = {
+    update: () => void;
+};
+
+export interface CanvasInteractionContext {
+
+    canvas: HTMLCanvasElement;
+
+    cameraRef: MutableRefObject<Camera>;
+
+    interactionRef: MutableRefObject<Interaction>;
+
+    textEditorRef: MutableRefObject<TextEditorRef | null>;
+
+    document: BoardDocument;
+
+    editor: Editor;
+
+    presence: Presence;
+
+    requestRender: () => void;
+
+    setTool: (tool: Tool) => void;
+
+    getSelectedObject: () => BoardObject | undefined;
+
+    selectObject: (id: string | null) => void;
+
+    selectedObjectIdRef: MutableRefObject<string | null>;
+
+    setSelectedObjectId: (id: string | null) => void;
+
+    selectedObjectIdsRef: MutableRefObject<string[]>;
+
+    setSelectedObjectIds: (ids: string[]) => void;
+
+    objectStyle: ObjectStyle;
+
+    remotePresence: Map<string, RemotePresence>;
+
+    localLasers: Laser[];
+}

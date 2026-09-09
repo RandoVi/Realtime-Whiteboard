@@ -1,8 +1,8 @@
-import type { EditorCommand } from "../editor/EditorCommand";
+import type { EditorCommand } from "@common/commands";
 
 export type DocumentCommand = {
   id: string;
-  clientId: string;
+  userId: string;
   timestamp: number;
 
   command: EditorCommand;

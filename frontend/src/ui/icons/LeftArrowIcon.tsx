@@ -1,0 +1,16 @@
+export function LeftArrowIcon() {
+  return (
+    <svg
+      width="30"
+      height="30"
+      viewBox="-1.6 -1.6 19.2 19.2"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="M8 10L8 14L6 14L-2.62268e-07 8L6 2L8 2L8 6L16 6L16 10L8 10Z"
+        fill="#000000"
+      />
+    </svg>
+  )
+}
