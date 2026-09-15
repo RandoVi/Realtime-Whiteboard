@@ -1,8 +1,8 @@
-# (Project Name)
+# Realtime-whiteboard
 
 ## Introduction
 
-**(Project Name)** is a portfolio project created by **Ago-Laur Luik (frontend)** and **Rando Viimne (backend)** to gain practical experience in building a collaborative whiteboard and drawing application.
+**Realtime-whiteboard** is a portfolio project created by **Ago-Laur Luik (frontend)** and **Rando Viimne (backend)** to gain practical experience in building a collaborative whiteboard and drawing application.
 
 The project is inspired by applications such as **Excalidraw, Microsoft Paint, and Miro**, and was built to explore how a whiteboard application works internally, including drawing, object manipulation, rendering, real-time collaboration, and client-server communication.
 
@@ -94,3 +94,4 @@ In simple terms, when we have **User A** and remote users **B** and **C**:
                 │ Editor           │                  │ Editor           │
                 │ Presence         │                  │ Presence         │
                 └──────────────────┘                  └──────────────────┘
+```
