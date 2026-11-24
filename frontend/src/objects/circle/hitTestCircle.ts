@@ -16,16 +16,16 @@ export function hitTestCircle(
 
     const hit = distanceSquared <= hitRadius * hitRadius;
 
-    console.log("CIRCLE HIT TEST", {
-        point,
-        center: {
-            x: circle.x,
-            y: circle.y,
-        },
-        radius: hitRadius,
-        distanceSquared,
-        hit,
-    });
+    // console.log("CIRCLE HIT TEST", {
+    //     point,
+    //     center: {
+    //         x: circle.x,
+    //         y: circle.y,
+    //     },
+    //     radius: hitRadius,
+    //     distanceSquared,
+    //     hit,
+    // });
 
     return hit;
 }

@@ -923,7 +923,6 @@ function Whiteboard() {
         }
       />
       {selectedObjectId && (
-        // <ObjectInspector editor={editor} />
         <ObjectInspector object={selectedObject} editor={editor} />
 
       )}
