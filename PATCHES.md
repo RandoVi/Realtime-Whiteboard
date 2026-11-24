@@ -1,5 +1,12 @@
 Patches file has latest updates on the top.
 
+Update 11/24/26 ~ 14:30 PM
+refactor(frontend): strengthen shape handler types
+
+- Require create and render methods on registered handlers (means no longer optional)
+- Replace handler lookup any types with shape-aware types
+- Handle optional selection and duplication methods explicitly
+
 
 Update 11/24/26 ~ 12:40 PM (I wrote aprox time here)
 refactor: centralize shape handling and improve local setup

@@ -29,8 +29,10 @@ export function getMultiSelectionBounds(
   let bottom = -Infinity;
 
   for (const object of objects) {
-    const bounds =
-      getObjectHandler(object).getBounds(object);
+    const bounds = getObjectHandler(object).getBounds?.(object);
+    if (!bounds) {
+      throw new Error(`Object ${object.type} has no selection bounds`);
+    }
 
     left = Math.min(left, bounds.left);
     top = Math.min(top, bounds.top);

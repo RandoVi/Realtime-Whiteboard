@@ -11,7 +11,7 @@ import type { ObjectProperty } from "../properties/ObjectProperty"
 // getting move and resize updates, duplicating objects, and managing object properties.
 export interface ObjectHandler<T extends BoardObject = BoardObject> {
 
-    create?: (
+    create: (
         point: Point,
         style: ObjectStyle
     ) => T
@@ -33,10 +33,10 @@ export interface ObjectHandler<T extends BoardObject = BoardObject> {
 
     resizeHandles?: ResizeHandle[]
     
-    render?: (
+    render: (
         context: CanvasRenderingContext2D,
         object: T,
-        camera: any
+        camera: Camera
     ) => void
 
     hitTest?: (

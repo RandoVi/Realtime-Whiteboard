@@ -237,7 +237,7 @@ function renderObject(
   camera: Camera,
 ) {
   getObjectHandler(object)
-    .render?.(
+    .render(
       context,
       object,
       camera,

@@ -5,9 +5,7 @@ export function duplicateObject(
   object: BoardObject
 ): BoardObject {
 
-  const duplicate =
-    getObjectHandler(object)
-      .duplicate(object)
+  const duplicate = getObjectHandler(object).duplicate?.(object);
 
   if (!duplicate) {
     throw new Error(

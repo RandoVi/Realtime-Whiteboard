@@ -19,7 +19,10 @@ export function getSelectionBounds(
     object: BoardObject
 ): SelectionBounds {
 
-    const bounds = getObjectHandler(object).getBounds(object)
+    const bounds = getObjectHandler(object).getBounds?.(object);
+    if (!bounds) {
+        throw new Error(`Object ${object.type} has no selection bounds`);
+    }
 
     return {
         ...bounds,
