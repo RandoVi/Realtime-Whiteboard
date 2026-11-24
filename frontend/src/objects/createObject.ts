@@ -1,22 +1,21 @@
-import type { Point, BoardObject } from "@common/types"
-import type { Tool } from "../types/Tool"
-
-import { objectFactories } from "./registry/objectFactories"
-import type {ObjectStyle} from "./ObjectStyle"
+import type { BoardObject, Point } from "@common/types";
+import type { Tool } from "../types/Tool";
+import type { ObjectStyle } from "./ObjectStyle";
+import type { ObjectHandler } from "./registry/ObjectHandler";
+import { objectHandlers } from "./registry/objectHandlers";
 
 export function createObject(
   tool: Tool,
   point: Point,
-  style: ObjectStyle
+  style: ObjectStyle,
 ): BoardObject | null {
-
-  if (!(tool in objectFactories)) {
-    return null
+  if (!Object.prototype.hasOwnProperty.call(objectHandlers, tool)) {
+    return null;
   }
 
-  const factory = objectFactories[
-    tool as keyof typeof objectFactories
-  ]
+  const handler = objectHandlers[
+    tool as keyof typeof objectHandlers
+  ] as ObjectHandler;
 
-  return factory(point, style) as BoardObject
+  return handler.create?.(point, style) ?? null;
 }

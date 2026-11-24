@@ -1,96 +1,80 @@
-# (Project Name)
+# Realtime Whiteboard
 
-## Introduction
+A collaborative drawing board built by Ago-Laur Luik (frontend) and Rando Viimne (backend) as a portfolio project. Users can create or join a board, draw shapes and strokes, edit objects together, and see remote cursors, selections, previews and laser pointers.
 
-**(Project Name)** is a portfolio project created by **Ago-Laur Luik (frontend)** and **Rando Viimne (backend)** to gain practical experience in building a collaborative whiteboard and drawing application.
-
-The project is inspired by applications such as **Excalidraw, Microsoft Paint, and Miro**, and was built to explore how a whiteboard application works internally, including drawing, object manipulation, rendering, real-time collaboration, and client-server communication.
-
-The project is also intended to be presented as part of our developer portfolios.
+For the codebase map and data flow, see [PROJECT_OVERVIEW.md](./PROJECT_OVERVIEW.md).
 
 ## Features
 
-- Real-time collaborative whiteboard
-- Multiple users on the same board
-- Drawing with pen and laser pointer
-- Shapes, arrows, text and sticky notes
-- Object selection, movement and resizing
-- Multi-selection
-- Object rotation
-- Zoom and pan
-- Undo / redo
-- Remote cursors
-- Remote selections
-- Real-time object movement previews
-- Keyboard shortcuts
+- Shared boards with real-time object edits and presence
+- Pen, laser pointer, shapes, arrows, text and sticky notes
+- Selection, multi-selection, movement, resizing and rotation
+- Zoom, pan, keyboard shortcuts, and local undo/redo
 
-## Architecture
+## Requirements
 
-The application is divided into several layers:
+- For a fully local run: **Node.js 22.12 or newer**, npm, and MongoDB listening on port 27017.
+- For a Docker run: Docker with the `docker compose` command. The frontend, backend and MongoDB run in containers; a local Node installation is not needed.
 
-- Interaction
-- Editor
-- Document
-- Presence
-- Rendering
-- Network / Socket communication
+The app uses these default addresses: frontend `http://localhost:5173`, API/socket server `http://localhost:3000`, and MongoDB `localhost:27017` when run locally. The client URL and server CORS origin are currently set in [SocketClient.ts](./frontend/src/network/SocketClient.ts), [main.ts](./backend/src/main.ts), and [board.gateway.ts](./backend/src/modules/board/board.gateway.ts), so keep those ports when following these steps.
 
-## Whiteboard Flow
+## Run locally
 
-In simple terms, when we have **User A** and remote users **B** and **C**:
+1. Start MongoDB on `localhost:27017`. If you have Docker but no local MongoDB installation, you can run just the database with `docker compose up -d mongo`.
+2. From the repository root, install backend/shared dependencies and build the shared package:
 
-- **Interaction layer** handles what the user is doing - creating, deleting, moving, resizing objects, drawing, selecting, etc.
+   ```bash
+   npm ci
+   npm run build --workspace=@whiteboard/common
+   ```
 
-- **Editor layer** handles permanent changes to the board state, including commands, history, undo, and redo.
+3. Start the backend. Set `DATABASE_URL` on this command because the checked-in [backend/.env](./backend/.env) uses the Compose hostname `mongo`, which is not available to a process running directly on your computer:
 
-- **Document** holds the current board state for the local user. The state contains objects and users.
+   ```bash
+   DATABASE_URL=mongodb://127.0.0.1:27017/realtime-whiteboard npm run start-dev --workspace=backend
+   ```
 
-- **Presence layer** handles temporary real-time activity that is not saved as part of the board state — cursors, object movement previews, selections, laser pointers, text editing, and similar activity.
+4. In another terminal, install and start the frontend:
 
-- **Server** stores the board state received through editor commands and keeps all connected users updated by distributing both **editor commands** and **presence commands** from one user to the other connected users.
+   ```bash
+   cd frontend
+   npm ci
+   npm run dev
+   ```
 
-```text
-                    ┌──────────────────────┐
-                    │       USER A         │
-                    │   Mouse / Keyboard   │
-                    └──────────┬───────────┘
-                               │
-                 ┌─────────────┴─────────────┐
-                 │                           │
-                 ▼                           ▼
-        ┌──────────────────┐       ┌──────────────────┐
-        │ Interaction      │       │ Presence Layer   │
-        │ Layer            │       │                  │
-        │                  │       │ cursor / laser / │
-        │ selection /      │       │ selection /      │
-        │ move / resize /  │       │ previews / text  │
-        │ drawing          │       │ editing          │
-        └────────┬─────────┘       └────────┬─────────┘
-                 │                          │
-                 ▼                          │
-        ┌──────────────────┐                │
-        │  Editor Layer    │                │
-        │                  │                │
-        │ commands /       │                │
-        │ history /        │                │
-        │ undo / redo      │                │
-        └────────┬─────────┘                │
-                 │                          │
-                 ▼                          ▼
-        ┌──────────────────┐       ┌──────────────────┐
-        │     Document     │       │      SERVER      │
-        │                  │       │                  │
-        │ current board    │       │ board state +    │
-        │ objects + users  │       │ updates          │
-        └──────────────────┘       └────────┬─────────┘
-                                            │
-                         ┌──────────────────┴──────────────────┐
-                         │                                     │
-                         ▼                                     ▼
-                ┌──────────────────┐                  ┌──────────────────┐
-                │     USER B       │                  │     USER C       │
-                │                  │                  │                  │
-                │ Document         │                  │ Document         │
-                │ Editor           │                  │ Editor           │
-                │ Presence         │                  │ Presence         │
-                └──────────────────┘                  └──────────────────┘
+5. Open `http://localhost:5173`. Enter a username and create a board. To try collaboration, copy the board ID and join from a second browser tab or window.
+
+The root [package.json](./package.json) includes the backend and shared package as npm workspaces. The frontend is a separate npm project, so it needs its own `npm ci`.
+
+If a local backend build reports `EACCES` while writing under `backend/dist`, an older Docker run may have left generated files owned by another user. Restore ownership once with `sudo chown -R "$(id -u):$(id -g)" backend/dist`, then retry. The current Compose setup keeps generated backend and shared build output in container volumes to prevent new ownership conflicts.
+
+## Run with Docker
+
+From the repository root:
+
+```bash
+docker compose up --build
+```
+
+Open `http://localhost:5173`. [docker-compose.yml](./docker-compose.yml) starts MongoDB, the NestJS backend on port 3000, and the Vite frontend on port 5173. It sets the backend's `DATABASE_URL` to the Compose service hostname `mongo`. Source folders are mounted into the containers for development; changes to the frontend and backend are watched. Generated backend/shared build output stays in container volumes. The first frontend start installs its npm dependencies and may take a little longer.
+
+To stop the containers, press Ctrl+C or run `docker compose down` from another terminal. MongoDB data is kept in the `mongo-data` volume between starts. Run `docker compose down --volumes` only when you want to delete that stored board data.
+
+## Checks
+
+From the repository root:
+
+```bash
+npm run build --workspace=@whiteboard/common
+npm run build --workspace=backend
+npm run lint --workspace=backend
+```
+
+From `frontend/`:
+
+```bash
+npm run build
+npm run lint
+```
+
+There is no configured root test script. See [PROJECT_OVERVIEW.md](./PROJECT_OVERVIEW.md) for the main modules and where to start when changing a feature.

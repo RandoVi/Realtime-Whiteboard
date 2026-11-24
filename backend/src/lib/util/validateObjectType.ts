@@ -1,39 +1,14 @@
-import { BadRequestException } from "@nestjs/common/exceptions";
+import { BadRequestException } from "@nestjs/common";
 import { BoardObjectDTO } from "../../modules/board/dto/BoardObjectDTO";
-import { validateArrow } from "./validators/validateArrow";
-import { validateCircle } from "./validators/validateCircle";
-import { validateRectangle } from "./validators/validateRectangle";
-import { validateStroke } from "./validators/validateStroke";
-import { validateTextbox } from "./validators/validateTextbox";
-import { validateTriangle } from "./validators/validateTriangle";
 import { BoardObject } from "../../modules/board/schemas/BoardObjectSchema";
-import { validateText } from "./validators/validateText";
+import { getShapeValidator } from "./shapeValidators";
 
-export function validateObjectType(objectData: BoardObjectDTO): BoardObject{
-    switch(objectData.type) {
-        case "arrow": {
-            return validateArrow(objectData)
-        }
-        case "circle": {
-            return validateCircle(objectData)
-        }
-        case "rectangle": {
-            return validateRectangle(objectData)
-        }
-        case "stroke": {
-            return validateStroke(objectData)
-        }
-        case "textbox": {
-            return validateTextbox(objectData)
-        }
-        case "triangle": {
-            return validateTriangle(objectData)
-        }
-        case "text": {
-            return validateText(objectData)
-        }
-        default: {
-            throw new BadRequestException("Unsupported object type");
-        }
-    }
+export function validateObjectType(objectData: BoardObjectDTO): BoardObject {
+  const validator = getShapeValidator(objectData.type);
+
+  if (!validator) {
+    throw new BadRequestException("Unsupported object type");
+  }
+
+  return validator.create(objectData);
 }
