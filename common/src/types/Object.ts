@@ -23,7 +23,7 @@ export type RotatableObject =
   | Triangle
   | Textbox
   | Arrow
-  | CanvasText
+  
 
 export type Point = {
   x: number
