@@ -7,7 +7,7 @@ import type { SelectionBounds } from '../interaction/selection/getSelectionBound
 import { getObjectHandler } from '../objects/registry/getObjectHandler'
 import { getRotationHandle, type RotationHandle } from '../interaction/selection/getRotationHandle'
 import { type MultiSelectionBounds } from "../interaction/selection/getMultiSelectionBounds"
-
+import { isRotatableObject } from "../objects/isRotatableObject"
 
 export function renderSelection(
     context: CanvasRenderingContext2D,
@@ -29,10 +29,10 @@ export function renderSelection(
         handler.getResizeHandle !== undefined &&
         handler.getResizeUpdates !== undefined
 
-    const rotationHandle = getRotationHandle(
-        object,
-        camera,
-    )
+    const rotationHandle = isRotatableObject(object)
+        ? getRotationHandle(object, camera)
+        : null
+
 
     renderObjectSelection(
         context,
@@ -54,7 +54,7 @@ function renderObjectSelection(
     showHandles: boolean,
     canResize: boolean,
     resizeHandles: ResizeHandle[] | undefined,
-    rotationHandle: RotationHandle,
+    rotationHandle: RotationHandle | null,
 ) {
     renderSelectionBox(
         context,
@@ -96,6 +96,10 @@ function renderObjectSelection(
         context.stroke()
 
         context.restore()
+    }
+
+    if (!rotationHandle) {
+        return
     }
 
     context.save()
