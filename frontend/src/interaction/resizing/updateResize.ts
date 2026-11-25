@@ -3,7 +3,7 @@ import type { Point } from "@common/types";
 import { getObjectById } from "../../objects/getObjectById"
 import { sendObjectPreview } from "../helpers/sendObjectPreview"
 import type { CanvasInteractionContext } from "../CanvasInteractionContext"
-import { getObjectMoveUpdates } from "../helpers/getObjectMoveUpdates";
+import { getObjectResizeUpdates } from "../helpers/getObjectResizeUpdates";
 
 type Args = {
   world: Point
@@ -57,7 +57,7 @@ export function updateResize({
     objects: [
       {
         objectId: boardObject.id,
-        updates: getObjectMoveUpdates(boardObject),
+        updates: getObjectResizeUpdates(interaction.preview),
       },
     ],
   });
