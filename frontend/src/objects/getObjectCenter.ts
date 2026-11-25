@@ -11,6 +11,7 @@ export function getObjectCenter(object: BoardObject): Point {
         case "rectangle":
         case "triangle":
         case "textbox":
+        case "text":
         case "arrow":
             return {
                 x: object.x + object.width / 2,

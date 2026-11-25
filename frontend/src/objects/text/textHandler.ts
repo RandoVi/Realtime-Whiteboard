@@ -13,6 +13,7 @@ import { updateTextPreview } from "./updateTextPreview";
 import { getTextResizeUpdates } from "./getTextResizeUpdates";
 import { getResizeHandleText } from "./getResizeHandleText";
 import { resizeText } from "./resizeText";
+import { normalizeText } from "./normalizeText";
 
 const textProperties: ObjectProperty<CanvasText>[] = [
     {
@@ -22,12 +23,28 @@ const textProperties: ObjectProperty<CanvasText>[] = [
         section: "transform",
         editable: false,
     },
-
     {
         key: "y",
         label: "Y",
         type: "number",
         section: "transform",
+        editable: false,
+    },
+
+    {
+        key: "width",
+        label: "Width",
+        type: "number",
+        section: "transform",
+        min: 1,
+        editable: false,
+    },
+    {
+        key: "height",
+        label: "Height",
+        type: "number",
+        section: "transform",
+        min: 1,
         editable: false,
     },
 
@@ -119,7 +136,7 @@ export const textHandler: ObjectHandler<CanvasText> = {
 
     duplicate: duplicateText,
 
-    resizeHandles: ["w", "e"],
+    normalize: normalizeText,
 
     properties: textProperties,
 }

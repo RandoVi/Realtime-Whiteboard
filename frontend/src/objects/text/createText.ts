@@ -3,7 +3,7 @@ import type { Point } from "@common/types";
 import type { ObjectStyle } from "../ObjectStyle";
 
 const DEFAULT_WIDTH = 250;
-
+const DEFAULT_HEIGHT = 250;
 const DEFAULT_FONT_SIZE = 24;
 
 const DEFAULT_FONT_FAMILY =
@@ -23,6 +23,7 @@ export function createText(
         y: point.y,
 
         width: DEFAULT_WIDTH,
+        height: DEFAULT_HEIGHT,
         rotation: 0,
 
         text: "Text...",

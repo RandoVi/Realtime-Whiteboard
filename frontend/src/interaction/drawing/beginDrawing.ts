@@ -26,6 +26,14 @@ export function beginDrawing({
     start: world,
     preview: object,
   }
+
+  context.presence.send({
+    type: "objectPreview",
+    previewType: "create",
+    boardObject: object,
+  });
+  
+  context.requestRender();
   updateCursor(context);
 
   return true

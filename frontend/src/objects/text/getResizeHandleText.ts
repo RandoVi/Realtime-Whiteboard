@@ -16,6 +16,5 @@ export function getResizeHandleText(
         getTextBounds(object),
         point,
         camera,
-        ["w", "e"],
     );
 }

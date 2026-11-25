@@ -41,6 +41,8 @@ import { initializeBoard } from "./initializeBoard";
 import { getOrCreateRemotePresence } from "../network/presence/getOrCreateRemotePresence";
 import { getUserById } from "../network/presence/getUserById";
 import { removeFinishedLasers } from "../rendering/removeFinishedLasers";
+import { getObjectHandler } from "../objects/registry/getObjectHandler";
+import { normalizeObject } from "../objects/normalizeObject";
 
 const SHAPE_MENU_TOOLS = [
   "rectangle",
@@ -250,7 +252,27 @@ function Whiteboard() {
 
     const currentUser = getCurrentUser();
 
-    if (currentUser) {
+    if (currentUser && interaction.type === "drawing") {
+
+      // Use the same geometry that finishDrawing will save.
+      // Keep the live preview unchanged while dragging.
+      const preview = normalizeObject({
+        ...interaction.preview,
+      });
+
+      // Laser has no selection bounds.
+      if (getObjectHandler(preview).getBounds) {
+        renderSelection(
+          context,
+          preview,
+          camera,
+          currentUser.color,
+          false, // Outline only while creating; handles appear after creation.
+        );
+      }
+    }
+
+    if (currentUser && interaction.type !== "drawing") {
       for (const object of selectedObjects) {
         let renderedObject = object;
 
@@ -301,17 +323,32 @@ function Whiteboard() {
     }
 
     for (const [userId, presence] of remotePresence.current) {
-
-      if (presence.selectedObjectIds.length === 0) {
-        continue;
-      }
-
       const user = getUserById(
         document.usersRef.current,
         userId,
       );
 
       if (!user) {
+        continue;
+      }
+
+      if (presence.preview?.type === "create") {
+        const preview = normalizeObject({
+          ...presence.preview.object,
+        });
+
+        if (getObjectHandler(preview).getBounds) {
+          renderSelection(
+            context,
+            preview,
+            camera,
+            user.color,
+            false, // Outline only; no resize or rotation handles.
+          );
+        }
+      }
+
+      if (presence.selectedObjectIds.length === 0) {
         continue;
       }
 

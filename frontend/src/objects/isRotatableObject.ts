@@ -8,6 +8,7 @@ export function isRotatableObject(
         object.type === "circle" ||
         object.type === "triangle" ||
         object.type === "textbox" ||
-        object.type === "arrow"
+        object.type === "arrow" ||
+        object.type === "text" 
     )
 }

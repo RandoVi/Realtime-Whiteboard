@@ -52,6 +52,7 @@ describe("renderSelection", () => {
             x: 0,
             y: 0,
             width: 100,
+            height: 50,
             rotation: 0,
             text: "Hello",
             fontSize: 20,
@@ -68,10 +69,10 @@ describe("renderSelection", () => {
             camera,
             "#000000",
         );
-        // Text still has its selection box and two resize handles.
+        // Text has four corner resize handles and a rotation handle.
         expect(context.strokeRect).toHaveBeenCalledOnce();
-        expect(context.rect).toHaveBeenCalledTimes(2); // west and east resize handles
-        expect(context.arc).not.toHaveBeenCalled();
+        expect(context.rect).toHaveBeenCalledTimes(4);
+        expect(context.arc).toHaveBeenCalled();
     });
 
     it("shows a rotation handle for a rectangle", () => {

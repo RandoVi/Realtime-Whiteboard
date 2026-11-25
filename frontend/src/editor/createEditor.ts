@@ -15,6 +15,9 @@ import type { BoardObject } from "@common/types";
 import type { HistoryEntry } from "./history/HistoryEntry";
 import { getCurrentUser } from "../network/currentUser";
 import { bringObjectsToFront } from "../interaction/helpers/bringObjectsToFront";
+import { getMinimumTextSize } from "../objects/getMinimumTextSize";
+import type { CanvasText, Textbox } from "@common/shapes";
+
 
 type Args = {
   document: BoardDocument;
@@ -132,6 +135,65 @@ export function createEditor({
       document.objectsRef.current,
       selectedObjectIdRef.current
     );
+  }
+
+  function fitTextCommand(command: EditorCommand): EditorCommand {
+    if (command.type === "createBoardObject") {
+      const object = command.boardObject;
+
+      if (object.type !== "text" && object.type !== "textbox") {
+        return command;
+      }
+
+      const minimum = getMinimumTextSize(object, object.width);
+      const width = Math.max(object.width, minimum.width);
+      const height = Math.max(
+        object.height,
+        getMinimumTextSize(object, width).height,
+      );
+
+      return {
+        ...command,
+        boardObject: { ...object, width, height },
+      };
+    }
+
+    if (command.type !== "updateBoardObject") {
+      return command;
+    }
+
+    const current = getObjectById(
+      document.objectsRef.current,
+      command.boardObjectId,
+    );
+
+    if (
+      !current ||
+      (current.type !== "text" && current.type !== "textbox")
+    ) {
+      return command;
+    }
+
+    const next = {
+      ...current,
+      ...command.updates,
+    } as CanvasText | Textbox;
+
+    const minimum = getMinimumTextSize(next, next.width);
+    const width = Math.max(next.width, minimum.width);
+    const height = Math.max(
+      next.height,
+      getMinimumTextSize(next, width).height,
+    );
+
+    return {
+      ...command,
+      updates: {
+        ...command.updates,
+        width,
+        height,
+      },
+    };
   }
 
   function deleteSelectedObject() {
@@ -303,6 +365,10 @@ export function createEditor({
     command: EditorCommand,
     options?: ExecuteOptions
   ): Record<string, number> {
+
+    if (options?.broadcast !== false) {
+      command = fitTextCommand(command);
+    }
 
     const shouldRecordHistory =
       options?.recordHistory !== false;

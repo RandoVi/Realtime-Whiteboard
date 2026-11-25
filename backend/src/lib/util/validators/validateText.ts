@@ -4,14 +4,14 @@ import { BoardObject } from "../../../modules/board/schemas/BoardObjectSchema";
 
 export function validateText(data: BoardObjectDTO): BoardObject {
     if (data.type !== "text") {
-
-        throw new BadRequestException("Object is not a textbox");
+        throw new BadRequestException("Object is not text");
     }
+
     if (
         data.x === undefined ||
         data.y === undefined ||
         data.width === undefined ||
-    //    data.height === undefined ||
+        data.height === undefined ||
         data.rotation === undefined ||
         data.fill === undefined ||
         data.text === undefined ||
@@ -20,16 +20,17 @@ export function validateText(data: BoardObjectDTO): BoardObject {
         data.fontWeight === undefined
     ) {
         throw new BadRequestException(
-            "Invalid textbox: missing required fields"
+            "Invalid text: missing required fields"
         );
     }
+
     return {
         id: data.id,
         type: "text",
         x: data.x,
         y: data.y,
         width: data.width,
-    //   height: data.height,
+        height: data.height,
         rotation: data.rotation,
         fill: data.fill,
         text: data.text,

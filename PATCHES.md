@@ -1,5 +1,16 @@
 Patches file has latest updates on the top.
 
+Update 11/25/26 ~21:39
+feat(frontend): rework canvas text and show live creation bounds
+
+- Give canvas text a fixed height, four corner resize handles, rotation, and transparent rendering inside its selection bounds
+- Keep the text editing overlay sized and rotated with the object; require text height in server creation validation
+- Set content-based minimum width and height for text and textbox during creation, resizing, text edits, and font changes
+- Show normalized selection bounds during creation to the creator and other users, including leftward and upward drags
+- Send creation presence from pointer down and update the text rotation and selection tests
+
+Compatibility: Existing saved text objects without `height` need a height assigned before those boards are opened with this update.
+
 Update 11/25/26 ~ 17:45
 fix(frontend): correct resize previews and expand interaction tests
 

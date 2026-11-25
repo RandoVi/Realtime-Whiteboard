@@ -7,6 +7,7 @@ export function getTextResizeUpdates(
         x: object.x,
         y: object.y,
         width: object.width,
+        height: object.height,
         rotation: object.rotation,
     };
 }

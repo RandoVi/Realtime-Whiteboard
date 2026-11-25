@@ -1,28 +1,36 @@
+
 import type { Point } from "@common/types";
 import type { Textbox } from "@common/shapes";
 
+import { getMinimumTextSize } from "../getMinimumTextSize";
 
 export function updateTextboxPreview(
     textbox: Textbox,
     start: Point,
     current: Point,
 ) {
-    const width = current.x - start.x;
-    const height = current.y - start.y;
+    const minimumWidth = getMinimumTextSize(textbox, 0).width;
 
-    if (width < 0) {
-        textbox.x = current.x;
-        textbox.width = Math.abs(width);
-    } else {
-        textbox.x = start.x;
-        textbox.width = width;
-    }
+    const width = Math.max(
+        Math.abs(current.x - start.x),
+        minimumWidth,
+    );
 
-    if (height < 0) {
-        textbox.y = current.y;
-        textbox.height = Math.abs(height);
-    } else {
-        textbox.y = start.y;
-        textbox.height = height;
-    }
+    const minimumHeight = getMinimumTextSize(textbox, width).height;
+
+    const height = Math.max(
+        Math.abs(current.y - start.y),
+        minimumHeight,
+    );
+
+    textbox.width = width;
+    textbox.height = height;
+
+    textbox.x = current.x < start.x
+        ? start.x - width
+        : start.x;
+
+    textbox.y = current.y < start.y
+        ? start.y - height
+        : start.y;
 }

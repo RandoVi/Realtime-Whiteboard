@@ -6,6 +6,7 @@ export type CanvasText = {
     y: number;
 
     width: number;
+    height: number;
     rotation: number;
 
     text: string;

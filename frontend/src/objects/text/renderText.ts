@@ -1,80 +1,54 @@
 import type { CanvasText } from "@common/shapes/CanvasText";
 import type { Camera } from "../../camera/Camera";
-import { measureText } from "./measureText";
+import { TEXT_LINE_HEIGHT } from "./textConstants";
+import { wrapText } from "./wrapText";
 
 export function renderText(
     context: CanvasRenderingContext2D,
     text: CanvasText,
     camera: Camera,
 ) {
-    const screenX =
-        text.x * camera.scale +
-        camera.offsetX;
+    const width = text.width * camera.scale;
+    const height = text.height * camera.scale;
+    const centerX =
+        (text.x + text.width / 2) * camera.scale + camera.offsetX;
+    const centerY =
+        (text.y + text.height / 2) * camera.scale + camera.offsetY;
 
-    const screenY =
-        text.y * camera.scale +
-        camera.offsetY;
-
-    /*
-     * Measure the text in world-space units.
-     *
-     * measureText() temporarily sets the canvas font
-     * to the object's actual font size.
-     */
-    const measurement =
-        measureText(
-            context,
-            text,
-        );
-
-    const lines =
-        measurement.lines;
-
-    const screenLineHeight =
-        measurement.lineHeight *
-        camera.scale;
-
-    const screenFontSize =
-        text.fontSize *
-        camera.scale;
-    /*
-     * Small visual adjustment so the canvas text
-     * aligns better with the DOM contentEditable editor.
-     */
-
-    const verticalOffset =
-        text.fontSize * 0.26 * camera.scale;
-
+    const fontSize = text.fontSize * camera.scale;
+    const padding = 12 * camera.scale;
+    const lineHeight = fontSize * TEXT_LINE_HEIGHT;
 
     context.save();
+    context.translate(centerX, centerY);
+    context.rotate(text.rotation);
 
-    /*
-     * IMPORTANT:
-     *
-     * measureText() changes context.font, so the
-     * screen-space font must be set AFTER measurement.
-     */
+    context.beginPath();
+    context.rect(-width / 2, -height / 2, width, height);
+    context.clip();
+
     context.font =
-        `${text.fontWeight} ${screenFontSize}px ${text.fontFamily}`;
+        `${text.fontWeight} ${fontSize}px ${text.fontFamily}`;
+    context.fillStyle = text.fill;
+    context.textAlign = "center";
+    context.textBaseline = "middle";
 
-    context.fillStyle =
-        text.fill;
+    const lines = wrapText(
+        context,
+        text.text,
+        Math.max(1, width - padding * 2),
+    );
 
-    context.textAlign =
-        "left";
+    const firstLineY =
+        -(lines.length * lineHeight) / 2 + lineHeight / 2;
 
-    context.textBaseline =
-        "top";
-
-    for (let i = 0; i < lines.length; i++) {
+    lines.forEach((line, index) => {
         context.fillText(
-            lines[i],
-            screenX,
-            screenY +
-            verticalOffset +
-            i * screenLineHeight,
+            line,
+            0,
+            firstLineY + index * lineHeight,
         );
-    }
+    });
 
     context.restore();
 }

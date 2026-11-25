@@ -1,13 +1,11 @@
+
 import type { Textbox } from "@common/shapes/Textbox";
 import type { CanvasText } from "@common/shapes/CanvasText";
 import type { CanvasInteractionContext } from "../CanvasInteractionContext";
 
 import { TEXT_LINE_HEIGHT } from "../../objects/text/textConstants";
-import { measureText } from "../../objects/text/measureText";
 
-type EditableTextObject =
-    | Textbox
-    | CanvasText;
+type EditableTextObject = Textbox | CanvasText;
 
 type Args = {
     object: EditableTextObject;
@@ -18,7 +16,6 @@ export function startTextEditing({
     object,
     context,
 }: Args) {
-
     const {
         canvas,
         cameraRef,
@@ -30,55 +27,7 @@ export function startTextEditing({
         presence,
     } = context;
 
-    const editorElement =
-        document.createElement("div");
-
-    /*
-     * ------------------------------------------------
-     * Resize CanvasText editor to fit its content.
-     * ------------------------------------------------
-     */
-
-    const updateCanvasTextEditorSize = () => {
-
-        if (object.type !== "text") {
-            return;
-        }
-
-        const measurementCanvas =
-            document.createElement("canvas");
-
-        const measurementContext =
-            measurementCanvas.getContext("2d");
-
-        if (!measurementContext) {
-            return;
-        }
-
-        /*
-         * Measure the current DOM text rather than
-         * object.text, because object.text may not have
-         * been updated/rendered yet.
-         */
-
-        const currentText =
-            editorElement.textContent ?? "";
-
-        const measurement =
-            measureText(
-                measurementContext,
-                {
-                    ...object,
-                    text: currentText,
-                },
-            );
-
-        const camera =
-            cameraRef.current;
-
-        editorElement.style.height =
-            `${measurement.height * camera.scale}px`;
-    };
+    const editorElement = document.createElement("div");
 
     /*
      * ------------------------------------------------
@@ -87,9 +36,7 @@ export function startTextEditing({
      */
 
     const updateEditorPosition = () => {
-
-        const camera =
-            cameraRef.current;
+        const camera = cameraRef.current;
 
         const screenX =
             object.x * camera.scale +
@@ -119,27 +66,17 @@ export function startTextEditing({
                 ? `${6 * camera.scale}px`
                 : "0";
 
-        /*
-         * Textbox has a fixed size and padding.
-         *
-         * CanvasText has no fixed height and no padding.
-         */
+        editorElement.style.height =
+            `${object.height * camera.scale}px`;
 
-        if (object.type === "textbox") {
+        editorElement.style.padding =
+            `${12 * camera.scale}px`;
 
-            editorElement.style.height =
-                `${object.height * camera.scale}px`;
+        editorElement.style.transform =
+            `rotate(${object.rotation}rad)`;
 
-            editorElement.style.padding =
-                `${12 * camera.scale}px`;
-
-        } else {
-
-            editorElement.style.padding =
-                "0";
-
-            updateCanvasTextEditorSize();
-        }
+        editorElement.style.transformOrigin =
+            "center center";
     };
 
     /*
@@ -158,32 +95,23 @@ export function startTextEditing({
      * ------------------------------------------------
      */
 
-    editorElement.contentEditable =
-        "true";
+    editorElement.contentEditable = "true";
 
-    editorElement.spellcheck =
-        false;
+    editorElement.spellcheck = false;
 
-    editorElement.textContent =
-        object.text;
+    editorElement.textContent = object.text;
 
-    editorElement.style.position =
-        "absolute";
+    editorElement.style.position = "absolute";
 
-    editorElement.style.boxSizing =
-        "border-box";
+    editorElement.style.boxSizing = "border-box";
 
-    editorElement.style.margin =
-        "0";
+    editorElement.style.margin = "0";
 
-    editorElement.style.border =
-        "none";
+    editorElement.style.border = "none";
 
-    editorElement.style.outline =
-        "none";
+    editorElement.style.outline = "none";
 
-    editorElement.style.resize =
-        "none";
+    editorElement.style.resize = "none";
 
     /*
      * ------------------------------------------------
@@ -192,12 +120,9 @@ export function startTextEditing({
      */
 
     if (object.type === "textbox") {
-
         editorElement.style.background =
             object.background;
-
     } else {
-
         editorElement.style.background =
             "transparent";
     }
@@ -208,8 +133,7 @@ export function startTextEditing({
      * ------------------------------------------------
      */
 
-    editorElement.style.color =
-        object.fill;
+    editorElement.style.color = object.fill;
 
     editorElement.style.fontFamily =
         object.fontFamily;
@@ -226,32 +150,13 @@ export function startTextEditing({
      * ------------------------------------------------
      */
 
-    if (object.type === "textbox") {
+    editorElement.style.display = "flex";
 
-        editorElement.style.display =
-            "flex";
+    editorElement.style.alignItems = "center";
 
-        editorElement.style.alignItems =
-            "center";
+    editorElement.style.justifyContent = "center";
 
-        editorElement.style.justifyContent =
-            "center";
-
-        editorElement.style.textAlign =
-            "center";
-
-    } else {
-
-        /*
-         * CanvasText starts exactly at x/y.
-         */
-
-        editorElement.style.display =
-            "block";
-
-        editorElement.style.textAlign =
-            "left";
-    }
+    editorElement.style.textAlign = "center";
 
     /*
      * ------------------------------------------------
@@ -259,28 +164,15 @@ export function startTextEditing({
      * ------------------------------------------------
      */
 
-    editorElement.style.whiteSpace =
-        "pre-wrap";
+    editorElement.style.whiteSpace = "pre-wrap";
 
-    editorElement.style.overflowWrap =
-        "anywhere";
+    editorElement.style.overflowWrap = "anywhere";
 
-    editorElement.style.wordBreak =
-        "break-word";
+    editorElement.style.wordBreak = "break-word";
 
-    /*
-     * Textbox stays inside its fixed rectangle.
-     *
-     * CanvasText grows vertically.
-     */
+    editorElement.style.overflow = "hidden";
 
-    editorElement.style.overflow =
-        object.type === "textbox"
-            ? "hidden"
-            : "visible";
-
-    editorElement.style.zIndex =
-        "1000";
+    editorElement.style.zIndex = "1000";
 
     /*
      * ------------------------------------------------
@@ -288,20 +180,14 @@ export function startTextEditing({
      * ------------------------------------------------
      */
 
-    const parent =
-        canvas.parentElement;
+    const parent = canvas.parentElement;
 
     if (!parent) {
-
-        textEditorRef.current =
-            null;
-
+        textEditorRef.current = null;
         return;
     }
 
-    parent.appendChild(
-        editorElement,
-    );
+    parent.appendChild(editorElement);
 
     /*
      * Apply initial camera-dependent styles.
@@ -325,9 +211,7 @@ export function startTextEditing({
         objectId: object.id,
     };
 
-    selectObject(
-        object.id,
-    );
+    selectObject(object.id);
 
     requestRender();
 
@@ -343,17 +227,12 @@ export function startTextEditing({
      * Put cursor at the end of the text.
      */
 
-    const selection =
-        window.getSelection();
+    const selection = window.getSelection();
 
     if (selection) {
+        const range = document.createRange();
 
-        const range =
-            document.createRange();
-
-        range.selectNodeContents(
-            editorElement,
-        );
+        range.selectNodeContents(editorElement);
 
         range.collapse(false);
 
@@ -361,6 +240,10 @@ export function startTextEditing({
 
         selection.addRange(range);
     }
+
+    const initialText = object.text;
+    const initialWidth = object.width;
+    const initialHeight = object.height;
 
     let finished = false;
 
@@ -371,7 +254,6 @@ export function startTextEditing({
      */
 
     const cleanup = () => {
-
         if (finished) {
             return;
         }
@@ -380,8 +262,7 @@ export function startTextEditing({
 
         editorElement.remove();
 
-        textEditorRef.current =
-            null;
+        textEditorRef.current = null;
 
         interactionRef.current = {
             type: "idle",
@@ -419,17 +300,10 @@ export function startTextEditing({
              * Render again on the next frame so selection bounds
              * are calculated from the updated CanvasText.
              */
+            updateEditorPosition();
             requestAnimationFrame(() => {
                 requestRender();
             });
-
-            /*
-             * Keep the DOM editor height synchronized with the
-             * current content.
-             */
-            if (object.type === "text") {
-                updateCanvasTextEditorSize();
-            }
         },
     );
 
@@ -442,16 +316,16 @@ export function startTextEditing({
     editorElement.addEventListener(
         "keydown",
         (event) => {
-
             if (event.key === "Escape") {
-
                 event.preventDefault();
 
                 editor.execute({
                     type: "updateBoardObject",
                     boardObjectId: object.id,
                     updates: {
-                        text: object.text,
+                        text: initialText,
+                        width: initialWidth,
+                        height: initialHeight,
                     },
                 });
 

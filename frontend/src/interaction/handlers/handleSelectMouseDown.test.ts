@@ -33,7 +33,7 @@ function makeContext(object: BoardObject) {
     return { context, editorExecute };
 }
 
-it("rotates a rectangle but does not rotate canvas text", () => {
+it("rotates a rectangle and rotates canvas text", () => {
     const rectangle: Rectangle = {
         id: "rectangle-1",
         type: "rectangle",
@@ -52,6 +52,7 @@ it("rotates a rectangle but does not rotate canvas text", () => {
         x: 0,
         y: 0,
         width: 100,
+        height: 50,
         rotation: 0,
         text: "Hello",
         fontSize: 20,
@@ -79,12 +80,15 @@ it("rotates a rectangle but does not rotate canvas text", () => {
     const textCase = makeContext(text);
 
     handleSelectMouseDown({
-        pointer,
+        pointer: getRotationHandle(text, camera),
         world: { x: 0, y: 0 },
         context: textCase.context,
         multiSelect: false,
     });
 
-    expect(textCase.context.interactionRef.current.type).not.toBe("rotating");
-    expect(textCase.editorExecute).not.toHaveBeenCalled();
+    expect(textCase.context.interactionRef.current.type).toBe("rotating");
+    expect(textCase.editorExecute).toHaveBeenCalledWith({
+        type: "bringBoardObjectToFront",
+        boardObjectId: text.id,
+    });
 });
