@@ -1,22 +1,17 @@
 import type { MutableRefObject } from "react";
 import type { Editor } from "./Editor";
 import { getObjectById } from "../objects/getObjectById";
-import { updateObject } from "./commands/updateObject";
-import { deleteObject } from "./commands/deleteObject";
 import type { EditorCommand } from "@common/commands";
-import { insertObject } from "./commands/insertObject";
 import type { BoardDocument } from "../document/Document";
 import type { Collaboration } from "../network/collaboration/Collaboration";
 import type { ExecuteOptions } from "./Editor";
 import { duplicateObject } from "./duplicateObject";
-import { bringObjectToFront } from "../interaction/helpers/bringObjectToFront";
 import { EditorHistory } from "./history/EditorHistory";
-import type { BoardObject } from "@common/types";
 import type { HistoryEntry } from "./history/HistoryEntry";
 import { getCurrentUser } from "../network/currentUser";
-import { bringObjectsToFront } from "../interaction/helpers/bringObjectsToFront";
-import { getMinimumTextSize } from "../objects/getMinimumTextSize";
-import type { CanvasText, Textbox } from "@common/shapes";
+import { fitTextCommand } from "./commands/fitTextCommand";
+import { createInverseCommand } from "./commands/createInverseCommand";
+import { applyEditorCommand } from "./commands/applyEditorCommand";
 
 
 type Args = {
@@ -137,65 +132,6 @@ export function createEditor({
     );
   }
 
-  function fitTextCommand(command: EditorCommand): EditorCommand {
-    if (command.type === "createBoardObject") {
-      const object = command.boardObject;
-
-      if (object.type !== "text" && object.type !== "textbox") {
-        return command;
-      }
-
-      const minimum = getMinimumTextSize(object, object.width);
-      const width = Math.max(object.width, minimum.width);
-      const height = Math.max(
-        object.height,
-        getMinimumTextSize(object, width).height,
-      );
-
-      return {
-        ...command,
-        boardObject: { ...object, width, height },
-      };
-    }
-
-    if (command.type !== "updateBoardObject") {
-      return command;
-    }
-
-    const current = getObjectById(
-      document.objectsRef.current,
-      command.boardObjectId,
-    );
-
-    if (
-      !current ||
-      (current.type !== "text" && current.type !== "textbox")
-    ) {
-      return command;
-    }
-
-    const next = {
-      ...current,
-      ...command.updates,
-    } as CanvasText | Textbox;
-
-    const minimum = getMinimumTextSize(next, next.width);
-    const width = Math.max(next.width, minimum.width);
-    const height = Math.max(
-      next.height,
-      getMinimumTextSize(next, width).height,
-    );
-
-    return {
-      ...command,
-      updates: {
-        ...command.updates,
-        width,
-        height,
-      },
-    };
-  }
-
   function deleteSelectedObject() {
 
     const objectId = selectedObjectIdRef.current
@@ -254,120 +190,13 @@ export function createEditor({
     };
   }
 
-  function createInverseCommand(
-    command: EditorCommand
-  ): EditorCommand | undefined {
-    switch (command.type) {
-
-      case "createBoardObject":
-        return {
-          type: "deleteBoardObject",
-          boardObjectId: command.boardObject.id,
-        };
-
-      case "deleteBoardObject": {
-        const object = getObjectById(
-          document.objectsRef.current,
-          command.boardObjectId
-        );
-
-        if (!object) {
-          return undefined;
-        }
-
-        return {
-          type: "createBoardObject",
-          boardObject: structuredClone(object),
-        };
-      }
-
-      case "updateBoardObject": {
-        const object = getObjectById(
-          document.objectsRef.current,
-          command.boardObjectId,
-        );
-
-        if (!object) {
-          return undefined;
-        }
-
-        const previousValues: Record<string, unknown> = {};
-
-        for (const property of Object.keys(command.updates)) {
-          previousValues[property] = structuredClone(
-            object[property as keyof typeof object]
-          );
-        }
-
-        return {
-          type: "updateBoardObject",
-          boardObjectId: command.boardObjectId,
-          updates: previousValues as Partial<BoardObject>,
-        };
-      }
-
-      case "bringBoardObjectToFront":
-        return undefined;
-
-      case "bringBoardObjectsToFront":
-        return undefined;
-    }
-  }
-
-  function apply(command: EditorCommand) {
-    switch (command.type) {
-      case "createBoardObject":
-        insertObject({
-          objects: document.objectsRef.current,
-          object: command.boardObject,
-        });
-        break;
-
-      case "updateBoardObject":
-        // console.log("APPLYING REMOTE UPDATE:", command);
-        updateObject({
-          objects: document.objectsRef.current,
-          objectId: command.boardObjectId,
-          updates: command.updates,
-        });
-        break;
-
-      case "deleteBoardObject":
-        deleteObject({
-          objects: document.objectsRef.current,
-          objectId: command.boardObjectId,
-        });
-
-        if (selectedObjectIdRef.current === command.boardObjectId) {
-          selectedObjectIdRef.current = null;
-          setSelectedObjectId(null);
-        }
-
-        break;
-
-      case "bringBoardObjectToFront":
-        bringObjectToFront({
-          objects: document.objectsRef.current,
-          objectId: command.boardObjectId,
-        });
-        break;
-
-      case "bringBoardObjectsToFront":
-        bringObjectsToFront({
-          objects: document.objectsRef.current,
-          objectIds: command.boardObjectIds,
-        });
-        break;
-    }
-  }
-
   function execute(
     command: EditorCommand,
     options?: ExecuteOptions
   ): Record<string, number> {
 
     if (options?.broadcast !== false) {
-      command = fitTextCommand(command);
+      command = fitTextCommand(command, document.objectsRef.current);
     }
 
     const shouldRecordHistory =
@@ -379,7 +208,7 @@ export function createEditor({
     let inverseCommand: EditorCommand | undefined;
 
     if (shouldRecordHistory) {
-      inverseCommand = createInverseCommand(command);
+      inverseCommand = createInverseCommand(command, document.objectsRef.current);
     }
 
     const beforeVersions: Record<string, number> = {};
@@ -389,7 +218,12 @@ export function createEditor({
         getObjectVersion(objectId);
     }
 
-    apply(command);
+    applyEditorCommand({
+      command,
+      objects: document.objectsRef.current,
+      selectedObjectIdRef,
+      setSelectedObjectId,
+    });
 
     const afterVersions: Record<string, number> = {};
 

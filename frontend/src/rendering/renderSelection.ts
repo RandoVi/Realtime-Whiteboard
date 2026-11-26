@@ -1,6 +1,6 @@
 import type { Camera } from "../camera/Camera"
 import type { BoardObject } from '@common/types'
-import { HANDLE_SIZE, type ResizeHandle } from "../types/selection"
+import { HANDLE_SIZE, SELECTION_BOX_LINE_WIDTH, type ResizeHandle } from "../types/selection"
 import { getResizeHandles } from '../interaction/selection/getResizeHandles'
 import { getSelectionBounds } from "../interaction/selection/getSelectionBounds"
 import type { SelectionBounds } from '../interaction/selection/getSelectionBounds'
@@ -209,7 +209,7 @@ function renderSelectionBox(
 
     context.globalAlpha = 0.8
     context.strokeStyle = color
-    context.lineWidth = 4
+    context.lineWidth = SELECTION_BOX_LINE_WIDTH
 
     const padding = 2
 

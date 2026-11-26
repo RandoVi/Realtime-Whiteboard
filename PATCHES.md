@@ -1,5 +1,23 @@
 Patches file has latest updates on the top.
 
+Update 11/26/26 
+refactor(frontend): separate editor command operations
+Status: Committed
+
+- Move text sizing, command application, and inverse-command creation out of createEditor
+- Keep history, object versions, broadcasting, and the editor API in createEditor
+- Add tests for restoring a deleted object and fitting text before applying and sending it
+- Verify with 33 passing frontend tests and a successful build; lint passes with four hook dependency warnings in Whiteboard
+
+Update 11/26/26
+refactor(frontend): split whiteboard rendering and input handling
+Status: Committed
+
+- Extract scene and selection overlay rendering from Whiteboard while preserving cleanup order
+- Extract remote presence command handling and add tests for selection conflicts and preview updates
+- Build the input interaction context after the canvas is available, type presence, and remove unused hook input
+- Verify with 31 passing frontend tests and a successful build; lint passes with four hook dependency warnings in Whiteboard
+
 Update 11/25/26 ~21:39
 feat(frontend): rework canvas text and show live creation bounds
 
